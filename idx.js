@@ -113,7 +113,13 @@ function mousemove(x, y) {
 }
 
 function mousewheel(k) {
-    
+    const CS = 0.05;
+
+    mapData.scale += CS * k;
+
+    mapData.scale = Math.max(0.1, mapData.scale);
+    mapData.scale = Math.min(2, mapData.scale);
+
 }
 
 function mapDataUpdate() {
@@ -121,7 +127,11 @@ function mapDataUpdate() {
 
     function calcuSpeed(x, a, b) {
         return (x * x) / (b * (x + a));
+
+
     }
+
+
 
 
     //检查拖动
@@ -142,11 +152,42 @@ function mapDataUpdate() {
         var dPos = mapData.mapPos.add(nowPos.negtive());
         var dis = dPos.dist();
 
-        var speed = calcuSpeed(dis, 3, 2);
+        var speed = calcuSpeed(dis, 3, 5);
         var dx = nowPos.add(dPos.normal().plus_n(speed));
         e.pos.set_p(dx);
 
         //e.pos.set_p(mapData.mapPos);
+    }
+
+    //检查缩放
+    {
+        var centerPos = new Vec2();
+        centerPos.set(600, 350);
+
+        var deltaSc = mapData.scale - e.scale;
+        var abs_deltaSc = Math.abs(deltaSc);
+
+        if (abs_deltaSc >= 0.00001) {
+            var sp = calcuSpeed(abs_deltaSc * 100, 3, 5) / 100;
+            if (abs_deltaSc <= 0.003) {
+                sp = abs_deltaSc;
+            }
+
+            var flag = deltaSc / abs_deltaSc;
+            var tar = e.scale + flag * sp;
+
+            var p0 = centerPos.add(mapData.mapPos.negtive());
+
+            var p1 = p0.plus_n(1 / e.scale);
+            e.scale = tar;
+            var p2 = p1.plus_n(tar);
+
+            var deltaP = p0.add(p2.negtive());
+
+            mapData.mapPos = mapData.mapPos.add(deltaP);
+            e.pos.set_p(mapData.mapPos);
+        }
+
     }
 
 }
