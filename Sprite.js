@@ -28,7 +28,6 @@ class Sprite {
         }
 
         var x = this.pos.x;
-
         var y = this.pos.y;
 
         canvas.translate(x, y);
