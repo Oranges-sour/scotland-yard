@@ -36,7 +36,7 @@ class Sprite {
 
         canvas.drawImage(this.img, 0, 0);
 
-        canvas.scale(1/ this.scale,1/this.scale);
+        canvas.scale(1 / this.scale, 1 / this.scale);
 
         canvas.translate(-x, -y);
     }
