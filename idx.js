@@ -253,6 +253,8 @@ function dragMoveMapOnMove(p) {
 
             dx = dx.add(mapData.touchStartMapPos);
 
+
+            
             mapData.mapPos.set_p(dx);
         }
     }
