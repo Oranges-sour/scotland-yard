@@ -42,6 +42,26 @@ window.onwheel = function (e) {
     }
 }
 
+function inside(pos, lrp, w, h) {
+    if (pos.x >= lrp.x && pos.x <= lrp.x + w && pos.y >= lrp.y && pos.y <= lrp.y + h) {
+        return true;
+    }
+
+    return false;
+}
+
+function convertInCanvas(pos) {
+    var canvas = document.getElementById("canvas");
+    var left = canvas.offsetLeft;
+    var top = canvas.offsetTop;
+
+    var ans = new Vec2();
+    ans.x = pos.x - left;
+    ans.y = pos.y - top;
+
+    return ans;
+}
+
 function insideCanvas(pos) {
     var canvas = document.getElementById("canvas");
 
@@ -50,47 +70,25 @@ function insideCanvas(pos) {
     var left = canvas.offsetLeft;
     var top = canvas.offsetTop;
 
-    if (pos.x >= left && pos.x <= left + w && pos.y >= top && pos.y <= top + h) {
-        return true;
-    }
-
-    return false;
+    var p = new Vec2();
+    p.set(left, top);
+    return inside(pos, p, w, h);
 }
-
-function convertToCanvas(pos) {
-    if (!insideCanvas(pos)) {
-        return new Vec2();
-    }
-
-    var canvas = document.getElementById("canvas");
-
-    var h = canvas.offsetHeight;
-    var left = canvas.offsetLeft;
-    var top = canvas.offsetTop;
-
-    var dx = pos.x - left;
-    var dy = pos.y - top;
-
-    var ans = new Vec2();
-    ans.set(dx, h - dy);
-    return ans;
-}
-
 
 function init() {
     var sp = new Sprite("src/map1.jpg");
 
     sprites.set("game_map", sp);
 
-    mapData.scale = 0.3;
+    // mapData.scale = 0.3;
 
     mapData.mapPos.set(-2800, -2800);
 
     for (var i = 1; i <= 199; ++i) {
         var sp1 = new Anchor(anchorData[i].type, i);
 
-        sp1.orgPos.x = anchorData[i].x - 190 / 2;
-        sp1.orgPos.y = anchorData[i].y - 210 / 2;
+        sp1.orgPos.x = anchorData[i].x;
+        sp1.orgPos.y = anchorData[i].y;
 
         sp1.scale = 0.3;
 
@@ -109,8 +107,8 @@ function init() {
 
 function main_update() {
     draw();
-
     mapDataUpdate();
+
 }
 
 function mousedown(x, y) {
@@ -132,7 +130,7 @@ function mousemove(x, y) {
     var p = new Vec2();
     p.set(x, y);
     dragMoveMapOnMove(p);
-
+    anchorUpdate(p);
 }
 
 function mousewheel(k) {
@@ -150,24 +148,19 @@ function mapDataUpdate() {
 
     function calcuSpeed(x, a, b) {
         return (x * x) / (b * (x + a));
-
-
     }
-
-
-
 
     //检查拖动
     //var w = e.img.width * e.scale;
     //var h = e.img.height * e.scale;
     //左侧
-    //mapData.mapPos.x = Math.min(mapData.mapPos.x, w / 2 + 25);
+    //mapData.mapPos.x = Math.min(mapData.mapPos.x, w / 4);
     //右侧
-    //mapData.mapPos.x = Math.max(mapData.mapPos.x, -w / 2 + 1200 - 25);
+    //mapData.mapPos.x = Math.max(mapData.mapPos.x, -w / 4);
     //上侧
-    //mapData.mapPos.y = Math.max(mapData.mapPos.y, -h / 2 + 700 - 25);
+    //mapData.mapPos.y = Math.max(mapData.mapPos.y, -h / 4);
     //下侧
-    //mapData.mapPos.y = Math.min(mapData.mapPos.y, h / 2 + 25);
+    //mapData.mapPos.y = Math.min(mapData.mapPos.y, h / 4);
 
     //计算地图移动
     {
@@ -182,13 +175,6 @@ function mapDataUpdate() {
         }
 
         e.pos.set_p(dx);
-
-
-        // for (var i = 1; i <= 199; ++i) {
-        //     anchors[i].pos.set_p(anchors[i].pos.add(dPos.normal().plus_n(speed)));
-        // }
-
-        //e.pos.set_p(mapData.mapPos);
     }
 
     //检查缩放
@@ -201,8 +187,8 @@ function mapDataUpdate() {
 
         if (abs_deltaSc >= 0.00001) {
             var sp = calcuSpeed(abs_deltaSc * 100, 3, 5) / 100;
-            if (abs_deltaSc <= 0.003) {
-                sp = abs_deltaSc;
+            if (abs_deltaSc <= 0.005) {
+                mapData.scale = e.scale;
             }
 
             var flag = deltaSc / abs_deltaSc;
@@ -220,27 +206,30 @@ function mapDataUpdate() {
             e.pos.set_p(mapData.mapPos);
         }
 
+        var p0 = new Vec2();
+        p0.set(190 / 2, 210 / 2);
+
         for (var i = 1; i <= 199; ++i) {
             var anc = anchors[i];
 
-            // var p3 = new Vec2();
-            // p3.set(0, 0);
+            p0.set(190 / 2, 210 / 2);
 
-            // p3 = p3.plus_n(-0.5);
+            if (!anc.mouseon) {
+                anc.scale = Math.max(e.scale, 0.2);
+            } else {
+                anc.scale = Math.max(e.scale + 0.1, 0.3);
+            }
 
-            var p0 = anc.orgPos.plus_n(e.scale);
 
-            var p1 = p0.add(e.pos);
+            p0 = p0.plus_n(-1 * anc.scale);
 
-            //var p1 = p0.plus_n(e.scale);
-            anc.scale = e.scale;
-            anc.pos.set_p(p1);
+            var p1 = anc.orgPos.plus_n(e.scale);
+
+            var p2 = p1.add(e.pos).add(p0);
+
+            anc.pos.set_p(p2);
         }
-
-
-
     }
-
 }
 
 
@@ -253,7 +242,39 @@ function dragMoveMapOnMove(p) {
 
             dx = dx.add(mapData.touchStartMapPos);
 
+
+
             mapData.mapPos.set_p(dx);
+        }
+    }
+}
+
+//鼠标移动到锚点上缩放
+function anchorUpdate(p) {
+    //console.log("hi");
+    if (insideCanvas(p)) {
+        p = convertInCanvas(p);
+        var e = sprites.get("game_map");
+        var p3 = new Vec2();
+        p3.set(190 / 2, 210 / 2);
+        for (var i = 1; i <= 199; ++i) {
+            var anc = anchors[i];
+
+            var p0 = new Vec2();
+            p0.set(200, 220);
+            var sc = Math.max(e.scale, 0.2);
+
+            p0 = p0.plus_n(sc);
+
+            var p1 = anc.orgPos.plus_n(e.scale).add(e.pos).add(p3.plus_n(sc).negtive());
+            //console.log(anc.pos);
+            if (inside(p, p1, p0.x, p0.y)) {
+                anc.mouseon = true;
+                //anc.z_order = 10;
+            } else {
+                anc.mouseon = false;
+                //anc.z_order = 0;
+            }
         }
     }
 }
@@ -262,10 +283,7 @@ function draw() {
     var canvas = document.getElementById("canvas");
     var ctx = canvas.getContext("2d");
 
-    
-
     ctx.fillRect(0, 0, 1200, 700);
-
 
     var arr = Array.from(sprites);
     arr.sort((a, b) => a.z_order < b.z_order);

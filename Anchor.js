@@ -26,6 +26,8 @@ class Anchor {
 
     scale = 1.0;
 
+    mouseon = false;
+
     visit(canvas, height) {
         this.sp.pos.set_p(this.pos);
         this.sp.scale = this.scale;
@@ -133,7 +135,6 @@ anchorData[68] = { type: 1, x: 7193, y: 2475};
 anchorData[69] = { type: 1, x: 7867, y: 2411};
 anchorData[70] = { type: 1, x: 8695, y: 2538};
 anchorData[71] = { type: 1, x: 9476, y: 2535};
-
 anchorData[72] = { type: 2, x: 10271, y: 2618};
 anchorData[73] = { type: 1, x: 696, y: 2740};
 anchorData[74] = { type: 3, x: 1054, y: 3164};
