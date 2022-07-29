@@ -1,8 +1,13 @@
 'use strict'
 import Sprite from "./Sprite.js"
 import Vec2 from "./Vec2.js";
+import Anchor from "./Anchor.js"
+
+import { anchorData } from "./Anchor.js";
 
 var sprites = new Map();
+
+var anchors = new Array();
 
 var mapData = new Object;
 mapData.touchStartMapPos = new Vec2();
@@ -77,8 +82,23 @@ function init() {
 
     sprites.set("game_map", sp);
 
-    sp.scale = 0.2;
-    mapData.mapPos.set(0, 0);
+    mapData.scale = 0.3;
+
+    mapData.mapPos.set(-2800, -2800);
+
+    for (var i = 1; i <= 199; ++i) {
+        var sp1 = new Anchor(anchorData[i].type, i);
+
+        sp1.orgPos.x = anchorData[i].x - 190 / 2;
+        sp1.orgPos.y = anchorData[i].y - 210 / 2;
+
+        sp1.scale = 0.3;
+
+        sprites.set(i, sp1);
+
+        anchors[i] = sp1;
+    }
+
 
     setInterval(main_update, 16);
 
@@ -103,6 +123,9 @@ function mousedown(x, y) {
 function mouseup(x, y) {
     mouseDown = false;
     touchEndPos.set(x, y);
+
+
+    console.log("(" + ((x - mapData.mapPos.x) / mapData.scale) + ", " + ((y - mapData.mapPos.y) / mapData.scale) + ")")
 }
 
 function mousemove(x, y) {
@@ -154,7 +177,16 @@ function mapDataUpdate() {
 
         var speed = calcuSpeed(dis, 3, 5);
         var dx = nowPos.add(dPos.normal().plus_n(speed));
+        if (speed <= 0.003) {
+            dx = nowPos.add(dPos);
+        }
+
         e.pos.set_p(dx);
+
+
+        // for (var i = 1; i <= 199; ++i) {
+        //     anchors[i].pos.set_p(anchors[i].pos.add(dPos.normal().plus_n(speed)));
+        // }
 
         //e.pos.set_p(mapData.mapPos);
     }
@@ -188,6 +220,25 @@ function mapDataUpdate() {
             e.pos.set_p(mapData.mapPos);
         }
 
+        for (var i = 1; i <= 199; ++i) {
+            var anc = anchors[i];
+
+            // var p3 = new Vec2();
+            // p3.set(0, 0);
+
+            // p3 = p3.plus_n(-0.5);
+
+            var p0 = anc.orgPos.plus_n(e.scale);
+
+            var p1 = p0.add(e.pos);
+
+            //var p1 = p0.plus_n(e.scale);
+            anc.scale = e.scale;
+            anc.pos.set_p(p1);
+        }
+
+
+
     }
 
 }
@@ -211,8 +262,10 @@ function draw() {
     var canvas = document.getElementById("canvas");
     var ctx = canvas.getContext("2d");
 
+    
 
     ctx.fillRect(0, 0, 1200, 700);
+
 
     var arr = Array.from(sprites);
     arr.sort((a, b) => a.z_order < b.z_order);

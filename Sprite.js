@@ -30,15 +30,19 @@ class Sprite {
         var x = this.pos.x;
         var y = this.pos.y;
 
+        canvas.save();
+
         canvas.translate(x, y);
 
         canvas.scale(this.scale, this.scale);
 
         canvas.drawImage(this.img, 0, 0);
 
-        canvas.scale(1/ this.scale,1/this.scale);
+        canvas.restore();
 
-        canvas.translate(-x, -y);
+        // canvas.scale(1 / this.scale, 1 / this.scale);
+
+        // canvas.translate(-x, -y);
     }
 }
 
