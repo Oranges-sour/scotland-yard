@@ -26,6 +26,14 @@ class Graph {
 
 class GameMap {
     constructor() {
+        this.playerAt = new Array();
+        this.playerAt[1] = 1;
+        this.playerAt[2] = 2;
+        this.playerAt[3] = 3;
+        this.playerAt[4] = 4;
+        this.playerAt[5] = 5;
+
+
         //建四层图，分别是taxi，bus，subway，ship
         this.w = new Array();
         this.w[1] = new Graph(199);
