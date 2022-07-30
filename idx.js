@@ -2,6 +2,7 @@
 import Sprite from "./Sprite.js"
 import Vec2 from "./Vec2.js";
 import Anchor from "./Anchor.js"
+import GameMap from "./Map.js"
 
 import { anchorData } from "./Anchor.js";
 
@@ -121,9 +122,6 @@ function mousedown(x, y) {
 function mouseup(x, y) {
     mouseDown = false;
     touchEndPos.set(x, y);
-
-
-    console.log("(" + ((x - mapData.mapPos.x) / mapData.scale) + ", " + ((y - mapData.mapPos.y) / mapData.scale) + ")")
 }
 
 function mousemove(x, y) {
