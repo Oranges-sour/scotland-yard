@@ -15,6 +15,8 @@ mapData.touchStartMapPos = new Vec2();
 mapData.mapPos = new Vec2();
 mapData.scale = 1.0;
 
+var gameMap = new GameMap();
+
 
 var touchStartPos = new Vec2();
 var touchEndPos = new Vec2();
@@ -109,7 +111,6 @@ function init() {
 function main_update() {
     draw();
     mapDataUpdate();
-
 }
 
 function mousedown(x, y) {
@@ -138,7 +139,6 @@ function mousewheel(k) {
 
     mapData.scale = Math.max(0.1, mapData.scale);
     mapData.scale = Math.min(2, mapData.scale);
-
 }
 
 function mapDataUpdate() {
@@ -207,6 +207,14 @@ function mapDataUpdate() {
         var p0 = new Vec2();
         p0.set(190 / 2, 210 / 2);
 
+        var arr = new Set();
+        for (var i = 1; i <= 199; ++i) {
+            var anc = anchors[i];
+            if (anc.mouseon) {
+                arr = gameMap.allcango(3, i);
+            }
+        }
+
         for (var i = 1; i <= 199; ++i) {
             var anc = anchors[i];
 
@@ -218,13 +226,14 @@ function mapDataUpdate() {
                 anc.scale = Math.max(e.scale + 0.1, 0.3);
             }
 
+            if (arr.has(i)) {
+                anc.scale = Math.max(e.scale + 0.15, 0.35);
+            }
+
 
             p0 = p0.plus_n(-1 * anc.scale);
-
             var p1 = anc.orgPos.plus_n(e.scale);
-
             var p2 = p1.add(e.pos).add(p0);
-
             anc.pos.set_p(p2);
         }
     }
