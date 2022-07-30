@@ -57,14 +57,14 @@ edgeData[12].bus = [];
 edgeData[12].subway = [];
 
 edgeData[13].taxi = [4, 23, 24];
-edgeData[13].bus = [23, 14];
+edgeData[13].bus = [23, 14, 52];
 edgeData[13].subway = [46, 67, 89];
 
 edgeData[14].taxi = [25, 15];
 edgeData[14].bus = [13, 15];
 edgeData[14].subway = [];
 
-edgeData[15].taxi = [14, 5, 16, 26];
+edgeData[15].taxi = [14, 5, 16, 26, 28];
 edgeData[15].bus = [14, 29, 41];
 edgeData[15].subway = [];
 
@@ -141,7 +141,7 @@ edgeData[33].bus = [];
 edgeData[33].subway = [];
 
 edgeData[34].taxi = [10, 47, 48, 22];
-edgeData[34].bus = [46, 22];
+edgeData[34].bus = [46, 22, 63];
 edgeData[34].subway = [];
 
 edgeData[35].taxi = [22, 48, 36, 65];
@@ -184,7 +184,7 @@ edgeData[44].taxi = [32, 31, 58];
 edgeData[44].bus = [];
 edgeData[44].subway = [];
 
-edgeData[45].taxi = [32, 58, 60, 46];
+edgeData[45].taxi = [32, 58, 60, 46, 59];
 edgeData[45].bus = [];
 edgeData[45].subway = [];
 
@@ -213,7 +213,7 @@ edgeData[51].bus = [];
 edgeData[51].subway = [];
 
 edgeData[52].taxi = [39, 51, 69, 40];
-edgeData[52].bus = [14, 67, 86, 41];
+edgeData[52].bus = [67, 86, 41, 13];
 edgeData[52].subway = [];
 
 edgeData[53].taxi = [40, 69, 54];
@@ -265,7 +265,7 @@ edgeData[64].bus = [];
 edgeData[64].subway = [];
 
 edgeData[65].taxi = [35, 64, 82, 66];
-edgeData[65].bus = [];
+edgeData[65].bus = [63, 82, 22, 67];
 edgeData[65].subway = [];
 
 edgeData[66].taxi = [49, 65, 82, 67];
@@ -273,7 +273,7 @@ edgeData[66].bus = [];
 edgeData[66].subway = [];
 
 edgeData[67].taxi = [51, 66, 84, 68];
-edgeData[67].bus = [23, 65, 52, 102];
+edgeData[67].bus = [23, 65, 52, 102, 82];
 edgeData[67].subway = [13, 79, 111, 89];
 
 edgeData[68].taxi = [51, 67, 85, 69];
@@ -300,7 +300,7 @@ edgeData[73].taxi = [57, 92, 74];
 edgeData[73].bus = [];
 edgeData[73].subway = [];
 
-edgeData[74].taxi = [73, 92];
+edgeData[74].taxi = [73, 92, 58, 75];
 edgeData[74].bus = [58, 94];
 edgeData[74].subway = [46];
 
@@ -362,7 +362,7 @@ edgeData[88].subway = [];
 
 edgeData[89].taxi = [71, 88, 105];
 edgeData[89].bus = [55, 105];
-edgeData[89].subway = [67, 29, 140, 128];
+edgeData[89].subway = [67, 13, 140, 128];
 
 edgeData[90].taxi = [72, 91, 105];
 edgeData[90].bus = [];
@@ -404,7 +404,7 @@ edgeData[99].taxi = [98, 80, 110, 112];
 edgeData[99].bus = [];
 edgeData[99].subway = [];
 
-edgeData[100].taxi = [80, 112, 113, 81];
+edgeData[100].taxi = [80, 112, 113, 81, 101];
 edgeData[100].bus = [63, 111, 82];
 edgeData[100].subway = [];
 
@@ -502,7 +502,7 @@ edgeData[123].taxi = [122, 137, 148, 149, 124];
 edgeData[123].bus = [122, 124, 144, 165];
 edgeData[123].subway = [];
 
-edgeData[124].taxi = [109, 123, 138, 130];
+edgeData[124].taxi = [109, 123, 138, 130, 111];
 edgeData[124].bus = [77, 123, 111, 153];
 edgeData[124].subway = [];
 
@@ -518,7 +518,7 @@ edgeData[127].taxi = [115, 126, 133, 134, 116];
 edgeData[127].bus = [102, 133, 116];
 edgeData[127].subway = [];
 
-edgeData[128].taxi = [143, 143, 172, 188, 160];
+edgeData[128].taxi = [143, 143, 172, 188, 160, 142];
 edgeData[128].bus = [142, 135, 161, 199, 187];
 edgeData[128].subway = [140, 185, 89];
 
@@ -566,9 +566,9 @@ edgeData[139].taxi = [130, 153, 154, 140];
 edgeData[139].bus = [];
 edgeData[139].subway = [];
 
-edgeData[140].taxi = [132, 139, 154, 156, 133];
+edgeData[140].taxi = [132, 139, 154, 156, 133, 126];
 edgeData[140].bus = [82, 154, 156, 133];
-edgeData[140].subway = [];
+edgeData[140].subway = [89, 128, 153];
 
 edgeData[141].taxi = [134, 133, 158, 142];
 edgeData[141].bus = [];
@@ -583,7 +583,7 @@ edgeData[143].bus = [];
 edgeData[143].subway = [];
 
 edgeData[144].taxi = [120, 177, 145];
-edgeData[144].bus = [];
+edgeData[144].bus = [122, 123, 163];
 edgeData[144].subway = [];
 
 edgeData[145].taxi = [121, 144, 146];
@@ -619,7 +619,7 @@ edgeData[152].bus = [];
 edgeData[152].subway = [];
 
 edgeData[153].taxi = [152, 166, 167, 154, 139];
-edgeData[153].bus = [124, 180, 184, 140];
+edgeData[153].bus = [124, 180, 184, 154];
 edgeData[153].subway = [163, 111, 140, 185];
 
 edgeData[154].taxi = [139, 153, 155, 140];
@@ -652,7 +652,7 @@ edgeData[160].bus = [];
 edgeData[160].subway = [];
 
 edgeData[161].taxi = [135, 160, 174];
-edgeData[161].bus = [135, 128, 190, 107];
+edgeData[161].bus = [135, 128, 107, 199];
 edgeData[161].subway = [];
 
 edgeData[162].taxi = [136, 175];
@@ -748,15 +748,15 @@ edgeData[184].bus = [153, 156, 180, 185];
 edgeData[184].subway = [];
 
 edgeData[185].taxi = [184, 170, 186];
-edgeData[185].bus = [184, 157, 198];
+edgeData[185].bus = [184, 157, 187];
 edgeData[185].subway = [153, 128];
 
 edgeData[186].taxi = [159, 185, 198];
 edgeData[186].bus = [];
 edgeData[186].subway = [];
 
-edgeData[187].taxi = [198, 188];
-edgeData[187].bus = [];
+edgeData[187].taxi = [198, 188, 172];
+edgeData[187].bus = [185, 128];
 edgeData[187].subway = [];
 
 edgeData[188].taxi = [128, 187, 199, 173];
@@ -800,7 +800,7 @@ edgeData[197].taxi = [195, 196, 184];
 edgeData[197].bus = [];
 edgeData[197].subway = [];
 
-edgeData[198].taxi = [186, 187, 199];
+edgeData[198].taxi = [186, 187, 199, 159];
 edgeData[198].bus = [];
 edgeData[198].subway = [];
 

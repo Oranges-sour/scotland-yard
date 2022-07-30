@@ -9,11 +9,14 @@ import { anchorData } from "./Anchor.js";
 var sprites = new Map();
 
 var anchors = new Array();
+var players = new Array();
 
 var mapData = new Object;
 mapData.touchStartMapPos = new Vec2();
 mapData.mapPos = new Vec2();
 mapData.scale = 1.0;
+
+var gameMap = new GameMap();
 
 
 var touchStartPos = new Vec2();
@@ -85,6 +88,7 @@ function init() {
 
     mapData.mapPos.set(-2800, -2800);
 
+    //创建节点
     for (var i = 1; i <= 199; ++i) {
         var sp1 = new Anchor(anchorData[i].type, i);
 
@@ -98,6 +102,18 @@ function init() {
         anchors[i] = sp1;
     }
 
+    for (var i = 1; i <= 5; ++i) {
+        var str = "src/chess_" + i + ".png"
+        var sp = new Sprite(str);
+
+
+        sprites.set(str, sp);
+
+        players[i] = sp;
+    }
+
+
+
 
     setInterval(main_update, 16);
 
@@ -109,7 +125,6 @@ function init() {
 function main_update() {
     draw();
     mapDataUpdate();
-
 }
 
 function mousedown(x, y) {
@@ -138,7 +153,6 @@ function mousewheel(k) {
 
     mapData.scale = Math.max(0.1, mapData.scale);
     mapData.scale = Math.min(2, mapData.scale);
-
 }
 
 function mapDataUpdate() {
@@ -214,18 +228,28 @@ function mapDataUpdate() {
 
             if (!anc.mouseon) {
                 anc.scale = Math.max(e.scale, 0.2);
+                anc.z_order = 0;
             } else {
                 anc.scale = Math.max(e.scale + 0.1, 0.3);
+                anc.z_order = 1;
             }
 
-
             p0 = p0.plus_n(-1 * anc.scale);
-
             var p1 = anc.orgPos.plus_n(e.scale);
-
             var p2 = p1.add(e.pos).add(p0);
-
             anc.pos.set_p(p2);
+
+            for (var j = 1; j <= 5; ++j) {
+                if (gameMap.playerAt[j] == i) {
+                    //console.log(players[j].pos);
+                    var p1 = new Vec2();
+                    p1.set_p(anc.pos);
+                    p1.x += 10 * anc.scale;
+                    p1.y -= 150 * anc.scale;
+                    players[j].pos.set_p(p1);
+                    players[j].scale = anc.scale + 1.2 * anc.scale;
+                }
+            }
         }
     }
 }
@@ -284,7 +308,10 @@ function draw() {
     ctx.fillRect(0, 0, 1200, 700);
 
     var arr = Array.from(sprites);
-    arr.sort((a, b) => a.z_order < b.z_order);
+    arr.sort(function (a, b) {
+        return a[1].z_order - b[1].z_order;
+    });
+
     for (var i = 0; i < arr.length; ++i) {
         //console.log(i);
         arr[i][1].visit(ctx, 700);
