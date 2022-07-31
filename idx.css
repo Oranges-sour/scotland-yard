@@ -2,8 +2,169 @@ body {
     background-color: rgb(119, 119, 119);
 }
 
-#canvas{
+#canvas {
     border-style: solid;
     border-width: 5px;
     border-color: beige;
+}
+
+
+
+
+/*////////////////////////////////////*/
+#OnGame {
+    background-color: antiquewhite;
+
+    width: 22%;
+    height: 700px;
+
+    position: absolute;
+
+    top: 10px;
+    left: 1230px;
+
+    /* z-index: 1; */
+}
+
+#OnGame_ServerStatue {
+    background-color: rgb(157, 157, 157);
+
+    width: 40%;
+    height: 4%;
+
+    position: absolute;
+
+    top: 0.5%;
+    left: 30%;
+
+    border-radius: 4px;
+}
+
+#OnGame_ServerStatue_text {
+    color: aliceblue;
+
+    font-size: 20px;
+
+    position: absolute;
+    left: 2%;
+}
+
+#OnGame_ServerStatue_show {
+    background-color: brown;
+
+    width: 20%;
+    height: 90%;
+
+    border-radius: 10px;
+
+    position: absolute;
+    right: 5%;
+    top: 2%;
+}
+
+#OnGame_ServerStatue_cutline {
+    background-color: rgb(18, 18, 18);
+
+    width: 200%;
+    height: 3%;
+
+    position: absolute;
+    left: -50%;
+    top: 120%;
+
+}
+
+#OnGame_StepShow_bk {
+
+    background-color: rgb(212, 144, 55);
+
+    width: 90%;
+    height: 50px;
+
+    position: absolute;
+
+    top: 10%;
+    left: 5%;
+
+    border-radius: 8px;
+}
+
+#OnGame_StepShow_bk_c1 {
+    background-color: rgb(33, 33, 33);
+
+    width: 20%;
+    height: 80%;
+
+    position: absolute;
+
+    left: 5%;
+    top: 10%;
+
+    border-radius: 6px;
+}
+
+#OnGame_StepShow_bk_c2 {
+    background-color: rgb(33, 33, 33);
+
+    width: 20%;
+    height: 80%;
+
+    position: absolute;
+
+    left: 28%;
+    top: 10%;
+
+    border-radius: 6px;
+}
+
+#OnGame_StepShow_bk_c3 {
+    background-color: rgb(33, 33, 33);
+
+    width: 20%;
+    height: 80%;
+
+    position: absolute;
+
+    left: 51%;
+    top: 10%;
+
+    border-radius: 6px;
+}
+
+#OnGame_StepShow_bk_c4 {
+    background-color: rgb(33, 33, 33);
+
+    width: 20%;
+    height: 80%;
+
+    position: absolute;
+
+    left: 74%;
+    top: 10%;
+
+    border-radius: 6px;
+}
+
+#OnGame_StepShow_bk_c5 {
+
+    width: 23%;
+    height: 86%;
+
+    position: absolute;
+
+    left: 72%;
+    top: 4%;
+
+    border-style: solid;
+
+    border-color: aliceblue;
+
+    border-radius: 9px;
+}
+
+#OnGame_Thief_img{
+    position: absolute;
+
+    top: 20%;
+    left: 15%;
 }

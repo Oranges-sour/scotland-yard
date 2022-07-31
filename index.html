@@ -7,10 +7,35 @@
 <body>
     <div style="text-align: left;">
         <div><canvas id="canvas" width="1200px" height="700px"></canvas></div>
-    </div>
 
-    <div>
-        
+        <!-- 游戏主界面 -->
+        <div id="OnHome"></div>
+
+
+        <!-- 进行游戏时的控件 -->
+        <div id="OnGame">
+            <!-- 显示服务器状态 -->
+            <div id="OnGame_ServerStatue">
+                <div id="OnGame_ServerStatue_text">服务器状态</div>
+                <div id="OnGame_ServerStatue_show"></div>
+                <div id="OnGame_ServerStatue_cutline"></div>
+            </div>
+            <!-- 到谁下棋，显示 -->
+            <div id="OnGame_StepShow">
+                <div id="OnGame_StepShow_bk">
+                    <div id="OnGame_StepShow_bk_c1"></div>
+                    <div id="OnGame_StepShow_bk_c2"></div>
+                    <div id="OnGame_StepShow_bk_c3"></div>
+                    <div id="OnGame_StepShow_bk_c4"></div>
+                    <div id="OnGame_StepShow_bk_c5"></div>
+                </div>
+            </div>
+
+            <!-- 小偷步骤状态 -->
+            <div id="OnGame_Thief">
+                <img id="OnGame_Thief_img" src="src/step_deck.png"></img>
+            </div>
+        </div>
     </div>
 
 

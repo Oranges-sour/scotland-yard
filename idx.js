@@ -40,9 +40,9 @@ window.onmouseup = function (e) {
 
 window.onwheel = function (e) {
     if (e.wheelDelta > 0) {
-        mousewheel(1);
+        mousewheel(e.pageX, e.pageY, 1);
     } else {
-        mousewheel(-1);
+        mousewheel(e.pageX, e.pageY, -1);
     }
 }
 
@@ -146,13 +146,18 @@ function mousemove(x, y) {
     anchorUpdate(p);
 }
 
-function mousewheel(k) {
+function mousewheel(x, y, k) {
     const CS = 0.05;
 
-    mapData.scale += CS * k;
+    var p = new Vec2();
+    p.set(x, y);
+    if (insideCanvas(p)) {
+        mapData.scale += CS * k;
 
-    mapData.scale = Math.max(0.1, mapData.scale);
-    mapData.scale = Math.min(2, mapData.scale);
+        mapData.scale = Math.max(0.1, mapData.scale);
+        mapData.scale = Math.min(2, mapData.scale);
+    }
+
 }
 
 function mapDataUpdate() {
