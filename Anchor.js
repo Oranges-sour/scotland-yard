@@ -3,7 +3,7 @@ import Vec2 from "./Vec2.js";
 
 import { anchorData } from "./AnchorData.js";
 
-import { sprites, anchors, convertInCanvas, insideCanvas, inside } from "./idx.js";
+import { sprites_main, anchors, convertInCanvas, insideCanvas, inside } from "./idx.js";
 
 
 export class Anchor {
@@ -67,7 +67,7 @@ export function anchorInit() {
 
         sp1.scale = 0.3;
 
-        sprites.set(i, sp1);
+        sprites_main.set(i, sp1);
 
         anchors[i] = sp1;
     }
@@ -77,7 +77,7 @@ export function anchorUpdate(p) {
     //console.log("hi");
     if (insideCanvas(p)) {
         p = convertInCanvas(p);
-        var e = sprites.get("game_map");
+        var e = sprites_main.get("game_map");
         var p3 = new Vec2();
         p3.set(190 / 2, 210 / 2);
         for (var i = 1; i <= 199; ++i) {

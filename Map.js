@@ -1,7 +1,7 @@
 import { edgeData } from "./EdgeData.js";
 import Vec2 from "./Vec2.js";
 import Sprite from "./Sprite.js";
-import { sprites, anchors, mouseDown, touchStartPos, gameMap, players, insideCanvas } from "./idx.js";
+import { sprites_main, anchors, mouseDown, touchStartPos, gameMap, players, insideCanvas } from "./idx.js";
 
 var mapData = new Object;
 mapData.touchStartMapPos = new Vec2();
@@ -113,7 +113,7 @@ export class GameMap {
 
 export function mapInit() {
     var sp = new Sprite("src/map1.jpg");
-    sprites.set("game_map", sp);
+    sprites_main.set("game_map", sp);
     mapData.mapPos.set(-2800, -2800);
 }
 
@@ -135,7 +135,7 @@ export function mapUpdateOnMouseDown(x, y) {
 }
 
 export function mapDataUpdate() {
-    var e = sprites.get("game_map");
+    var e = sprites_main.get("game_map");
 
     function calcuSpeed(x, a, b) {
         return (x * x) / (b * (x + a));

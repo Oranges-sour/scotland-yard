@@ -6,11 +6,12 @@ import Vec2 from "./Vec2.js";
 import { GameMap, mapDataUpdate, dragMoveMapOnMove, mapInit, mapUpdateOnWheel, mapUpdateOnMouseDown } from "./Map.js"
 import { Anchor, anchorInit, anchorUpdate } from "./Anchor.js";
 
-import { initUI } from "./uiCtl.js";
+import { initUI, uiUpdate, updateUIOnMouseUp } from "./uiCtl.js";
 
 // import { anchorData } from "./Anchor.js";
 
-var sprites = new Map();
+var sprites_main = new Map();
+var sprites_ui = new Map();
 
 
 var anchors = new Array();
@@ -25,11 +26,18 @@ var mouseDown = false;
 
 
 //当前选择了哪个棋子
-var chessSelect = 1;
+var chessSelect = 5;
+//到谁下棋
+var chessStepOn = 5;
 //小偷行动的步骤
 var thiefStepList = new Array();
 for (var i = 1; i <= 24; ++i) {
-    thiefStepList[i] = 0;
+    thiefStepList[i] = 1;
+}
+
+var cardsLeft = new Array();
+for (var i = 1; i <= 5; ++i) {
+    cardsLeft[i] = 0;
 }
 
 
@@ -97,7 +105,7 @@ function init() {
     for (var i = 1; i <= 5; ++i) {
         var str = "src/chess_" + i + ".png"
         var sp = new Sprite(str);
-        sprites.set(str, sp);
+        sprites_main.set(str, sp);
         players[i] = sp;
     }
 
@@ -105,8 +113,10 @@ function init() {
 }
 
 function main_update() {
-    draw();
+    draw_main();
+    draw_ui();
     mapDataUpdate();
+    uiUpdate();
 }
 
 function mousedown(x, y) {
@@ -118,6 +128,11 @@ function mousedown(x, y) {
 function mouseup(x, y) {
     mouseDown = false;
     touchEndPos.set(x, y);
+
+    var p = new Vec2();
+    p.set(x, y);
+
+    updateUIOnMouseUp(p);
 }
 
 function mousemove(x, y) {
@@ -132,13 +147,13 @@ function mousewheel(x, y, k) {
     mapUpdateOnWheel(x, y, k);
 }
 
-function draw() {
+function draw_main() {
     var canvas = document.getElementById("canvas");
     var ctx = canvas.getContext("2d");
 
     ctx.fillRect(0, 0, 1200, 700);
 
-    var arr = Array.from(sprites);
+    var arr = Array.from(sprites_main);
     arr.sort(function (a, b) {
         return a[1].z_order - b[1].z_order;
     });
@@ -148,6 +163,22 @@ function draw() {
     }
 }
 
-export var sprites, mouseDown, touchStartPos, touchEndPos, anchors, gameMap, players;
-export var chessSelect;
+function draw_ui() {
+    var canvas = document.getElementById("canvas_ui");
+    var ctx = canvas.getContext("2d");
+
+    ctx.fillRect(0, 0, 350, 700);
+
+    var arr = Array.from(sprites_ui);
+    arr.sort(function (a, b) {
+        return a[1].z_order - b[1].z_order;
+    });
+
+    for (var i = 0; i < arr.length; ++i) {
+        arr[i][1].visit(ctx, 700);
+    }
+}
+
+export var sprites_main, sprites_ui, mouseDown, touchStartPos, touchEndPos, anchors, gameMap, players;
+export var chessSelect, chessStepOn, thiefStepList, cardsLeft;
 
