@@ -1,20 +1,18 @@
 'use strict'
 import Sprite from "./Sprite.js"
 import Vec2 from "./Vec2.js";
-import Anchor from "./Anchor.js"
-import GameMap from "./Map.js"
 
-import { anchorData } from "./Anchor.js";
+
+import { GameMap, mapDataUpdate, dragMoveMapOnMove, mapInit, mapUpdateOnWheel, mapUpdateOnMouseDown } from "./Map.js"
+import { Anchor, anchorInit, anchorUpdate } from "./Anchor.js";
+
+// import { anchorData } from "./Anchor.js";
 
 var sprites = new Map();
 
+
 var anchors = new Array();
 var players = new Array();
-
-var mapData = new Object;
-mapData.touchStartMapPos = new Vec2();
-mapData.mapPos = new Vec2();
-mapData.scale = 1.0;
 
 var gameMap = new GameMap();
 
@@ -46,7 +44,7 @@ window.onwheel = function (e) {
     }
 }
 
-function inside(pos, lrp, w, h) {
+export function inside(pos, lrp, w, h) {
     if (pos.x >= lrp.x && pos.x <= lrp.x + w && pos.y >= lrp.y && pos.y <= lrp.y + h) {
         return true;
     }
@@ -54,7 +52,7 @@ function inside(pos, lrp, w, h) {
     return false;
 }
 
-function convertInCanvas(pos) {
+export function convertInCanvas(pos) {
     var canvas = document.getElementById("canvas");
     var left = canvas.offsetLeft;
     var top = canvas.offsetTop;
@@ -66,7 +64,7 @@ function convertInCanvas(pos) {
     return ans;
 }
 
-function insideCanvas(pos) {
+export function insideCanvas(pos) {
     var canvas = document.getElementById("canvas");
 
     var w = canvas.offsetWidth;
@@ -84,23 +82,9 @@ function init() {
 
     sprites.set("game_map", sp);
 
-    // mapData.scale = 0.3;
+    mapInit();
 
-    mapData.mapPos.set(-2800, -2800);
-
-    //创建节点
-    for (var i = 1; i <= 199; ++i) {
-        var sp1 = new Anchor(anchorData[i].type, i);
-
-        sp1.orgPos.x = anchorData[i].x;
-        sp1.orgPos.y = anchorData[i].y;
-
-        sp1.scale = 0.3;
-
-        sprites.set(i, sp1);
-
-        anchors[i] = sp1;
-    }
+    anchorInit();
 
     for (var i = 1; i <= 5; ++i) {
         var str = "src/chess_" + i + ".png"
@@ -112,14 +96,7 @@ function init() {
         players[i] = sp;
     }
 
-
-
-
     setInterval(main_update, 16);
-
-
-    var canvas = document.getElementById("canvas");
-    var ctx = canvas.getContext("2d");
 }
 
 function main_update() {
@@ -130,8 +107,7 @@ function main_update() {
 function mousedown(x, y) {
     mouseDown = true;
     touchStartPos.set(x, y);
-
-    mapData.touchStartMapPos.set_p(mapData.mapPos);
+    mapUpdateOnMouseDown(x, y);
 }
 
 function mouseup(x, y) {
@@ -142,168 +118,13 @@ function mouseup(x, y) {
 function mousemove(x, y) {
     var p = new Vec2();
     p.set(x, y);
+
     dragMoveMapOnMove(p);
     anchorUpdate(p);
 }
 
 function mousewheel(x, y, k) {
-    const CS = 0.05;
-
-    var p = new Vec2();
-    p.set(x, y);
-    if (insideCanvas(p)) {
-        mapData.scale += CS * k;
-
-        mapData.scale = Math.max(0.1, mapData.scale);
-        mapData.scale = Math.min(2, mapData.scale);
-    }
-
-}
-
-function mapDataUpdate() {
-    var e = sprites.get("game_map");
-
-    function calcuSpeed(x, a, b) {
-        return (x * x) / (b * (x + a));
-    }
-
-    //检查拖动
-    //var w = e.img.width * e.scale;
-    //var h = e.img.height * e.scale;
-    //左侧
-    //mapData.mapPos.x = Math.min(mapData.mapPos.x, w / 4);
-    //右侧
-    //mapData.mapPos.x = Math.max(mapData.mapPos.x, -w / 4);
-    //上侧
-    //mapData.mapPos.y = Math.max(mapData.mapPos.y, -h / 4);
-    //下侧
-    //mapData.mapPos.y = Math.min(mapData.mapPos.y, h / 4);
-
-    //计算地图移动
-    {
-        var nowPos = e.pos.copy();
-        var dPos = mapData.mapPos.add(nowPos.negtive());
-        var dis = dPos.dist();
-
-        var speed = calcuSpeed(dis, 3, 5);
-        var dx = nowPos.add(dPos.normal().plus_n(speed));
-        if (speed <= 0.003) {
-            dx = nowPos.add(dPos);
-        }
-
-        e.pos.set_p(dx);
-    }
-
-    //检查缩放
-    {
-        var centerPos = new Vec2();
-        centerPos.set(600, 350);
-
-        var deltaSc = mapData.scale - e.scale;
-        var abs_deltaSc = Math.abs(deltaSc);
-
-        if (abs_deltaSc >= 0.00001) {
-            var sp = calcuSpeed(abs_deltaSc * 100, 3, 5) / 100;
-            if (abs_deltaSc <= 0.005) {
-                mapData.scale = e.scale;
-            }
-
-            var flag = deltaSc / abs_deltaSc;
-            var tar = e.scale + flag * sp;
-
-            var p0 = centerPos.add(mapData.mapPos.negtive());
-
-            var p1 = p0.plus_n(1 / e.scale);
-            e.scale = tar;
-            var p2 = p1.plus_n(tar);
-
-            var deltaP = p0.add(p2.negtive());
-
-            mapData.mapPos = mapData.mapPos.add(deltaP);
-            e.pos.set_p(mapData.mapPos);
-        }
-
-        var p0 = new Vec2();
-        p0.set(190 / 2, 210 / 2);
-
-        for (var i = 1; i <= 199; ++i) {
-            var anc = anchors[i];
-
-            p0.set(190 / 2, 210 / 2);
-
-            if (!anc.mouseon) {
-                anc.scale = Math.max(e.scale, 0.2);
-                anc.z_order = 0;
-            } else {
-                anc.scale = Math.max(e.scale + 0.1, 0.3);
-                anc.z_order = 1;
-            }
-
-            p0 = p0.plus_n(-1 * anc.scale);
-            var p1 = anc.orgPos.plus_n(e.scale);
-            var p2 = p1.add(e.pos).add(p0);
-            anc.pos.set_p(p2);
-
-            for (var j = 1; j <= 5; ++j) {
-                if (gameMap.playerAt[j] == i) {
-                    //console.log(players[j].pos);
-                    var p1 = new Vec2();
-                    p1.set_p(anc.pos);
-                    p1.x += 10 * anc.scale;
-                    p1.y -= 150 * anc.scale;
-                    players[j].pos.set_p(p1);
-                    players[j].scale = anc.scale + 1.2 * anc.scale;
-                }
-            }
-        }
-    }
-}
-
-
-function dragMoveMapOnMove(p) {
-    if (mouseDown) {
-        if (insideCanvas(p)) {
-            var dx = touchStartPos.add(p.negtive());
-            dx.x = -dx.x;
-            dx.y = -dx.y;
-
-            dx = dx.add(mapData.touchStartMapPos);
-
-
-
-            mapData.mapPos.set_p(dx);
-        }
-    }
-}
-
-//鼠标移动到锚点上缩放
-function anchorUpdate(p) {
-    //console.log("hi");
-    if (insideCanvas(p)) {
-        p = convertInCanvas(p);
-        var e = sprites.get("game_map");
-        var p3 = new Vec2();
-        p3.set(190 / 2, 210 / 2);
-        for (var i = 1; i <= 199; ++i) {
-            var anc = anchors[i];
-
-            var p0 = new Vec2();
-            p0.set(200, 220);
-            var sc = Math.max(e.scale, 0.2);
-
-            p0 = p0.plus_n(sc);
-
-            var p1 = anc.orgPos.plus_n(e.scale).add(e.pos).add(p3.plus_n(sc).negtive());
-            //console.log(anc.pos);
-            if (inside(p, p1, p0.x, p0.y)) {
-                anc.mouseon = true;
-                //anc.z_order = 10;
-            } else {
-                anc.mouseon = false;
-                //anc.z_order = 0;
-            }
-        }
-    }
+    mapUpdateOnWheel(x, y, k);
 }
 
 function draw() {
@@ -318,8 +139,9 @@ function draw() {
     });
 
     for (var i = 0; i < arr.length; ++i) {
-        //console.log(i);
         arr[i][1].visit(ctx, 700);
     }
 }
+
+export var sprites, mouseDown, touchStartPos, touchEndPos, anchors, gameMap, players;
 
