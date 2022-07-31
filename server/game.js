@@ -1,5 +1,4 @@
 import exp from "constants";
-import { isUndefined } from "util";
 import { GameMap } from "./GameMap.js";
 
 //玩家的可能开始点
@@ -27,11 +26,19 @@ for (var i = 1; i <= 24; ++i) {
 }
 
 var cardsLeft = new Array();
-for (var i = 1; i <= 5; ++i) {
+for (var i = 1; i <= 6; ++i) {
     cardsLeft[i] = new Array();
     for (var j = 1; j <= 5; ++j) {
         cardsLeft[i][j] = 0;
     }
+}
+
+export function setChessStepOn(x) {
+    chessStepOn = x;
+}
+
+export function setGameRound(x) {
+    gameRound = x;
 }
 
 export function initGame() {
@@ -104,6 +111,8 @@ export function chessMove(id, type, where) {
             cardsLeft[id][type] -= 1;
             cardsLeft[1][type] += 1;
             playerAt[id] = where;
+        } else {
+            return 0;
         }
     }
     if (id == 1) {
@@ -111,20 +120,30 @@ export function chessMove(id, type, where) {
         if (playerAt[id] == where) {
             return 0;
         }
+
         //不是特殊卡
         if (type <= 3) {
+            console.log(type + " " + playerAt[id] + " " + where);
             if (gameMap.cango(type, playerAt[id], where)) {
                 cardsLeft[id][type] -= 1;
                 playerAt[id] = where;
+            } else {
+                return 0;
             }
         }
         //特殊卡
         if (type == 5) {
-            for (var i = 1; i <= 3; ++i) {
+            var suc = false;
+            for (var i = 1; i <= 4; ++i) {
                 if (gameMap.cango(i, playerAt[id], where)) {
                     cardsLeft[id][type] -= 1;
                     playerAt[id] = where;
+                    suc = true;
+                    break;
                 }
+            }
+            if (!suc) {
+                return 0;
             }
         }
         /*
@@ -133,12 +152,24 @@ export function chessMove(id, type, where) {
             然后把步数退回重新走
         */
         if (type == 4) {
-            for (var i = 1; i <= 3; ++i) {
+            var goo = new Array();
+
+            var suc = false;
+            for (var i = 1; i <= 4; ++i) {
                 if (gameMap.cango(i, playerAt[id], where)) {
-                    playerAt[id] = where;
-                    return i;
+                    suc = true;
+                    goo[i] = true;
+                } else {
+                    goo[i] = false;
                 }
             }
+            if (suc) {
+                playerAt[id] = where;
+            }
+
+            //第0个代表是否有任何方法能走过去
+            goo[0] = suc;
+            return goo;
         }
     }
     //4代表正常移动(1~3留给了4号卡特判用)
@@ -151,3 +182,6 @@ function getRandomNum(min, max) {
 
 export var chessStepOn;
 export var gameRound;
+export var playerAt;
+export var thiefStepList;
+export var cardsLeft;

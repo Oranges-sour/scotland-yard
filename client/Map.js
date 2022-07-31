@@ -1,7 +1,7 @@
 import { edgeData } from "./EdgeData.js";
 import Vec2 from "./Vec2.js";
 import Sprite from "./Sprite.js";
-import { sprites_main, anchors, mouseDown, touchStartPos, gameMap, players, insideCanvas } from "./idx.js";
+import { sprites_main, anchors, mouseDown, touchStartPos, gameMap, players, insideCanvas, gameRound, selfChessCtl } from "./idx.js";
 
 var mapData = new Object;
 mapData.touchStartMapPos = new Vec2();
@@ -231,6 +231,15 @@ export function mapDataUpdate() {
                 }
             }
         }
+    }
+
+    if (gameRound == 3 || gameRound == 8 ||
+        gameRound == 13 || gameRound == 18 ||
+        gameRound == 24
+        || selfChessCtl.find(1) != undefined) {
+        players[i].visible = true;
+    } else {
+        players[i].false = false;
     }
 }
 

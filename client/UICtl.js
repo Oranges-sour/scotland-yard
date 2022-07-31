@@ -1,5 +1,6 @@
-import { chessSelect, chessStepOn, sprites_ui, thiefStepList, cardsLeft } from "./idx.js";
+import { cardSelect, chessStepOn, sprites_ui, thiefStepList, cardsLeft, inside, insideUICanvas, convertInUICanvas, setChessSelect } from "./idx.js";
 import Sprite from "./Sprite.js";
+import Vec2 from "./Vec2.js";
 
 export function initUI() {
     var bk = new Sprite("src/play_ui.png");
@@ -29,7 +30,7 @@ export function uiUpdate() {
     e.pos.x = chessStepOnPos[chessStepOn];
 
     var e = sprites_ui.get("select_on");
-    e.pos.x = chessSelectPos[chessSelect];
+    e.pos.x = chessSelectPos[cardSelect];
 
     for (var i = 0; i <= 23; ++i) {
         var j = i + 1;
@@ -47,17 +48,23 @@ export function uiUpdate() {
 
             sprites_ui.set("thief_card_" + j, e);
         }
-        if(thiefStepList[j] == 0){
+        if (thiefStepList[j] == 0) {
             sprites_ui.delete("thief_card_" + j);
         }
     }
 }
 
 export function updateUIOnMouseUp(p) {
-
-}
-
-//选哪个棋子去下棋
-function playChessSelect(x) {
-
+    if (insideUICanvas(p)) {
+        var pos = convertInUICanvas(p);
+        
+        for (var i = 1; i <= 5; ++i) {
+            var lrp = new Vec2();
+            lrp.x = chessSelectPos[i] - 10;
+            lrp.y = 174 + 15;
+            if (inside(pos, lrp, 55, 30)) {
+                setChessSelect(i);
+            }
+        }
+    }
 }

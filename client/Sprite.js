@@ -18,11 +18,16 @@ class Sprite {
 
     scale = 1.0;
 
+    visible = true;
+
     setScale(x) {
         this.scale = x;
     }
 
     visit(canvas, height) {
+        if (!this.visible) {
+            return;
+        }
         if (this.loadFinish != true) {
             return;
         }
