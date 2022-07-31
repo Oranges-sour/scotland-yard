@@ -1,0 +1,12 @@
+{
+    "name": "123",
+    "version": "1.0.0",
+    "description": "123",
+    "main": "idx.js",
+    "scripts": {
+        "start": "node idx.js"
+    },
+    "type": "module",
+    "author": "Author name",
+    "license": "ISC"
+}
