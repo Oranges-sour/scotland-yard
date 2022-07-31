@@ -41,7 +41,7 @@ class Vec2 {
 
     normal() {
         var k = this.dist();
-        if(k == 0) {
+        if (k == 0) {
             return new Vec2();
         }
         var ans = new Vec2();

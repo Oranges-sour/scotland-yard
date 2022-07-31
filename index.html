@@ -7,10 +7,58 @@
 <body>
     <div style="text-align: left;">
         <div><canvas id="canvas" width="1200px" height="700px"></canvas></div>
-    </div>
 
-    <div>
-        
+        <!-- 游戏主界面 -->
+        <div id="OnHome"></div>
+
+
+        <!-- 进行游戏时的控件 -->
+        <div id="OnGame">
+            <!-- 显示服务器状态 -->
+            <div id="OnGame_ServerStatue">
+                <div id="OnGame_ServerStatue_text">服务器状态</div>
+                <div id="OnGame_ServerStatue_show"></div>
+                <div id="OnGame_ServerStatue_cutline"></div>
+            </div>
+            <!-- 到谁下棋，显示 -->
+            <div id="OnGame_StepShow">
+                <div id="OnGame_StepShow_bk">
+                    <div id="OnGame_StepShow_bk_c1"></div>
+                    <div id="OnGame_StepShow_bk_c2"></div>
+                    <div id="OnGame_StepShow_bk_c3"></div>
+                    <div id="OnGame_StepShow_bk_c4"></div>
+                    <div id="OnGame_StepShow_bk_c5"></div>
+                </div>
+            </div>
+
+            <!-- 小偷步骤状态 -->
+            <div id="OnGame_Thief">
+                <img id="OnGame_Thief_img" src="src/step_deck.png"></img>
+            </div>
+
+            <!-- 下棋 -->
+            <div id="OnGame_PlayChess">
+                <!-- 显示各种棋的剩余数量 -->
+                <div id="OnGame_PlayChess_RestShow">
+                    <img id="OnGame_PlayChess_RestShow_taxi" src="src/taxi.png"></img>
+                    <img id="OnGame_PlayChess_RestShow_bus" src="src/bus.png"></img>
+                    <img id="OnGame_PlayChess_RestShow_subway" src="src/subway.png"></img>
+                    <img id="OnGame_PlayChess_RestShow_plus2" src="src/plus2.png"></img>
+                    <img id="OnGame_PlayChess_RestShow_unknow" src="src/unknow.png"></img>
+
+                    <div id="OnGame_PlayChess_RestShow_taxi_num">99</div>
+                    <div id="OnGame_PlayChess_RestShow_bus_num">99</div>
+                    <div id="OnGame_PlayChess_RestShow_subway_num">99</div>
+                    <div id="OnGame_PlayChess_RestShow_plus2_num">99</div>
+                    <div id="OnGame_PlayChess_RestShow_unknow_num">99</div>
+                
+                    <button id="OnGame_PlayChess_PlayBtn">
+                        下棋
+                    </button>
+                </div>
+            
+            </div>
+        </div>
     </div>
 
 
