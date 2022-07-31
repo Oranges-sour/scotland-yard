@@ -50,7 +50,7 @@ body {
 }
 
 #OnGame_ServerStatue_show {
-    background-color: brown;
+    background-color: rgb(218, 40, 40);
 
     width: 20%;
     height: 90%;
@@ -104,7 +104,7 @@ body {
 }
 
 #OnGame_StepShow_bk_c2 {
-    background-color: rgb(33, 33, 33);
+    background-color: rgb(183, 46, 46);
 
     width: 20%;
     height: 80%;
@@ -118,7 +118,7 @@ body {
 }
 
 #OnGame_StepShow_bk_c3 {
-    background-color: rgb(33, 33, 33);
+    background-color: rgb(38, 131, 37);
 
     width: 20%;
     height: 80%;
@@ -132,7 +132,7 @@ body {
 }
 
 #OnGame_StepShow_bk_c4 {
-    background-color: rgb(33, 33, 33);
+    background-color: rgb(39, 45, 143);
 
     width: 20%;
     height: 80%;
@@ -162,9 +162,141 @@ body {
     border-radius: 9px;
 }
 
-#OnGame_Thief_img{
+#OnGame_Thief_img {
     position: absolute;
 
     top: 20%;
     left: 15%;
+}
+
+#OnGame_PlayChess_RestShow {
+    background-color: rgb(41, 41, 41);
+
+    width: 90%;
+    height: 120px;
+
+    position: absolute;
+
+    top: 80%;
+    left: 5%;
+
+    border-radius: 8px;
+}
+
+#OnGame_PlayChess_RestShow_taxi {
+    position: absolute;
+
+    left: 1%;
+    top: 5%;
+}
+
+#OnGame_PlayChess_RestShow_bus {
+    position: absolute;
+
+    left: 21%;
+    top: 5%;
+}
+
+#OnGame_PlayChess_RestShow_subway {
+    position: absolute;
+
+    left: 41%;
+    top: 5%;
+}
+
+#OnGame_PlayChess_RestShow_plus2 {
+    position: absolute;
+
+    left: 61%;
+    top: 5%;
+}
+
+#OnGame_PlayChess_RestShow_unknow {
+    position: absolute;
+
+    left: 81%;
+    top: 5%;
+}
+
+#OnGame_PlayChess_RestShow_taxi_num {
+    color: rgb(239, 239, 239);
+    font-size: 24px;
+
+    text-align: center;
+
+    position: absolute;
+
+    top: 30%;
+    left: 5%;
+}
+
+#OnGame_PlayChess_RestShow_bus_num {
+    color: rgb(239, 239, 239);
+    font-size: 24px;
+
+    text-align: center;
+
+    position: absolute;
+
+    top: 30%;
+    left: 25%;
+}
+
+#OnGame_PlayChess_RestShow_subway_num {
+    color: rgb(239, 239, 239);
+    font-size: 24px;
+
+    text-align: center;
+
+    position: absolute;
+
+    top: 30%;
+    left: 45%;
+}
+
+#OnGame_PlayChess_RestShow_plus2_num {
+    color: rgb(239, 239, 239);
+    font-size: 24px;
+
+    text-align: center;
+
+    position: absolute;
+
+    top: 30%;
+    left: 65%;
+}
+
+#OnGame_PlayChess_RestShow_unknow_num {
+    color: rgb(239, 239, 239);
+    font-size: 24px;
+
+    text-align: center;
+
+    position: absolute;
+
+    top: 30%;
+    left: 85%;
+}
+
+#OnGame_PlayChess_PlayBtn {
+    color: aliceblue;
+
+    background-color: rgb(35, 35, 35);
+
+    border-style: solid;
+    border-radius: 5px;
+    border-color: aliceblue;
+
+    position: absolute;
+
+    width: 30%;
+    height: 30px;
+
+    top: 60%;
+    left: 35%;
+}
+
+#OnGame_PlayChess_PlayBtn:hover {
+    background-color: rgb(105, 105, 105);
+    transition: 0ms ease;
 }
