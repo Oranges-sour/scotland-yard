@@ -40,6 +40,7 @@ export class GameMap {
         this.playerAt[3] = 3;
         this.playerAt[4] = 4;
         this.playerAt[5] = 5;
+        this.playerAt[6] = 6;
 
 
         //建四层图，分别是taxi，bus，subway，ship
@@ -218,7 +219,7 @@ export function mapDataUpdate() {
             var p2 = p1.add(e.pos).add(p0);
             anc.pos.set_p(p2);
 
-            for (var j = 1; j <= 5; ++j) {
+            for (var j = 1; j <= 6; ++j) {
                 if (gameMap.playerAt[j] == i) {
                     //console.log(players[j].pos);
                     var p1 = new Vec2();

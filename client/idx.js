@@ -26,9 +26,9 @@ var mouseDown = false;
 
 
 //当前选择了哪个棋子
-var chessSelect = 5;
+var chessSelect = 1;
 //到谁下棋
-var chessStepOn = 5;
+var chessStepOn = 1;
 //小偷行动的步骤
 var thiefStepList = new Array();
 for (var i = 1; i <= 24; ++i) {
@@ -102,7 +102,7 @@ function init() {
 
     anchorInit();
 
-    for (var i = 1; i <= 5; ++i) {
+    for (var i = 1; i <= 6; ++i) {
         var str = "src/chess_" + i + ".png"
         var sp = new Sprite(str);
         sprites_main.set(str, sp);

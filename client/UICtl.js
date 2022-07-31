@@ -14,8 +14,9 @@ export function initUI() {
     sprites_ui.set("select_on", selectOn);
 }
 
-var chessSelectPos = [0, 52, 108, 162, 221, 275];
-var chessStepOnPos = [0, 52, 126, 196, 272, 310];
+var chessSelectPos = [0, 52, 108, 162, 221, 275, 300];
+
+var chessStepOnPos = [0, 40, 88, 135, 181, 230, 280];
 
 //小偷行动的步骤
 var thiefStepList_old = new Array();
@@ -45,6 +46,9 @@ export function uiUpdate() {
             e.pos.set(x, y);
 
             sprites_ui.set("thief_card_" + j, e);
+        }
+        if(thiefStepList[j] == 0){
+            sprites_ui.delete("thief_card_" + j);
         }
     }
 }
