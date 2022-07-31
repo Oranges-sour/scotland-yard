@@ -6,6 +6,8 @@ import Vec2 from "./Vec2.js";
 import { GameMap, mapDataUpdate, dragMoveMapOnMove, mapInit, mapUpdateOnWheel, mapUpdateOnMouseDown } from "./Map.js"
 import { Anchor, anchorInit, anchorUpdate } from "./Anchor.js";
 
+import { initUI } from "./uiCtl.js";
+
 // import { anchorData } from "./Anchor.js";
 
 var sprites = new Map();
@@ -21,6 +23,14 @@ var touchStartPos = new Vec2();
 var touchEndPos = new Vec2();
 var mouseDown = false;
 
+
+//当前选择了哪个棋子
+var chessSelect = 1;
+//小偷行动的步骤
+var thiefStepList = new Array();
+for (var i = 1; i <= 24; ++i) {
+    thiefStepList[i] = 0;
+}
 
 
 window.onload = function () {
@@ -78,9 +88,7 @@ export function insideCanvas(pos) {
 }
 
 function init() {
-    var sp = new Sprite("src/map1.jpg");
-
-    sprites.set("game_map", sp);
+    initUI();
 
     mapInit();
 
@@ -89,10 +97,7 @@ function init() {
     for (var i = 1; i <= 5; ++i) {
         var str = "src/chess_" + i + ".png"
         var sp = new Sprite(str);
-
-
         sprites.set(str, sp);
-
         players[i] = sp;
     }
 
@@ -144,4 +149,5 @@ function draw() {
 }
 
 export var sprites, mouseDown, touchStartPos, touchEndPos, anchors, gameMap, players;
+export var chessSelect;
 

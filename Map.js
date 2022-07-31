@@ -1,5 +1,6 @@
 import { edgeData } from "./EdgeData.js";
 import Vec2 from "./Vec2.js";
+import Sprite from "./Sprite.js";
 import { sprites, anchors, mouseDown, touchStartPos, gameMap, players, insideCanvas } from "./idx.js";
 
 var mapData = new Object;
@@ -111,6 +112,8 @@ export class GameMap {
 }
 
 export function mapInit() {
+    var sp = new Sprite("src/map1.jpg");
+    sprites.set("game_map", sp);
     mapData.mapPos.set(-2800, -2800);
 }
 
@@ -127,7 +130,7 @@ export function mapUpdateOnWheel(x, y, k) {
     }
 }
 
-export function mapUpdateOnMouseDown(x,y){
+export function mapUpdateOnMouseDown(x, y) {
     mapData.touchStartMapPos.set_p(mapData.mapPos);
 }
 
