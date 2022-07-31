@@ -1,0 +1,153 @@
+import exp from "constants";
+import { isUndefined } from "util";
+import { GameMap } from "./GameMap.js";
+
+//玩家的可能开始点
+const playerStart = [141, 197, 174, 155, 198, 138, 132, 103, 117, 112, 94, 29, 34, 26, 13, 50, 53, 91];
+//开始点是否被使用
+var playerStartUsed = new Array();
+
+
+var playerAt = new Array();
+for (var i = 1; i <= 6; ++i) {
+    playerAt[i] = i;
+}
+
+//到谁下棋
+var chessStepOn = 1;
+
+//整个游戏的轮数
+var gameRound = 1;
+
+var gameMap = new GameMap();
+
+var thiefStepList = new Array();
+for (var i = 1; i <= 24; ++i) {
+    thiefStepList[i] = 0;
+}
+
+var cardsLeft = new Array();
+for (var i = 1; i <= 5; ++i) {
+    cardsLeft[i] = new Array();
+    for (var j = 1; j <= 5; ++j) {
+        cardsLeft[i][j] = 0;
+    }
+}
+
+export function initGame() {
+    for (var i = 0; i < playerStart.length; ++i) {
+        playerStartUsed[i] = false;
+    }
+
+    //初始化棋子坐标
+    for (var i = 1; i <= 6; ++i) {
+        var p = -1;
+        while (true) {
+            var k = getRandomNum(0, playerStart.length - 1);
+            if (!playerStartUsed[k]) {
+                playerStartUsed[k] = true;
+                p = k;
+                break;
+            }
+        }
+        playerAt[i] = playerStart[p];
+    }
+
+    chessStepOn = 1;
+    gameRound = 1;
+
+    for (var i = 1; i <= 24; ++i) {
+        thiefStepList[i] = 0;
+    }
+
+    cardsLeft[1][1] = 4;
+    cardsLeft[1][2] = 4;
+    cardsLeft[1][3] = 3;
+    cardsLeft[1][4] = 2;
+    cardsLeft[1][5] = 5;
+
+    for (var i = 2; i <= 6; ++i) {
+        cardsLeft[i][1] = 10;
+        cardsLeft[i][2] = 8;
+        cardsLeft[i][3] = 4;
+        cardsLeft[i][4] = 0;
+        cardsLeft[i][5] = 0;
+    }
+}
+
+export function checkPoliceWin() {
+    for (var i = 2; i <= 6; ++i) {
+        if (playerAt[1] == playerAt[i]) {
+            return true;
+        }
+    }
+    return false;
+}
+
+//走棋
+export function chessMove(id, type, where) {
+
+    //卡太少，走不了
+    if (cardsLeft[id][type] <= 0) {
+        return 0;
+    }
+
+    //不是小偷
+    if (id != 1) {
+        //踩在其他棋子上了,不包括小偷
+        for (var i = 2; i <= 6; ++i) {
+            if (playerAt[i] == where) {
+                return 0;
+            }
+        }
+        if (gameMap.cango(type, playerAt[id], where)) {
+            cardsLeft[id][type] -= 1;
+            cardsLeft[1][type] += 1;
+            playerAt[id] = where;
+        }
+    }
+    if (id == 1) {
+        //不能呆在原地
+        if (playerAt[id] == where) {
+            return 0;
+        }
+        //不是特殊卡
+        if (type <= 3) {
+            if (gameMap.cango(type, playerAt[id], where)) {
+                cardsLeft[id][type] -= 1;
+                playerAt[id] = where;
+            }
+        }
+        //特殊卡
+        if (type == 5) {
+            for (var i = 1; i <= 3; ++i) {
+                if (gameMap.cango(i, playerAt[id], where)) {
+                    cardsLeft[id][type] -= 1;
+                    playerAt[id] = where;
+                }
+            }
+        }
+        /*
+            如果是4号特殊卡，走两次
+            第一步可以任意走，到第二步时特判一下，如果种类过不来，那就走不了
+            然后把步数退回重新走
+        */
+        if (type == 4) {
+            for (var i = 1; i <= 3; ++i) {
+                if (gameMap.cango(i, playerAt[id], where)) {
+                    playerAt[id] = where;
+                    return i;
+                }
+            }
+        }
+    }
+    //4代表正常移动(1~3留给了4号卡特判用)
+    return 4;
+}
+
+function getRandomNum(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+export var chessStepOn;
+export var gameRound;

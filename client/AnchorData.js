@@ -1,60 +1,3 @@
-import Sprite from "./Sprite.js";
-import Vec2 from "./Vec2.js";
-
-
-class Anchor {
-    constructor(type, number) {
-        this.sp = new Sprite("src/anchor_" + type + ".png");
-
-        this.number = number;
-        this.outstr = "";
-        if (this.number < 10) {
-            this.outstr = "00" + this.number;
-        } else if (this.number < 100) {
-            this.outstr = "0" + this.number;
-        } else {
-            this.outstr = this.number;
-        }
-
-
-        this.pos = new Vec2();
-
-        this.orgPos = new Vec2();
-    }
-
-    z_order = 0;
-
-    scale = 1.0;
-
-    mouseon = false;
-
-    visit(canvas, height) {
-        this.sp.pos.set_p(this.pos);
-        this.sp.scale = this.scale;
-
-        this.sp.visit(canvas, height);
-
-        canvas.save();
-
-        var x = this.pos.x;
-        var y = this.pos.y;
-
-        canvas.translate(x, y);
-
-        canvas.scale(this.scale, this.scale);
-
-        canvas.font = "80px Verdana";
-
-        canvas.fillText(this.outstr, 20, 140);
-
-
-        canvas.restore();
-
-
-
-    }
-}
-
 var anchorData = new Array();
 for (var i = 1; i <= 199; ++i) {
     anchorData[i] = new Object();
@@ -265,4 +208,3 @@ anchorData[198] = { type: 1, x: 7525, y: 8131};
 anchorData[199] = { type: 2, x: 9230, y: 8051};
 
 export var anchorData;
-export default Anchor;
