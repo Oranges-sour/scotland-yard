@@ -51,7 +51,6 @@ export class Anchor {
 
         canvas.fillText(this.outstr, 20, 140);
 
-
         canvas.restore();
 
     }
@@ -74,7 +73,6 @@ export function anchorInit() {
 }
 
 export function anchorUpdate(p) {
-    //console.log("hi");
     if (insideCanvas(p)) {
         p = convertInCanvas(p);
         var e = sprites_main.get("game_map");
@@ -93,10 +91,8 @@ export function anchorUpdate(p) {
             //console.log(anc.pos);
             if (inside(p, p1, p0.x, p0.y)) {
                 anc.mouseon = true;
-                //anc.z_order = 10;
             } else {
                 anc.mouseon = false;
-                //anc.z_order = 0;
             }
         }
     }

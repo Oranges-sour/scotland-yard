@@ -10,6 +10,7 @@ class Sprite {
         };
 
         this.pos = new Vec2();
+
     }
 
     z_order = 0;
@@ -24,7 +25,7 @@ class Sprite {
         this.scale = x;
     }
 
-    visit(canvas, height) {
+    visit(canvas) {
         if (!this.visible) {
             return;
         }

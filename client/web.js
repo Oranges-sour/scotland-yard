@@ -1,6 +1,6 @@
 var ws;
 
-import { updateGameStatue, selfChessCtl } from "./idx.js";
+import { updateGameStatue, gameData } from "./idx.js";
 
 var name = "123";
 
@@ -12,7 +12,7 @@ export function webInit() {
             var obj = new Object();
             obj.type = "hello";
             obj.name = name;
-            obj.controlChess = selfChessCtl;
+            obj.controlChess = gameData.selfChessCtl;
 
             var str = JSON.stringify(obj);
             ws.send(str);
@@ -23,9 +23,6 @@ export function webInit() {
             var str = JSON.stringify(obj);
             ws.send(str);
         }
-
-
-
     };
     ws.onmessage = function (e) {
         var obj = JSON.parse(e.data);
