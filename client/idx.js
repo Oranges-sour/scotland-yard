@@ -6,7 +6,7 @@ import Vec2 from "./Vec2.js";
 import { mapDataUpdate, dragMoveMapOnMove, mapInit, mapUpdateOnWheel, mapUpdateOnMouseDown } from "./GameMap.js"
 import { Anchor, anchorInit, anchorUpdate } from "./Anchor.js";
 
-import { initUI, uiUpdate, updateUIOnMouseUp } from "./uiCtl.js";
+import { initUI, uiUpdate, updateUIOnMouseUp } from "./UICtl.js";
 
 import { webInit, playChess, resetGame } from "./web.js";
 

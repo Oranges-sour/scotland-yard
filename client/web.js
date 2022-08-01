@@ -14,7 +14,7 @@ export function webInit() {
 
 function webUpdate() {
     if (!connected) {
-        ws = new WebSocket("ws://127.0.0.1:23480");
+        ws = new WebSocket("ws://101.43.196.171:23480");
 
         ws.onopen = function () {
             connected = true;
