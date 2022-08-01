@@ -7,7 +7,9 @@ body {
     border-width: 5px;
     border-color: beige;
 
-    display: inline-block;
+    position: absolute;
+
+    left: 15px;
 }
 
 #canvas_ui {
@@ -15,23 +17,25 @@ body {
     border-width: 5px;
     border-color: beige;
 
-    display: inline-block;
+    position: absolute;
+
+    left: 1230px;
 }
 
 #MenuShow {
     position: absolute;
 
-    left: 25%;
+    left: 0px;
 
-    width: 50%;
-    height: 80%;
+    width: 900px;
+    height: 600px;
 
 
     text-align: center;
 }
 
 #Menu {
-    background-color: beige;
+    background-color: rgb(160, 160, 150);
 
     border-style: solid;
     border-width: 3px;
@@ -40,11 +44,15 @@ body {
     width: 50%;
     height: 100%;
 
-    display: inline-block;
 
     font: 24px Verdana;
 
     color: white;
+
+    position: absolute;
+
+    left: 450px;
+    top: 50px;
 
 }
 
@@ -56,9 +64,12 @@ body {
     border-color: rgb(239, 233, 218);
 
     width: 40%;
-    height: 80%;
+    height: 100%;
 
-    display: inline-block;
+    position: absolute;
+
+    left: 1000px;
+    top: 50px;
 }
 
 #nameinput {
@@ -80,6 +91,8 @@ body {
 
     width: 25%;
     height: 5%;
+
+    border-radius: 3px;
 }
 
 #ok_btn {
@@ -100,7 +113,7 @@ body {
     height: 5%;
 }
 
-#close_btn {
+#start_btn {
     background-color: rgb(67, 65, 65);
     color: white;
     font: 14px Verdana;

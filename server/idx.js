@@ -4,8 +4,9 @@ var wss = new WebSocketServer({ port: 23480 });
 
 var chessControl = new Map();
 
-import { chessStepOn, gameRound, chessMove, checkPoliceWin, thiefStepList, playerAt, cardsLeft, initGame, setChessStepOn, setGameRound } from "./game.js";
+import { chessStepOn, gameRound, chessMove, checkPoliceWin, thiefStepList, playerAt, cardsLeft, initGame, setChessStepOn, setGameRound, setGameStart, gameStart } from "./game.js";
 
+initGame();
 
 wss.on("connection", function (ws) {
     ws.on("message", function (e) {
@@ -17,11 +18,11 @@ wss.on("connection", function (ws) {
     });
 });
 
-// setInterval(() => {
-//     boardcastStatue();
-// }, 100);
-
 function boardcastStatue() {
+    if (!gameStart) {
+        return;
+    }
+
     var obj = new Object();
 
     obj.type = "upd";
@@ -61,6 +62,28 @@ function boardcastThiefWin() {
     });
 }
 
+function boardcastReset() {
+    var obj = new Object();
+    obj.type = "reset";
+
+    var j = JSON.stringify(obj);
+
+    wss.clients.forEach(function each(e) {
+        e.send(j);
+    });
+}
+
+function boardcastStart(){
+    var obj = new Object();
+    obj.type = "start";
+
+    var j = JSON.stringify(obj);
+
+    wss.clients.forEach(function each(e) {
+        e.send(j);
+    });
+}
+
 function processMessgae(ws, obj) {
     var r = false;
     if (obj.type == "hello") {
@@ -72,6 +95,9 @@ function processMessgae(ws, obj) {
     if (obj.type == "reset") {
         r = msg_reset(obj);
     }
+    if (obj.type == "start") {
+        r = msg_start(obj);
+    }
     if (r) {
         boardcastStatue();
     }
@@ -79,6 +105,7 @@ function processMessgae(ws, obj) {
 }
 
 function msg_hello(obj) {
+    console.log("-Hello-" + " Name:" + obj.name + " CtlChess:" + obj.controlChess);
     var str = obj.name;
     var ctl = obj.controlChess;
     chessControl.set(str, ctl);
@@ -95,9 +122,14 @@ var card4_orgOn = 0;
 var card4_goo = new Array();
 
 function msg_play(obj) {
-    var str = obj.name;
+    if (!gameStart) {
+        return;
+    }
 
-    //检查能不能走
+    console.log("-Play- name:" + obj.name + " chessOn:" + chessStepOn + " where:" + obj.where + " cardType:" + obj.card_type);
+
+    var str = obj.name;
+    //检查能不能走 
     var ctl = chessControl.get(str);
     var suc = false;
     for (var i = 0; i < ctl.length; ++i) {
@@ -149,7 +181,6 @@ function msg_play(obj) {
         if (card4_step == 1) {
             card4_orgOn = playerAt[chessStepOn];
             var r = chessMove(chessStepOn, type, where);
-            console.log(r);
             if (r[0] == false) {
                 return true;
             }
@@ -160,7 +191,7 @@ function msg_play(obj) {
         //第二次使用4号卡
         else if (card4_step == 2) {
             var r = chessMove(chessStepOn, type, where);
-            console.log(r);
+
             if (r[0] == false) {
                 //不成功，要从头走棋
                 playerAt[chessStepOn] = card4_orgOn;
@@ -190,9 +221,20 @@ function msg_play(obj) {
     return true;
 }
 
-
 function msg_reset(msg) {
+    console.log("-Reset-");
+
     chessControl.clear();
     initGame();
+
+    setGameStart(false);
+    boardcastReset();
+    return true;
+}
+
+function msg_start() {
+    console.log("-Start-");
+    boardcastStart();
+    setGameStart(true);
     return true;
 }

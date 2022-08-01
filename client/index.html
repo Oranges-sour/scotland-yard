@@ -6,11 +6,12 @@
 
 <body>
     <div style="text-align: center;">
+        <canvas id="canvas" width="1200px" height="700px"></canvas>
+        <canvas id="canvas_ui" width="350px" height="700px"></canvas>
+
         <div id="MenuShow">
-            <!-- <div type="text" id="Menu">Scotland Yard</div> -->
+            <div type="text" id="Menu">Scotland Yard</div>
             <div id="StartCtl">
-                <div style="color: white; font: 24px Verdana;">游戏ID</div>
-                <textarea id="nameinput" maxlength="10">输入名称</textarea>
                 <div style="color: white; font: 24px Verdana;">棋子选择</div>
                 <select id="selectChess">
                     <option value="1">小偷</option>
@@ -19,14 +20,16 @@
                     <option value="4">紫</option>
                 </select>
                 <br>
-                <button id="ok_btn">加入游戏</button>
+                <br>
                 <button id="reset_btn">重置</button>
-                <button id="close_btn">关闭</button>
+                <br>
+                <br>
+                <button id="ok_btn">加入游戏</button>
+                <br>
+                <br>
+                <button id="start_btn">开始游戏</button>
             </div>
         </div>
-
-        <canvas id="canvas" width="1200px" height="700px"></canvas>
-        <canvas id="canvas_ui" width="350px" height="700px"></canvas>
     </div>
 
 </body>

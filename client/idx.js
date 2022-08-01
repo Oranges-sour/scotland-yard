@@ -48,6 +48,7 @@ gameData.playerAt = new Array();
 for (var i = 1; i <= 6; ++i) {
     gameData.playerAt[i] = i;
 }
+gameData.gameStart = false;
 
 export function updateGameStatue(obj) {
     gameData.cardsLeft = obj.cardsLeft;
@@ -63,6 +64,10 @@ export function setCardSelect(x) {
 
 export function setSelfChessCtl(ctl) {
     gameData.selfChessCtl = ctl;
+}
+
+export function setGameStart(x) {
+    gameData.gameStart = x;
 }
 
 

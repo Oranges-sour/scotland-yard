@@ -1,6 +1,8 @@
 var ws;
 
-import { updateGameStatue, gameData, setSelfChessCtl } from "./idx.js";
+import { updateGameStatue, gameData, setSelfChessCtl, setGameStart } from "./idx.js";
+
+import { resetUI } from "./menuui.js";
 
 var userName = "123";
 
@@ -41,6 +43,16 @@ export function helloGame(name, ctl) {
     ws.send(str);
 }
 
+export function startGame() {
+    var obj = new Object();
+    obj.type = "start";
+
+    var str = JSON.stringify(obj);
+    ws.send(str);
+
+
+}
+
 export function playChess(where, card_type) {
     var obj = new Object();
     obj.type = "play";
@@ -63,5 +75,12 @@ export function resetGame() {
 function processMsg(obj) {
     if (obj.type == "upd") {
         updateGameStatue(obj);
+    }
+    if (obj.type == "reset") {
+        setGameStart(false);
+        resetUI();
+    }
+    if (obj.type == "start") {
+        setGameStart(true);
     }
 }

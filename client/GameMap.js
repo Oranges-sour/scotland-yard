@@ -15,6 +15,9 @@ export function mapInit() {
 }
 
 export function mapUpdateOnWheel(x, y, k) {
+    if (!gameData.gameStart) {
+        return;
+    }
     const CS = 0.05;
 
     var p = new Vec2();
@@ -28,6 +31,9 @@ export function mapUpdateOnWheel(x, y, k) {
 }
 
 export function mapUpdateOnMouseDown(x, y) {
+    if (!gameData.gameStart) {
+        return;
+    }
     mapSpriteData.touchStartMapPos.set_p(mapSpriteData.mapPos);
 }
 
@@ -143,6 +149,9 @@ export function mapDataUpdate() {
 }
 
 export function dragMoveMapOnMove(p) {
+    if (!gameData.gameStart) {
+        return;
+    }
     if (mouseDown) {
         if (insideCanvas(p)) {
             var dx = touchStartPos.add(p.negtive());
