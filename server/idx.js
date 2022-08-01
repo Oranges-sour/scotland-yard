@@ -64,7 +64,7 @@ function boardcastThiefWin() {
 function processMessgae(ws, obj) {
     var r = false;
     if (obj.type == "hello") {
-        r = msg_hello(obj);
+        r = msg_hello(obj, ws);
     }
     if (obj.type == "play") {
         r = msg_play(obj);
@@ -192,6 +192,7 @@ function msg_play(obj) {
 
 
 function msg_reset(msg) {
+    chessControl.clear();
     initGame();
     return true;
 }

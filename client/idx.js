@@ -61,6 +61,10 @@ export function setCardSelect(x) {
     gameData.cardSelect = x;
 }
 
+export function setSelfChessCtl(ctl) {
+    gameData.selfChessCtl = ctl;
+}
+
 
 
 window.onload = function () {
