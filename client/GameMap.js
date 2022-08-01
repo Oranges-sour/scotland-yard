@@ -8,8 +8,9 @@ mapSpriteData.mapPos = new Vec2();
 mapSpriteData.scale = 1.0;
 
 export function mapInit() {
-    var sp = new Sprite("src/map1.jpg");
+    var sp = new Sprite("src/map.bmp");
     sprites_main.set("game_map", sp);
+    sp.orgscale = 2.5;
     mapSpriteData.mapPos.set(-2800, -2800);
 }
 
@@ -113,17 +114,19 @@ export function mapDataUpdate() {
             var p1 = anc.orgPos.plus_n(e.scale);
             var p2 = p1.add(e.pos).add(p0);
             anc.pos.set_p(p2);
+        }
 
-            for (var j = 1; j <= 6; ++j) {
-                if (gameData.playerAt[j] == i) {
-                    var p1 = new Vec2();
-                    p1.set_p(anc.pos);
-                    p1.x += 10 * anc.scale;
-                    p1.y -= 150 * anc.scale;
-                    players[j].pos.set_p(p1);
-                    players[j].scale = anc.scale + 1.2 * anc.scale;
-                }
-            }
+        for (var i = 1; i <= 6; ++i) {
+            var k = gameData.playerAt[i];
+
+            var anc = anchors[k];
+
+            var p1 = new Vec2();
+            p1.set_p(anc.pos);
+            p1.x += 10 * anc.scale;
+            p1.y -= 150 * anc.scale;
+            players[i].pos.set_p(p1);
+            players[i].scale = anc.scale + 1.2 * anc.scale;
         }
     }
 

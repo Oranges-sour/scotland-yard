@@ -19,6 +19,8 @@ class Sprite {
 
     scale = 1.0;
 
+    orgscale = 1.0;
+
     visible = true;
 
     setScale(x) {
@@ -40,7 +42,7 @@ class Sprite {
 
         canvas.translate(x, y);
 
-        canvas.scale(this.scale, this.scale);
+        canvas.scale(this.scale * this.orgscale, this.scale * this.orgscale);
 
         canvas.drawImage(this.img, 0, 0);
 
