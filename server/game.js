@@ -18,6 +18,9 @@ var chessStepOn = 1;
 //整个游戏的轮数
 var gameRound = 1;
 
+//游戏未开始
+var gameStart = false;
+
 var gameMap = new GameMap();
 
 var thiefStepList = new Array();
@@ -39,6 +42,10 @@ export function setChessStepOn(x) {
 
 export function setGameRound(x) {
     gameRound = x;
+}
+
+export function setGameStart(x) {
+    gameStart = x;
 }
 
 export function initGame() {
@@ -123,7 +130,6 @@ export function chessMove(id, type, where) {
 
         //不是特殊卡
         if (type <= 3) {
-            console.log(type + " " + playerAt[id] + " " + where);
             if (gameMap.cango(type, playerAt[id], where)) {
                 cardsLeft[id][type] -= 1;
                 playerAt[id] = where;
@@ -185,3 +191,4 @@ export var gameRound;
 export var playerAt;
 export var thiefStepList;
 export var cardsLeft;
+export var gameStart;

@@ -3,14 +3,12 @@ import Sprite from "./Sprite.js"
 import Vec2 from "./Vec2.js";
 
 
-import { GameMap, mapDataUpdate, dragMoveMapOnMove, mapInit, mapUpdateOnWheel, mapUpdateOnMouseDown } from "./Map.js"
+import { mapDataUpdate, dragMoveMapOnMove, mapInit, mapUpdateOnWheel, mapUpdateOnMouseDown } from "./GameMap.js"
 import { Anchor, anchorInit, anchorUpdate } from "./Anchor.js";
 
 import { initUI, uiUpdate, updateUIOnMouseUp } from "./uiCtl.js";
 
 import { webInit, playChess, resetGame } from "./web.js";
-
-// import { anchorData } from "./Anchor.js";
 
 var sprites_main = new Map();
 var sprites_ui = new Map();
@@ -19,35 +17,59 @@ var sprites_ui = new Map();
 var anchors = new Array();
 var players = new Array();
 
-var gameMap = new GameMap();
-
 
 var touchStartPos = new Vec2();
 var touchEndPos = new Vec2();
 var mouseDown = false;
 
+var gameData = new Object();
 //游戏局
-var gameRound = 1;
-//当前选择了哪个卡子
-var cardSelect = 1;
+gameData.gameRound = 1;
+//当前选择了哪个卡
+gameData.cardSelect = 1;
 //到谁下棋
-var chessStepOn = 1;
+gameData.chessStepOn = 1;
 //小偷行动的步骤
-var thiefStepList = new Array();
+gameData.thiefStepList = new Array();
 for (var i = 1; i <= 24; ++i) {
-    thiefStepList[i] = 1;
+    gameData.thiefStepList[i] = 1;
 }
-
-//控制的棋子
-var selfChessCtl = [1, 2, 3, 4, 5, 6];
-
-var cardsLeft = new Array();
+//玩家能控制的棋
+gameData.selfChessCtl = [1, 2, 3, 4, 5, 6];
+//剩余的卡牌
+gameData.cardsLeft = new Array();
 for (var i = 1; i <= 6; ++i) {
-    cardsLeft[i] = new Array();
+    gameData.cardsLeft[i] = new Array();
     for (var j = 1; j <= 5; ++j) {
-        cardsLeft[i][j] = 0;
+        gameData.cardsLeft[i][j] = 0;
     }
 }
+gameData.playerAt = new Array();
+for (var i = 1; i <= 6; ++i) {
+    gameData.playerAt[i] = i;
+}
+gameData.gameStart = false;
+
+export function updateGameStatue(obj) {
+    gameData.cardsLeft = obj.cardsLeft;
+    gameData.thiefStepList = obj.thiefStepList;
+    gameData.chessStepOn = obj.chessStepOn;
+    gameData.playerAt = obj.playerAt;
+    gameData.gameRound = obj.gameRound;
+}
+
+export function setCardSelect(x) {
+    gameData.cardSelect = x;
+}
+
+export function setSelfChessCtl(ctl) {
+    gameData.selfChessCtl = ctl;
+}
+
+export function setGameStart(x) {
+    gameData.gameStart = x;
+}
+
 
 
 window.onload = function () {
@@ -73,6 +95,8 @@ window.onwheel = function (e) {
         mousewheel(e.pageX, e.pageY, -1);
     }
 }
+
+
 
 export function inside(pos, lrp, w, h) {
     if (pos.x >= lrp.x && pos.x <= lrp.x + w && pos.y >= lrp.y && pos.y <= lrp.y + h) {
@@ -130,18 +154,6 @@ export function insideUICanvas(pos) {
     var p = new Vec2();
     p.set(left, top);
     return inside(pos, p, w, h);
-}
-
-export function updateGameStatue(obj) {
-    cardsLeft = obj.cardsLeft;
-    thiefStepList = obj.thiefStepList;
-    chessStepOn = obj.chessStepOn;
-    gameMap.playerAt = obj.playerAt;
-    gameRound = obj.gameRound;
-}
-
-export function setChessSelect(x) {
-    cardSelect = x;
 }
 
 function init() {
@@ -209,9 +221,9 @@ function playChessOnDblClick(p) {
     if (insideCanvas(p)) {
         //检查现在是不是到自己操控的棋子
         var k = -1;
-        for (var i = 0; i < selfChessCtl.length; ++i) {
-            if (chessStepOn == selfChessCtl[i]) {
-                k = chessStepOn;
+        for (var i = 0; i < gameData.selfChessCtl.length; ++i) {
+            if (gameData.chessStepOn == gameData.selfChessCtl[i]) {
+                k = gameData.chessStepOn;
             }
         }
         if (k == -1) {
@@ -228,7 +240,7 @@ function playChessOnDblClick(p) {
         }
         //保证鼠标只点击一个棋子
         if (cnt == 1) {
-            playChess(mark, cardSelect);
+            playChess(mark, gameData.cardSelect);
         }
     }
 }
@@ -246,7 +258,7 @@ function draw_main() {
     });
 
     for (var i = 0; i < arr.length; ++i) {
-        arr[i][1].visit(ctx, 700);
+        arr[i][1].visit(ctx);
     }
 }
 
@@ -264,14 +276,14 @@ function draw_ui() {
     });
 
     for (var i = 0; i < arr.length; ++i) {
-        arr[i][1].visit(ctx, 700);
+        arr[i][1].visit(ctx);
     }
 
     //显示卡片堆的数量
     var k = -1;
-    for (var i = 0; i < selfChessCtl.length; ++i) {
-        if (chessStepOn == selfChessCtl[i]) {
-            k = chessStepOn;
+    for (var i = 0; i < gameData.selfChessCtl.length; ++i) {
+        if (gameData.chessStepOn == gameData.selfChessCtl[i]) {
+            k = gameData.chessStepOn;
         }
     }
     if (k != -1) {
@@ -287,10 +299,10 @@ function draw_ui() {
             ctx.font = "20px Verdana";
 
             var str;
-            if (cardsLeft[k][i] < 10) {
-                str = "0" + cardsLeft[k][i];
+            if (gameData.cardsLeft[k][i] < 10) {
+                str = "0" + gameData.cardsLeft[k][i];
             } else {
-                str = cardsLeft[k][i];
+                str = gameData.cardsLeft[k][i];
             }
 
             ctx.fillText(str, 0, 0);
@@ -299,10 +311,5 @@ function draw_ui() {
     }
 }
 
-export var sprites_main, sprites_ui, mouseDown, touchStartPos, touchEndPos, anchors, gameMap, players;
-export var cardSelect;
-export var chessStepOn;
-export var thiefStepList;
-export var cardsLeft;
-export var gameRound;
-export var selfChessCtl;
+export var sprites_main, sprites_ui, mouseDown, touchStartPos, touchEndPos, anchors, players;
+export var gameData;

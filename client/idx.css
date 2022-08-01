@@ -6,6 +6,10 @@ body {
     border-style: solid;
     border-width: 5px;
     border-color: beige;
+
+    position: absolute;
+
+    left: 15px;
 }
 
 #canvas_ui {
@@ -15,10 +19,105 @@ body {
 
     position: absolute;
 
-    top: 10px;
     left: 1230px;
 }
 
+#MenuShow {
+    position: absolute;
+
+    left: 0px;
+
+    width: 900px;
+    height: 600px;
 
 
+    text-align: center;
+}
 
+#Menu {
+    background-color: rgb(160, 160, 150);
+
+    border-style: solid;
+    border-width: 3px;
+    border-color: rgb(239, 233, 218);
+
+    width: 50%;
+    height: 100%;
+
+
+    font: 24px Verdana;
+
+    color: white;
+
+    position: absolute;
+
+    left: 450px;
+    top: 50px;
+
+}
+
+#StartCtl {
+    background-color: rgb(160, 160, 150);
+
+    border-style: solid;
+    border-width: 3px;
+    border-color: rgb(239, 233, 218);
+
+    width: 40%;
+    height: 100%;
+
+    position: absolute;
+
+    left: 1000px;
+    top: 50px;
+}
+
+#nameinput {
+    background-color: rgb(67, 65, 65);
+    color: white;
+    font: 14px Verdana;
+
+    text-align: center;
+
+    resize: none;
+
+    border-radius: 3px;
+}
+
+#selectChess {
+    background-color: rgb(67, 65, 65);
+    color: white;
+    font: 14px Verdana;
+
+    width: 25%;
+    height: 5%;
+
+    border-radius: 3px;
+}
+
+#ok_btn {
+    background-color: rgb(67, 65, 65);
+    color: white;
+    font: 14px Verdana;
+
+    width: 30%;
+    height: 5%;
+}
+
+#reset_btn {
+    background-color: rgb(67, 65, 65);
+    color: white;
+    font: 14px Verdana;
+
+    width: 30%;
+    height: 5%;
+}
+
+#start_btn {
+    background-color: rgb(67, 65, 65);
+    color: white;
+    font: 14px Verdana;
+
+    width: 30%;
+    height: 5%;
+}

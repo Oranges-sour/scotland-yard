@@ -5,16 +5,36 @@
 </head>
 
 <body>
-    <div style="text-align: left;">
-        <div><canvas id="canvas" width="1200px" height="700px"></canvas></div>
+    <div style="text-align: center;">
+        <canvas id="canvas" width="1200px" height="700px"></canvas>
+        <canvas id="canvas_ui" width="350px" height="700px"></canvas>
 
-        <div><canvas id="canvas_ui" width="350px" height="700px"></canvas></div>
-
+        <div id="MenuShow">
+            <div type="text" id="Menu">Scotland Yard</div>
+            <div id="StartCtl">
+                <div style="color: white; font: 24px Verdana;">棋子选择</div>
+                <select id="selectChess">
+                    <option value="1">小偷</option>
+                    <option value="2">红绿</option>
+                    <option value="3">蓝黄</option>
+                    <option value="4">紫</option>
+                </select>
+                <br>
+                <br>
+                <button id="reset_btn">重置</button>
+                <br>
+                <br>
+                <button id="ok_btn">加入游戏</button>
+                <br>
+                <br>
+                <button id="start_btn">开始游戏</button>
+            </div>
+        </div>
+    </div>
 
 </body>
 
 <script src="idx.js" type="module"></script>
 <script src="UICtl.js" type="module"></script>
 <script src="web.js" type="module"></script>
-
-</html>
+<script src="menuui.js" type="module"></script>

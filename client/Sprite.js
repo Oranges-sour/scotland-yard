@@ -1,22 +1,20 @@
 import Vec2 from "./Vec2.js";
+import { imgPool } from "./ImagePool.js"
 
 class Sprite {
     constructor(src) {
-        this.img = new Image();
-        this.img.src = src;
-        var that = this;
-        this.img.onload = function () {
-            that.loadFinish = true;
-        };
-
+        this.img = imgPool.get(src);
         this.pos = new Vec2();
+
     }
 
     z_order = 0;
 
-    loadFinish = false;
+    loadFinish = true;
 
     scale = 1.0;
+
+    orgscale = 1.0;
 
     visible = true;
 
@@ -24,7 +22,7 @@ class Sprite {
         this.scale = x;
     }
 
-    visit(canvas, height) {
+    visit(canvas) {
         if (!this.visible) {
             return;
         }
@@ -39,7 +37,7 @@ class Sprite {
 
         canvas.translate(x, y);
 
-        canvas.scale(this.scale, this.scale);
+        canvas.scale(this.scale * this.orgscale, this.scale * this.orgscale);
 
         canvas.drawImage(this.img, 0, 0);
 
