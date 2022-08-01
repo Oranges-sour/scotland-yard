@@ -1,6 +1,7 @@
 import Sprite from "./Sprite.js";
 import Vec2 from "./Vec2.js";
 
+
 import { anchorData } from "./AnchorData.js";
 
 import { sprites_main, anchors, convertInCanvas, insideCanvas, inside } from "./idx.js";
