@@ -6,7 +6,7 @@ import Vec2 from "./Vec2.js";
 import { mapDataUpdate, dragMoveMapOnMove, mapInit, mapUpdateOnWheel, mapUpdateOnMouseDown } from "./GameMap.js"
 import { Anchor, anchorInit, anchorUpdate } from "./Anchor.js";
 
-import { initUI, uiUpdate, updateUIOnMouseUp } from "./uiCtl.js";
+import { initUI, uiUpdate, updateUIOnMouseUp } from "./UICtl.js";
 
 import { webInit, playChess, resetGame } from "./web.js";
 
@@ -71,22 +71,98 @@ export function setGameStart(x) {
 }
 
 
-
 window.onload = function () {
     init();
 }
-window.onmousedown = function (e) {
-    mousedown(e.pageX, e.pageY);
+
+var touchData = new Object();
+touchData.sUserAgent = navigator.userAgent.toLowerCase();
+touchData.time0 = 0, touchData.time1 = 0, touchData.cnt = 1;
+touchData.startTowSpot = true;
+touchData.dist = 0;
+
+if (/ipad|iphone|midp|rv:1.2.3.4|ucweb|android|windows ce|windows mobile/.test(touchData.sUserAgent)) {
+    console.log("phone");
+    window.ontouchstart = function (e) {
+        var e = e.touches[0];
+        touchdown(e.pageX, e.pageY);
+    }
+    window.addEventListener("touchmove", function (e) {
+        if (gameData.gameStart) {
+            e.preventDefault();
+        }
+
+        if (e.touches.length == 1) {
+            var ee = e.touches[0];
+            touchmoveOneSpot(ee.pageX, ee.pageY);
+        }
+        if (e.touches.length >= 2) {
+
+            var ee0 = e.touches[0];
+            var ee1 = e.touches[1];
+
+            var x0 = ee0.pageX; var y0 = ee0.pageY; var x1 = ee1.pageX; var y1 = ee1.pageY;
+            if (touchData.startTowSpot) {
+                touchData.startTowSpot = false;
+                var dx = x1 - x0;
+                var dy = y1 - y0;
+                touchData.dist = Math.sqrt(dx * dx + dy * dy);
+            }
+            touchmoveTwoSpot(x0, y0, x1, y1);
+        }
+
+
+    }, { passive: false });
+
+    window.addEventListener("touchend", function (e) {
+        if (gameData.gameStart) {
+            e.preventDefault();
+        }
+
+        if (touchData.startTowSpot) {
+            var ee = e.changedTouches[0];
+
+            var tt = new Date().getTime();
+            if (touchData.cnt == 2 && tt - touchData.time0 > 300) {
+                touchData.cnt = 1;
+            }
+            if (touchData.cnt == 1) {
+                touchData.cnt += 1;
+                touchData.time0 = tt;
+            }
+            else if (touchData.cnt == 2) {
+                touchData.time1 = tt;
+                console.log(touchData.time1 - touchData.time0);
+                if (touchData.time1 - touchData.time0 < 300) {
+                    touchdbl(ee.pageX, ee.pageY);
+                }
+                touchData.cnt = 1;
+            }
+        }
+
+
+        touchData.startTowSpot = true;
+
+        var ee = e.changedTouches[0];
+        touchup(ee.pageX, ee.pageY);
+    }, { passive: false });
+
+} else {
+    //PC操作
+    window.onmousedown = function (e) {
+        mousedown(e.pageX, e.pageY);
+    }
+    window.onmousemove = function (e) {
+        mousemove(e.pageX, e.pageY);
+    }
+    window.onmouseup = function (e) {
+        mouseup(e.pageX, e.pageY);
+    }
+    window.ondblclick = function (e) {
+        mousedblclick(e.pageX, e.pageY);
+    }
 }
-window.onmousemove = function (e) {
-    mousemove(e.pageX, e.pageY);
-}
-window.onmouseup = function (e) {
-    mouseup(e.pageX, e.pageY);
-}
-window.ondblclick = function (e) {
-    mousedblclick(e.pageX, e.pageY);
-}
+
 
 window.onwheel = function (e) {
     if (e.wheelDelta > 0) {
@@ -181,6 +257,60 @@ function main_update() {
     mapDataUpdate();
     uiUpdate();
 }
+
+//针对触控的操作
+function touchdown(x, y) {
+    mouseDown = true;
+    touchStartPos.set(x, y);
+    mapUpdateOnMouseDown(x, y);
+}
+
+function touchup(x, y) {
+    mouseDown = false;
+    touchEndPos.set(x, y);
+
+    var p = new Vec2();
+    p.set(x, y);
+
+    updateUIOnMouseUp(p);
+    anchorUpdate(p);
+}
+
+function touchmoveOneSpot(x, y) {
+    var p = new Vec2();
+    p.set(x, y);
+
+    dragMoveMapOnMove(p);
+}
+
+function touchmoveTwoSpot(x0, y0, x1, y1) {
+    var p0 = new Vec2();
+    p0.set(x0, y0);
+
+    var p1 = new Vec2();
+    p1.set(x1, y1);
+
+    var dx = x1 - x0;
+    var dy = y1 - y0;
+    var dd = Math.sqrt(dx * dx + dy * dy);
+
+    var k = parseInt((dd - touchData.dist) / 30);
+    if (Math.abs(k) >= 1) {
+        touchData.dist = dd;
+    }
+
+    mapUpdateOnWheel(x0, y0, k);
+    //dragMoveMapOnMove(p);
+}
+
+function touchdbl(x, y) {
+    var p = new Vec2();
+    p.set(x, y);
+
+    playChessOnDblClick(p);
+}
+
+//针对鼠标的操作
 
 function mousedown(x, y) {
     mouseDown = true;

@@ -1,7 +1,7 @@
 import { edgeData } from "./EdgeData.js";
 
 //链式前向星存图
-class Graph {
+export class Graph {
     constructor(nodeCnt) {
         this.cnt = 0;
         this.head = new Array();
