@@ -12,13 +12,14 @@ mapSpriteData.scale = 1.0;
 export function mapInit() {
     var sp = new Sprite("src/map_0.jpg");
     sprites_main.set("game_map", sp);
-    sp.orgscale = 2.5;
+    sp.orgscale = 10;
     mapSpriteData.mapPos.set(-2800, -2800);
 
     //异步加载高分辨率的大地图
     imgPool.load("src/map.bmp", function (src) {
         var m = sprites_main.get("game_map");
         m.img = imgPool.get(src);
+        sp.orgscale = 2.5;
     });
 }
 
