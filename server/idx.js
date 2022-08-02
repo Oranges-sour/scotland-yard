@@ -4,7 +4,12 @@ var wss = new WebSocketServer({ port: 23480 });
 
 var chessControl = new Map();
 
-import { chessStepOn, gameRound, chessMove, checkPoliceWin, thiefStepList, playerAt, cardsLeft, initGame, setChessStepOn, setGameRound, setGameStart, gameStart } from "./game.js";
+import {
+    chessStepOn, gameRound, chessMove,
+    checkPoliceWin, thiefStepList, playerAt,
+    cardsLeft, initGame, setChessStepOn, setGameRound,
+    setGameStart, gameStart, canMoveCheck
+} from "./game.js";
 
 initGame();
 
@@ -73,7 +78,7 @@ function boardcastReset() {
     });
 }
 
-function boardcastStart(){
+function boardcastStart() {
     var obj = new Object();
     obj.type = "start";
 
@@ -145,17 +150,26 @@ function msg_play(obj) {
     function moveSuccess(type) {
 
         if (chessStepOn == 1) {
-
             thiefStepList[gameRound] = type;
         }
 
-        //成功走棋
-        setChessStepOn(chessStepOn + 1);
+        while (true) {
+            //成功走棋
+            setChessStepOn(chessStepOn + 1);
 
-        if (chessStepOn > 6) {
-            setChessStepOn(1);
-            setGameRound(gameRound + 1);
+            if (chessStepOn > 6) {
+                setChessStepOn(1);
+                setGameRound(gameRound + 1);
+            }
+
+            //这个人有方式可以移动
+            if (canMoveCheck()) {
+                break;
+            }
+            //不然直接跳过这个人
+            console.log("-Jump-" + chessStepOn);
         }
+
 
         if (checkPoliceWin()) {
             boardcastPoliceWin();
@@ -192,12 +206,14 @@ function msg_play(obj) {
         else if (card4_step == 2) {
             var r = chessMove(chessStepOn, type, where);
 
+            //任何道路都无法过去
             if (r[0] == false) {
                 //不成功，要从头走棋
                 playerAt[chessStepOn] = card4_orgOn;
                 card4_step = 1;
                 return true;
             }
+
             var suc = false;
             for (var i = 1; i <= 4; ++i) {
                 //保证两次走棋是使用的一样的交通
@@ -205,18 +221,22 @@ function msg_play(obj) {
                     suc = true;
                 }
             }
+            //可以走，减少一张卡
             if (suc) {
                 card4_step = 1;
+                cardsLeft[chessStepOn][type] -= 1;
                 moveSuccess(type);
             }
-
+            //两步不一样，要从头走棋
             if (!suc) {
-                //不成功，要从头走棋
+
                 playerAt[chessStepOn] = card4_orgOn;
                 card4_step = 1;
             }
         }
     }
+
+
 
     return true;
 }

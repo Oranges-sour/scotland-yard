@@ -1,4 +1,5 @@
 import exp from "constants";
+import { addAbortSignal } from "stream";
 import { GameMap } from "./GameMap.js";
 
 //玩家的可能开始点
@@ -100,7 +101,6 @@ export function checkPoliceWin() {
 
 //走棋
 export function chessMove(id, type, where) {
-
     //卡太少，走不了
     if (cardsLeft[id][type] <= 0) {
         return 0;
@@ -180,6 +180,43 @@ export function chessMove(id, type, where) {
     }
     //4代表正常移动(1~3留给了4号卡特判用)
     return 4;
+}
+
+//能使用任何方式进行走棋(有卡是前提)
+export function canMoveCheck() {
+    //小偷肯定能直接走，不用管
+    if (chessStepOn >= 2) {
+        //初始化'桶'
+        var goo = new Array();
+        for (var i = 1; i <= 3; ++i) {
+            goo[i] = false;
+        }
+        ///////////////////////////////////////
+
+        for (var i = 1; i <= 3; ++i) {
+            var aa = new Set();
+            aa = gameMap.allcango(i, playerAt[chessStepOn]);
+
+            if (Array.from(aa).length > 0) {
+                goo[i] = true;
+            }
+        }
+
+
+        var suc = false;
+        for (var i = 1; i <= 3; ++i) {
+            console.log(goo[i]);
+            if (goo[i] == true && cardsLeft[chessStepOn][i] > 0) {
+                suc = true;
+            }
+        }
+
+        if (suc == false) {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 function getRandomNum(min, max) {
