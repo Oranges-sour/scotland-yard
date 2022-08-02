@@ -1,6 +1,8 @@
 import Vec2 from "./Vec2.js";
 import Sprite from "./Sprite.js";
 import { sprites_main, anchors, mouseDown, touchStartPos, players, insideCanvas, gameData } from "./idx.js";
+import { imgPool } from "./ImagePool.js"
+
 
 var mapSpriteData = new Object;
 mapSpriteData.touchStartMapPos = new Vec2();
@@ -8,10 +10,16 @@ mapSpriteData.mapPos = new Vec2();
 mapSpriteData.scale = 1.0;
 
 export function mapInit() {
-    var sp = new Sprite("src/map.bmp");
+    var sp = new Sprite("src/map_0.jpg");
     sprites_main.set("game_map", sp);
     sp.orgscale = 2.5;
     mapSpriteData.mapPos.set(-2800, -2800);
+
+    //异步加载高分辨率的大地图
+    imgPool.load("src/map.bmp", function (src) {
+        var m = sprites_main.get("game_map");
+        m.img = imgPool.get(src);
+    });
 }
 
 export function mapUpdateOnWheel(x, y, k) {
