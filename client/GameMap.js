@@ -1,8 +1,8 @@
 import Vec2 from "./Vec2.js";
 import Sprite from "./Sprite.js";
-import { sprites_main, anchors, mouseDown, touchStartPos, players, insideCanvas, gameData } from "./idx.js";
+import { sprites_main, anchors, mouseDown, touchStartPos, players, insideCanvas } from "./idx.js";
 import { imgPool } from "./ImagePool.js"
-
+import { game } from "./Game.js";
 
 var mapSpriteData = new Object;
 mapSpriteData.touchStartMapPos = new Vec2();
@@ -24,7 +24,7 @@ export function mapInit() {
 }
 
 export function mapUpdateOnWheel(x, y, k) {
-    if (!gameData.gameStart) {
+    if (!game.isGameStart()) {
         return;
     }
     const CS = 0.05;
@@ -40,7 +40,7 @@ export function mapUpdateOnWheel(x, y, k) {
 }
 
 export function mapUpdateOnMouseDown(x, y) {
-    if (!gameData.gameStart) {
+    if (!game.isGameStart()) {
         return;
     }
     mapSpriteData.touchStartMapPos.set_p(mapSpriteData.mapPos);
@@ -132,7 +132,7 @@ export function mapDataUpdate() {
         }
 
         for (var i = 1; i <= 6; ++i) {
-            var k = gameData.playerAt[i];
+            var k = game.gameData.playerAt[i];
 
             var anc = anchors[k];
 
@@ -146,10 +146,10 @@ export function mapDataUpdate() {
     }
 
     //小偷是否显示
-    if (gameData.gameRound == 3 || gameData.gameRound == 8 ||
-        gameData.gameRound == 13 || gameData.gameRound == 18 ||
-        gameData.gameRound == 24
-        || gameData.selfChessCtl.includes(1)) {
+    if (((game.gameData.gameRound == 3 || game.gameData.gameRound == 8 ||
+        game.gameData.gameRound == 13 || game.gameData.gameRound == 18 ||
+        game.gameData.gameRound == 24) && game.gameData.chessStepOn >= 2)
+        || game.gameData.selfChessCtl.includes(1)) {
 
         players[1].visible = true;
     } else {
@@ -158,7 +158,7 @@ export function mapDataUpdate() {
 }
 
 export function dragMoveMapOnMove(p) {
-    if (!gameData.gameStart) {
+    if (!game.isGameStart()) {
         return;
     }
     if (mouseDown) {

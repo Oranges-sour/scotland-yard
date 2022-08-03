@@ -4,11 +4,13 @@ import Vec2 from "./Vec2.js";
 
 
 import { mapDataUpdate, dragMoveMapOnMove, mapInit, mapUpdateOnWheel, mapUpdateOnMouseDown } from "./GameMap.js"
-import { Anchor, anchorInit, anchorUpdate } from "./Anchor.js";
+import { anchorInit, anchorUpdate } from "./Anchor.js";
 
 import { initUI, uiUpdate, updateUIOnMouseUp } from "./UICtl.js";
 
-import { webInit, playChess, resetGame as webResetGame } from "./web.js";
+import { web } from "./Web.js";
+
+import { game } from "./Game.js"
 
 var sprites_main = new Map();
 var sprites_ui = new Map();
@@ -21,77 +23,6 @@ var players = new Array();
 var touchStartPos = new Vec2();
 var touchEndPos = new Vec2();
 var mouseDown = false;
-
-var gameData = new Object();
-//游戏局
-gameData.gameRound = 1;
-//当前选择了哪个卡
-gameData.cardSelect = 1;
-//到谁下棋
-gameData.chessStepOn = 1;
-//小偷行动的步骤
-gameData.thiefStepList = new Array();
-for (var i = 1; i <= 24; ++i) {
-    gameData.thiefStepList[i] = 1;
-}
-//玩家能控制的棋
-gameData.selfChessCtl = [1, 2, 3, 4, 5, 6];
-//剩余的卡牌
-gameData.cardsLeft = new Array();
-for (var i = 1; i <= 6; ++i) {
-    gameData.cardsLeft[i] = new Array();
-    for (var j = 1; j <= 5; ++j) {
-        gameData.cardsLeft[i][j] = 0;
-    }
-}
-gameData.playerAt = new Array();
-for (var i = 1; i <= 6; ++i) {
-    gameData.playerAt[i] = i;
-}
-gameData.gameStart = false;
-
-//游戏胜利，0:还在继续，1：警察赢，2：小偷赢
-gameData.gameWin = 0;
-
-export function updateGameStatue(obj) {
-    gameData.cardsLeft = obj.cardsLeft;
-    gameData.thiefStepList = obj.thiefStepList;
-    gameData.chessStepOn = obj.chessStepOn;
-    gameData.playerAt = obj.playerAt;
-    gameData.gameRound = obj.gameRound;
-}
-
-export function setCardSelect(x) {
-    gameData.cardSelect = x;
-}
-
-export function setSelfChessCtl(ctl) {
-    gameData.selfChessCtl = ctl;
-}
-
-export function resetGame() {
-    gameData.gameStart = false;
-    gameData.gameWin = 0;
-}
-
-export function startGame() {
-    gameData.gameStart = true;
-    gameData.gameWin = 0;
-}
-
-export function setGameStart(x) {
-    gameData.gameStart = x;
-}
-
-export function gamePoliceWin() {
-    gameData.gameStart = false;
-    gameData.gameWin = 1;
-}
-
-export function gameThiefWin() {
-    gameData.gameStart = false;
-    gameData.gameWin = 2;
-}
 
 
 window.onload = function () {
@@ -111,7 +42,7 @@ if (/ipad|iphone|midp|rv:1.2.3.4|ucweb|android|windows ce|windows mobile/.test(t
         touchdown(e.pageX, e.pageY);
     }
     window.addEventListener("touchmove", function (e) {
-        if (gameData.gameStart) {
+        if (game.isGameStart()) {
             e.preventDefault();
         }
 
@@ -138,7 +69,7 @@ if (/ipad|iphone|midp|rv:1.2.3.4|ucweb|android|windows ce|windows mobile/.test(t
     }, { passive: false });
 
     window.addEventListener("touchend", function (e) {
-        if (gameData.gameStart) {
+        if (game.isGameStart()) {
             e.preventDefault();
         }
 
@@ -256,7 +187,7 @@ export function insideUICanvas(pos) {
 }
 
 function init() {
-    webInit();
+    web.init();
 
     initUI();
 
@@ -372,17 +303,6 @@ function mousedblclick(x, y) {
 
 function playChessOnDblClick(p) {
     if (insideCanvas(p)) {
-        //检查现在是不是到自己操控的棋子
-        var k = -1;
-        for (var i = 0; i < gameData.selfChessCtl.length; ++i) {
-            if (gameData.chessStepOn == gameData.selfChessCtl[i]) {
-                k = gameData.chessStepOn;
-            }
-        }
-        //不到自己
-        if (k == -1) {
-            return;
-        }
         var mark;
         var cnt = 0;
         for (var i = 1; i <= 199; ++i) {
@@ -392,9 +312,10 @@ function playChessOnDblClick(p) {
                 mark = i;
             }
         }
+
         //保证鼠标只点击一个棋子
         if (cnt == 1) {
-            playChess(mark, gameData.cardSelect);
+            game.playChess(mark);
         }
     }
 }
@@ -417,17 +338,17 @@ function draw_main() {
     }
 
     //绘制游戏胜利显示
-    if (gameData.gameWin != 0) {
+    if (game.gameData.gameWin != 0) {
         ctx.fillStyle = "rgb(40, 40, 40)";
         ctx.fillRect(300, 200, 600, 300);
 
         ctx.fillStyle = "rgb(255,255,255)";
         ctx.font = "100px Verdana";
 
-        if (gameData.gameWin == 1) {
+        if (game.gameData.gameWin == 1) {
             ctx.fillText("警察胜利！", 300, 400);
         }
-        if (gameData.gameWin == 2) {
+        if (game.gameData.gameWin == 2) {
             ctx.fillText("小偷胜利！", 300, 400);
         }
     }
@@ -452,9 +373,9 @@ function draw_ui() {
 
     //显示卡片堆的数量
     var k = -1;
-    for (var i = 0; i < gameData.selfChessCtl.length; ++i) {
-        if (gameData.chessStepOn == gameData.selfChessCtl[i]) {
-            k = gameData.chessStepOn;
+    for (var i = 0; i < game.gameData.selfChessCtl.length; ++i) {
+        if (game.gameData.chessStepOn == game.gameData.selfChessCtl[i]) {
+            k = game.gameData.chessStepOn;
         }
     }
     if (k != -1) {
@@ -470,10 +391,10 @@ function draw_ui() {
             ctx.font = "20px Verdana";
 
             var str;
-            if (gameData.cardsLeft[k][i] < 10) {
-                str = "0" + gameData.cardsLeft[k][i];
+            if (game.gameData.cardsLeft[k][i] < 10) {
+                str = "0" + game.gameData.cardsLeft[k][i];
             } else {
-                str = gameData.cardsLeft[k][i];
+                str = game.gameData.cardsLeft[k][i];
             }
 
             ctx.fillText(str, 0, 0);
@@ -483,4 +404,3 @@ function draw_ui() {
 }
 
 export var sprites_main, sprites_ui, mouseDown, touchStartPos, touchEndPos, anchors, players;
-export var gameData;
