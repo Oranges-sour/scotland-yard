@@ -54,16 +54,16 @@ export function mapDataUpdate() {
     }
 
     //检查拖动
-    //var w = e.img.width * e.scale;
-    //var h = e.img.height * e.scale;
+    var w = e.width();
+    var h = e.height();
     //左侧
-    //mapData.mapPos.x = Math.min(mapData.mapPos.x, w / 4);
+    mapSpriteData.mapPos.x = Math.min(mapSpriteData.mapPos.x, 600);
     //右侧
-    //mapData.mapPos.x = Math.max(mapData.mapPos.x, -w / 4);
+    mapSpriteData.mapPos.x = Math.max(mapSpriteData.mapPos.x, -w + 600);
     //上侧
-    //mapData.mapPos.y = Math.max(mapData.mapPos.y, -h / 4);
+    mapSpriteData.mapPos.y = Math.min(mapSpriteData.mapPos.y, 350);
     //下侧
-    //mapData.mapPos.y = Math.min(mapData.mapPos.y, h / 4);
+    mapSpriteData.mapPos.y = Math.max(mapSpriteData.mapPos.y, -h + 350);
 
     //计算地图移动
     {

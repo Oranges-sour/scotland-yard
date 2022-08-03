@@ -22,6 +22,14 @@ class Sprite {
         this.scale = x;
     }
 
+    width() {
+        return this.img.width * this.scale * this.orgscale;
+    }
+
+    height() {
+        return this.img.height * this.scale * this.orgscale;
+    }
+
     visit(canvas) {
         if (!this.visible) {
             return;

@@ -1,6 +1,10 @@
 var ws;
 
-import { updateGameStatue, gameData, setSelfChessCtl, setGameStart } from "./idx.js";
+import {
+    updateGameStatue, gameData, setSelfChessCtl,
+    setGameStart, gamePoliceWin, gameThiefWin, resetGame as gameResetGame,
+    startGame as gameStartGame
+} from "./idx.js";
 
 import { resetUI } from "./menuui.js";
 
@@ -77,10 +81,16 @@ function processMsg(obj) {
         updateGameStatue(obj);
     }
     if (obj.type == "reset") {
-        setGameStart(false);
+        gameResetGame();
         resetUI();
     }
     if (obj.type == "start") {
-        setGameStart(true);
+        gameStartGame();
+    }
+    if (obj.type == "thief_win") {
+        gameThiefWin();
+    }
+    if (obj.type == "police_win") {
+        gamePoliceWin();
     }
 }
