@@ -1,9 +1,10 @@
-import { helloGame, resetGame, startGame as webStartGame } from "./web.js";
+import { web } from "./Web.js";
+import { game } from "./Game.js";
 
 
 document.getElementById("ok_btn").onclick = joinGame;
 
-document.getElementById("reset_btn").onclick = rresetGame;
+document.getElementById("reset_btn").onclick = resetGame;
 
 document.getElementById("start_btn").onclick = startGame;
 
@@ -43,18 +44,20 @@ function joinGame() {
 
     var c = ctl[val];
 
-    helloGame(name, c);
+    web.helloGame(name, c);
 
     closeWin();
 }
 
 function startGame() {
     joinGame();
-    webStartGame();
+    game.startGame();
+    web.startGame();
 }
 
-function rresetGame() {
-    resetGame();
+function resetGame() {
+    game.resetGame();
+    web.resetGame();
 }
 
 function closeWin() {

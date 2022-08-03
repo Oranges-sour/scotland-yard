@@ -1,4 +1,9 @@
-import { sprites_ui, inside, insideUICanvas, convertInUICanvas, setCardSelect, gameData } from "./idx.js";
+import {
+    sprites_ui, inside, insideUICanvas,
+    convertInUICanvas
+} from "./idx.js";
+import { game } from "./Game.js";
+
 import Sprite from "./Sprite.js";
 import Vec2 from "./Vec2.js";
 
@@ -27,16 +32,16 @@ for (var i = 1; i <= 24; ++i) {
 
 export function uiUpdate() {
     var e = sprites_ui.get("step_on");
-    e.pos.x = chessStepOnPos[gameData.chessStepOn];
+    e.pos.x = chessStepOnPos[game.gameData.chessStepOn];
 
     var e = sprites_ui.get("select_on");
-    e.pos.x = chessSelectPos[gameData.cardSelect];
+    e.pos.x = chessSelectPos[game.gameData.cardSelect];
 
     for (var i = 0; i <= 23; ++i) {
         var j = i + 1;
-        if (thiefStepList_old[j] != gameData.thiefStepList[j] && gameData.thiefStepList[j] != 0) {
+        if (thiefStepList_old[j] != game.gameData.thiefStepList[j] && game.gameData.thiefStepList[j] != 0) {
 
-            var e = new Sprite("src/card_" + gameData.thiefStepList[j] + ".png");
+            var e = new Sprite("src/card_" + game.gameData.thiefStepList[j] + ".png");
 
             var kx = parseInt(i / 8);
             var ky = parseInt(i % 8);
@@ -48,7 +53,7 @@ export function uiUpdate() {
 
             sprites_ui.set("thief_card_" + j, e);
         }
-        if (gameData.thiefStepList[j] == 0) {
+        if (game.gameData.thiefStepList[j] == 0) {
             sprites_ui.delete("thief_card_" + j);
         }
     }
