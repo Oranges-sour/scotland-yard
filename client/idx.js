@@ -380,6 +380,7 @@ function draw_main() {
     var canvas = document.getElementById("canvas");
     var ctx = canvas.getContext("2d");
 
+    ctx.fillStyle = "rgb(64, 61, 52)";
     ctx.fillRect(0, 0, 1200, 700);
 
     var arr = Array.from(sprites_main);
