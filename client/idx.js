@@ -8,7 +8,7 @@ import { Anchor, anchorInit, anchorUpdate } from "./Anchor.js";
 
 import { initUI, uiUpdate, updateUIOnMouseUp } from "./UICtl.js";
 
-import { webInit, playChess, resetGame } from "./web.js";
+import { webInit, playChess, resetGame as webResetGame } from "./web.js";
 
 var sprites_main = new Map();
 var sprites_ui = new Map();
@@ -50,6 +50,9 @@ for (var i = 1; i <= 6; ++i) {
 }
 gameData.gameStart = false;
 
+//游戏胜利，0:还在继续，1：警察赢，2：小偷赢
+gameData.gameWin = 0;
+
 export function updateGameStatue(obj) {
     gameData.cardsLeft = obj.cardsLeft;
     gameData.thiefStepList = obj.thiefStepList;
@@ -66,8 +69,28 @@ export function setSelfChessCtl(ctl) {
     gameData.selfChessCtl = ctl;
 }
 
+export function resetGame() {
+    gameData.gameStart = false;
+    gameData.gameWin = 0;
+}
+
+export function startGame() {
+    gameData.gameStart = true;
+    gameData.gameWin = 0;
+}
+
 export function setGameStart(x) {
     gameData.gameStart = x;
+}
+
+export function gamePoliceWin() {
+    gameData.gameStart = false;
+    gameData.gameWin = 1;
+}
+
+export function gameThiefWin() {
+    gameData.gameStart = false;
+    gameData.gameWin = 2;
 }
 
 
@@ -356,6 +379,7 @@ function playChessOnDblClick(p) {
                 k = gameData.chessStepOn;
             }
         }
+        //不到自己
         if (k == -1) {
             return;
         }
@@ -390,6 +414,12 @@ function draw_main() {
 
     for (var i = 0; i < arr.length; ++i) {
         arr[i][1].visit(ctx);
+    }
+
+    //绘制游戏胜利显示
+    if (gameData.gameWin != 0) {
+        ctx.fillStyle = "rgb(40, 40, 40)";
+        ctx.fillRect(0, 0, 1200, 700);
     }
 }
 
