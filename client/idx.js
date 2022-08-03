@@ -419,7 +419,17 @@ function draw_main() {
     //绘制游戏胜利显示
     if (gameData.gameWin != 0) {
         ctx.fillStyle = "rgb(40, 40, 40)";
-        ctx.fillRect(0, 0, 1200, 700);
+        ctx.fillRect(300, 200, 600, 300);
+
+        ctx.fillStyle = "rgb(255,255,255)";
+        ctx.font = "100px Verdana";
+
+        if (gameData.gameWin == 1) {
+            ctx.fillText("警察胜利！", 300, 400);
+        }
+        if (gameData.gameWin == 2) {
+            ctx.fillText("小偷胜利！", 300, 400);
+        }
     }
 }
 
