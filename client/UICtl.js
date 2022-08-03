@@ -68,7 +68,7 @@ export function updateUIOnMouseUp(p) {
             lrp.x = chessSelectPos[i] - 10;
             lrp.y = 174 + 15;
             if (inside(pos, lrp, 55, 30)) {
-                setCardSelect(i);
+                game.setCardSelect(i);
             }
         }
     }
