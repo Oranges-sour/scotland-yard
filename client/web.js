@@ -112,6 +112,15 @@ class Web {
         this.ws.send(str);
     }
 
+    changePlayerCnt(cnt) {
+        var obj = new Object();
+        obj.type = "playercnt";
+        obj.cnt = cnt;
+
+        var str = JSON.stringify(obj);
+        this.ws.send(str);
+    }
+
     processMsg(obj) {
         if (obj.type == "upd") {
             game.updateGameStatue(obj);

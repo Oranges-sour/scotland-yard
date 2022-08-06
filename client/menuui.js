@@ -120,6 +120,8 @@ function menuUpd() {
     if (playerCnt != lastPlayerCnt) {
         ele_ChessChoose.innerHTML = chessChooseInnerHtml[playerCnt];
         lastPlayerCnt = playerCnt;
+
+        web.changePlayerCnt(playerCnt);
     }
 
     for (var i = 1; i <= 6; ++i) {
@@ -138,6 +140,7 @@ setInterval(function () {
 //web更新当前的玩家选择状态
 export function updateMenuStatue(obj) {
     playerChooseStatue = obj.playerChooseStatue;
+    ele_PlayerCntChoose.value = obj.playerCnt;
 }
 
 //游戏重置时被调用
@@ -176,8 +179,6 @@ export function closeUI() {
     ele_help.style.visibility = "hidden";
     ele_start.style.visibility = "hidden";
 }
-
-
 
 function onMenuStart() {
     ele_menu.style.visibility = "hidden";

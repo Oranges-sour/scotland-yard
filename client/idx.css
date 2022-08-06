@@ -150,6 +150,7 @@ body {
 
 #Menu {
     background-color: rgb(160, 160, 150);
+    background-image: url("src/menu_bk.png");
 
     border-style: solid;
     border-width: 3px;

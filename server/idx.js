@@ -25,7 +25,20 @@ wss.on("connection", function (ws) {
     });
 });
 
+function resetGame(){
+    chessControl.clear();
+    for (var i = 1; i <= 6; ++i) {
+        chessChooseStatue[i] = false;
+    }
 
+    initGame();
+
+    setGameStart(false);
+    boardcastReset();
+}
+
+
+var playerCnt = 2;
 var chessChooseStatue = new Array();
 for (var i = 1; i <= 6; ++i) {
     chessChooseStatue[i] = false;
@@ -37,6 +50,7 @@ function boardcastBeforeStartStatue() {
     obj.type = "before_start_upd";
 
     obj.playerChooseStatue = chessChooseStatue;
+    obj.playerCnt = playerCnt;
 
     var j = JSON.stringify(obj);
     wss.clients.forEach(function each(e) {
@@ -133,6 +147,9 @@ function processMessgae(ws, obj) {
     if (obj.type == "heart_beat") {
         r = msg_heardbeat(obj, ws);
     }
+    if (obj.type == "playercnt") {
+        r = msg_playercnt(obj, ws);
+    }
     if (r) {
         if (!gameStart) {
             boardcastBeforeStartStatue();
@@ -142,9 +159,17 @@ function processMessgae(ws, obj) {
     }
 }
 
+function msg_playercnt(obj) {
+    console.log("-ChangePlayerCnt-" + " Cnt:" + obj.cnt);
+    playerCnt = obj.cnt;
+
+    resetGame();
+    return true;
+}
+
 //心跳未完工
 function msg_heardbeat(obj, ws) {
-    
+
 }
 
 function msg_regist(obj, ws) {
@@ -349,15 +374,7 @@ function msg_play(obj) {
 function msg_reset(msg, ws) {
     console.log("-Reset-");
 
-    chessControl.clear();
-    for (var i = 1; i <= 6; ++i) {
-        chessChooseStatue[i] = false;
-    }
-
-    initGame();
-
-    setGameStart(false);
-    boardcastReset();
+    resetGame();
 
     var obj = new Object();
     obj.type = "ctlbtl_success";
