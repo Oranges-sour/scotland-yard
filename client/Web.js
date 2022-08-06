@@ -4,12 +4,12 @@ import {
 } from "./Game.js";
 import { touchStartPos } from "./idx.js";
 
-import { resetUI } from "./menuui.js";
-
+import { resetUI, closeUI, updateMenuStatue, btnCtlSuccess } from "./MenuUI.js";
+ 
 
 class Web {
     constructor() {
-        this.userName = "123";
+        this.userName = randomString(true, 5, 8);
         this.connected = false;
         this.onopen = false;
     }
@@ -31,12 +31,19 @@ class Web {
                 console.log("Connected");
                 that.connected = true;
                 that.onopen = false;
+
+                //regist name
+                var obj = new Object();
+                obj.type = "regist";
+                obj.name = this.userName;
+
+                var str = JSON.stringify(obj);
+                that.ws.send(str);
             };
 
 
             this.ws.onmessage = function (e) {
                 var obj = JSON.parse(e.data);
-                //console.log(that);
                 that.processMsg(obj);
             };
 
@@ -46,16 +53,33 @@ class Web {
                 that.connected = false;
             }
         }
+
+        // if (this.connected) {
+        //     var obj = new Object();
+        //     obj.type = "heart_beat";
+        //     obj.name = this.userName;
+
+        //     var str = JSON.stringify(obj);
+        //     this.ws.send(str);
+        // }
     }
 
-    helloGame(name, ctl) {
-        this.userName = name;
+    joinGame(ctl) {
         game.setSelfChessCtl(ctl);
 
         var obj = new Object();
-        obj.type = "hello";
-        obj.name = name;
+        obj.type = "join";
+        obj.name = this.userName;
         obj.controlChess = game.gameData.selfChessCtl;
+
+        var str = JSON.stringify(obj);
+        this.ws.send(str);
+    }
+
+    quitGame() {
+        var obj = new Object();
+        obj.type = "quit";
+        obj.name = this.userName;
 
         var str = JSON.stringify(obj);
         this.ws.send(str);
@@ -88,6 +112,15 @@ class Web {
         this.ws.send(str);
     }
 
+    changePlayerCnt(cnt) {
+        var obj = new Object();
+        obj.type = "playercnt";
+        obj.cnt = cnt;
+
+        var str = JSON.stringify(obj);
+        this.ws.send(str);
+    }
+
     processMsg(obj) {
         if (obj.type == "upd") {
             game.updateGameStatue(obj);
@@ -98,6 +131,7 @@ class Web {
         }
         if (obj.type == "start") {
             game.startGame();
+            closeUI();
         }
         if (obj.type == "thief_win") {
             game.gameThiefWin();
@@ -105,7 +139,31 @@ class Web {
         if (obj.type == "police_win") {
             game.gamePoliceWin();
         }
+        if (obj.type == "before_start_upd") {
+            updateMenuStatue(obj);
+        }
+        if (obj.type == "ctlbtl_success") {
+            btnCtlSuccess(obj);
+        }
     }
+}
+
+function randomString(randomLen, min, max) {
+    var str = "",
+        range = min,
+        arr = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+            'A', 'B', 'C', 'D', 'E', 'F',
+            'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',
+            'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+    // 随机产生
+    if (randomLen) {
+        range = Math.round(Math.random() * (max - min)) + min;
+    }
+    for (var i = 0; i < range; i++) {
+        var pos = Math.round(Math.random() * (arr.length - 1));
+        str += arr[pos];
+    }
+    return str;
 }
 
 

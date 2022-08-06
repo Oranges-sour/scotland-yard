@@ -1,56 +1,165 @@
 import { web } from "./Web.js";
 import { game } from "./Game.js";
 
+const chessChooseInnerHtml = [
+    "", "",
+    //2
+    "<option value=\"1\">小偷</option>" +
+    "<option value=\"2\">红绿蓝黄紫</option>",
+    //3
+    "<option value=\"1\">小偷</option>" +
+    "<option value=\"2\">红绿蓝</option>" +
+    "<option value=\"3\">黄紫</option>",
+    //4
+    "<option value=\"1\">小偷</option>" +
+    "<option value=\"2\">红绿</option>" +
+    "<option value=\"3\">蓝黄</option>" +
+    "<option value=\"4\">紫</option>",
+    //5
+    "<option value=\"1\">小偷</option>" +
+    "<option value=\"2\">红绿</option>" +
+    "<option value=\"3\">蓝</option>" +
+    "<option value=\"4\">黄</option>" +
+    "<option value=\"5\">紫</option>",
+    //6
+    "<option value=\"1\">小偷</option>" +
+    "<option value=\"2\">红</option>" +
+    "<option value=\"3\">绿</option>" +
+    "<option value=\"4\">蓝</option>" +
+    "<option value=\"5\">黄</option>" +
+    "<option value=\"6\">紫</option>",
+];
 
-document.getElementById("ok_btn").onclick = joinGame;
 
-document.getElementById("reset_btn").onclick = resetGame;
+const chessCtl = [
+    [], [],
+    [[], [1], [2, 3, 4, 5, 6]],//2
+    [[], [1], [2, 3, 4], [5, 6]],//3
+    [[], [1], [2, 3], [4, 5], [6]],//4
+    [[], [1], [2, 3], [4], [5], [6]],//5
+    [[], [1], [2], [3], [4], [5], [6]]//6
+];
 
-document.getElementById("start_btn").onclick = startGame;
+const CtlStatue = "<div class=\"CtlStatue\"></div>"
 
-const ctl = [[], [1], [2, 3], [4, 5], [6]];
+var lastPlayerCnt = 0;
 
-var isClose = false;
+var playerChooseStatue = new Array();
+for (var i = 1; i <= 6; ++i) {
+    playerChooseStatue[i] = false;
+}
 
-function upd() {
-    if (isClose) {
-        document.getElementById("reset_btn").style.visibility = "hidden";
-        document.getElementById("start_btn").style.visibility = "hidden";
-        return;
+var ele_uuid = document.getElementById("Start_UUID");
+var ele_ChessChoose = document.getElementById("ChessChoose");
+var ele_PlayerCntChoose = document.getElementById("PlayerCntChoose");
+var ele_playerStatue = new Array();
+for (var i = 1; i <= 6; ++i) {
+    ele_playerStatue[i] = document.getElementById("PlS_" + i);
+}
+var ele_menu = document.getElementById("Menu");
+var ele_help = document.getElementById("Help");
+var ele_start = document.getElementById("Start");
+
+document.getElementById("BtnReset").onclick = function () {
+    resetGame();
+};
+document.getElementById("BtnJoin").onclick = function () {
+    joinGame();
+};
+document.getElementById("BtnQuit").onclick = function () {
+    quitGame();
+};
+document.getElementById("BtnStart").onclick = function () {
+    startGame();
+};
+document.getElementById("Menu_Start").onclick = function () {
+    onMenuStart();
+};
+document.getElementById("Menu_Help").onclick = function () {
+    onMenuHelp();
+};
+document.getElementById("Help_Close").onclick = function () {
+    onMenuBack();
+};
+document.getElementById("Start_Close").onclick = function () {
+    onMenuBack();
+};
+
+
+export function btnCtlSuccess(obj) {
+    if (obj.type1 == "reset") {
+        setCtlStatue("BtnReset_S");
     }
-    var val = document.getElementById("selectChess").value;
-    if (val == 1) {
-        document.getElementById("reset_btn").style.visibility = "visible";
-        document.getElementById("start_btn").style.visibility = "visible";
-        document.getElementById("ok_btn").style.visibility = "hidden";
-    } else {
-        document.getElementById("reset_btn").style.visibility = "hidden";
-        document.getElementById("start_btn").style.visibility = "hidden";
-        document.getElementById("ok_btn").style.visibility = "visible";
+    if (obj.type1 == "join") {
+        setCtlStatue("BtnJoin_S");
+    }
+    if (obj.type1 == "quit") {
+        setCtlStatue("BtnQuit_S");
     }
 }
 
-setInterval(upd, 100);
+function setCtlStatue(ele_str) {
+    var e = document.getElementById(ele_str);
+    e.innerHTML = CtlStatue;
 
+    setTimeout(function () {
+        clearCtlStatue(ele_str);
+    }, 500);
+}
+
+function clearCtlStatue(ele_str) {
+    var e = document.getElementById(ele_str);
+    e.innerHTML = "";
+}
+
+
+function menuUpd() {
+    ele_uuid.innerHTML = "UUID: " + web.userName;
+
+    var playerCnt = ele_PlayerCntChoose.value;
+    if (playerCnt != lastPlayerCnt) {
+        ele_ChessChoose.innerHTML = chessChooseInnerHtml[playerCnt];
+        lastPlayerCnt = playerCnt;
+
+        web.changePlayerCnt(playerCnt);
+    }
+
+    for (var i = 1; i <= 6; ++i) {
+        if (playerChooseStatue[i]) {
+            ele_playerStatue[i].style.backgroundImage = "url(\"src/ok.png\")";
+        } else {
+            ele_playerStatue[i].style.backgroundImage = "none";
+        }
+    }
+}
+
+setInterval(function () {
+    menuUpd();
+}, 32);
+
+//web更新当前的玩家选择状态
+export function updateMenuStatue(obj) {
+    playerChooseStatue = obj.playerChooseStatue;
+    ele_PlayerCntChoose.value = obj.playerCnt;
+}
+
+//游戏重置时被调用
 export function resetUI() {
-    isClose = false;
-    document.getElementById("MenuShow").style.visibility = "visible";
+    // ele_menu.style.visibility = "visible";
+    // ele_help.style.visibility = "hidden";
+    // ele_start.style.visibility = "hidden";
 }
 
 function joinGame() {
-    //从概率上讲不可能产生相同的名字
-    var name = randomString(true, 10, 20);
-    var val = document.getElementById("selectChess").value;
+    var playerCnt = ele_PlayerCntChoose.value;
+    var chessChoose = ele_ChessChoose.value;
 
-    var c = ctl[val];
+    var ctl = chessCtl[playerCnt][chessChoose];
 
-    web.helloGame(name, c);
-
-    closeWin();
+    web.joinGame(ctl);
 }
 
 function startGame() {
-    joinGame();
     game.startGame();
     web.startGame();
 }
@@ -60,31 +169,29 @@ function resetGame() {
     web.resetGame();
 }
 
-function closeWin() {
-    isClose = true;
-    document.getElementById("MenuShow").style.visibility = "hidden";
-    document.getElementById("reset_btn").style.visibility = "hidden";
-    document.getElementById("start_btn").style.visibility = "hidden";
-    document.getElementById("ok_btn").style.visibility = "hidden";
+function quitGame() {
+    game.setSelfChessCtl([]);
+    web.quitGame();
 }
 
-
-function randomString(randomLen, min, max) {
-    var str = "",
-        range = min,
-        arr = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-            'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k',
-            'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v',
-            'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F',
-            'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',
-            'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
-    // 随机产生
-    if (randomLen) {
-        range = Math.round(Math.random() * (max - min)) + min;
-    }
-    for (var i = 0; i < range; i++) {
-        var pos = Math.round(Math.random() * (arr.length - 1));
-        str += arr[pos];
-    }
-    return str;
+export function closeUI() {
+    ele_menu.style.visibility = "hidden";
+    ele_help.style.visibility = "hidden";
+    ele_start.style.visibility = "hidden";
 }
+
+function onMenuStart() {
+    ele_menu.style.visibility = "hidden";
+    ele_start.style.visibility = "visible";
+}
+
+function onMenuHelp() {
+    ele_menu.style.visibility = "hidden";
+    ele_help.style.visibility = "visible";
+}
+function onMenuBack() {
+    ele_menu.style.visibility = "visible";
+    ele_help.style.visibility = "hidden";
+    ele_start.style.visibility = "hidden";
+}
+

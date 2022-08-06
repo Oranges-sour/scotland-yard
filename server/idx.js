@@ -4,6 +4,8 @@ var wss = new WebSocketServer({ port: 23480 });
 
 var chessControl = new Map();
 
+var heartBeatCnt = new Map();
+
 import {
     chessStepOn, gameRound, chessMove,
     checkPoliceWin, thiefStepList, playerAt,
@@ -22,6 +24,39 @@ wss.on("connection", function (ws) {
         ws.close();
     });
 });
+
+function resetGame(){
+    chessControl.clear();
+    for (var i = 1; i <= 6; ++i) {
+        chessChooseStatue[i] = false;
+    }
+
+    initGame();
+
+    setGameStart(false);
+    boardcastReset();
+}
+
+
+var playerCnt = 2;
+var chessChooseStatue = new Array();
+for (var i = 1; i <= 6; ++i) {
+    chessChooseStatue[i] = false;
+}
+//广播游戏开始前的玩家选择等状态
+function boardcastBeforeStartStatue() {
+    var obj = new Object();
+
+    obj.type = "before_start_upd";
+
+    obj.playerChooseStatue = chessChooseStatue;
+    obj.playerCnt = playerCnt;
+
+    var j = JSON.stringify(obj);
+    wss.clients.forEach(function each(e) {
+        e.send(j);
+    });
+}
 
 function boardcastStatue() {
     if (!gameStart) {
@@ -91,30 +126,125 @@ function boardcastStart() {
 
 function processMessgae(ws, obj) {
     var r = false;
-    if (obj.type == "hello") {
-        r = msg_hello(obj, ws);
+    if (obj.type == "regist") {
+        r = msg_regist(obj, ws);
+    }
+    if (obj.type == "join") {
+        r = msg_join(obj, ws);
     }
     if (obj.type == "play") {
         r = msg_play(obj);
     }
     if (obj.type == "reset") {
-        r = msg_reset(obj);
+        r = msg_reset(obj, ws);
     }
     if (obj.type == "start") {
         r = msg_start(obj);
     }
-    if (r) {
-        boardcastStatue();
+    if (obj.type == "quit") {
+        r = msg_quit(obj, ws);
     }
+    if (obj.type == "heart_beat") {
+        r = msg_heardbeat(obj, ws);
+    }
+    if (obj.type == "playercnt") {
+        r = msg_playercnt(obj, ws);
+    }
+    if (r) {
+        if (!gameStart) {
+            boardcastBeforeStartStatue();
+        } else {
+            boardcastStatue();
+        }
+    }
+}
+
+function msg_playercnt(obj) {
+    console.log("-ChangePlayerCnt-" + " Cnt:" + obj.cnt);
+    playerCnt = obj.cnt;
+
+    resetGame();
+    return true;
+}
+
+//心跳未完工
+function msg_heardbeat(obj, ws) {
 
 }
 
-function msg_hello(obj) {
-    console.log("-Hello-" + " Name:" + obj.name + " CtlChess:" + obj.controlChess);
+function msg_regist(obj, ws) {
+
+    //初始化心跳
+    heartBeatCnt.set(obj.name, 1);
+
+    return true;
+}
+
+function msg_quit(obj, ws) {
+    console.log("-Quit-" + " Name:" + obj.name);
+    var str = obj.name;
+    if (!chessControl.has(str)) {
+        console.log("-Failed- Didn't join before.");
+        return true;
+    }
+    var ctl = chessControl.get(str);
+    for (var i = 0; i < ctl.length; ++i) {
+        chessChooseStatue[ctl[i]] = false;
+    }
+
+    chessControl.delete(str);
+
+    console.log(chessControl);
+
+    var obj = new Object();
+    obj.type = "ctlbtl_success";
+    obj.type1 = "quit";
+
+    var j = JSON.stringify(obj);
+    ws.send(j);
+
+    console.log("-Success-");
+    return true;
+}
+
+function msg_join(obj, ws) {
+    console.log("-Join-" + " Name:" + obj.name + " CtlChess:" + obj.controlChess);
     var str = obj.name;
     var ctl = obj.controlChess;
-    chessControl.set(str, ctl);
 
+    //看看他是不是加入了其他的
+    if (chessControl.has(str)) {
+        console.log("-Failed- Has joined before.");
+        return true;
+    }
+
+    //看看在他之前是不是有人已经选过相同的了
+    var suc = true;
+    for (var i = 0; i < ctl.length; ++i) {
+        if (chessChooseStatue[ctl[i]]) {
+            suc = false;
+            break;
+        }
+    }
+    if (!suc) {
+        console.log("-Failed- Somebody has chosen the same chess before.");
+        return true;
+    }
+    ////
+
+    chessControl.set(str, ctl);
+    for (var i = 0; i < ctl.length; ++i) {
+        chessChooseStatue[ctl[i]] = true;
+    }
+
+    var obj = new Object();
+    obj.type = "ctlbtl_success";
+    obj.type1 = "join";
+
+    var j = JSON.stringify(obj);
+    ws.send(j);
+
+    console.log("-Success-");
     return true;
 }
 
@@ -241,20 +371,40 @@ function msg_play(obj) {
     return true;
 }
 
-function msg_reset(msg) {
+function msg_reset(msg, ws) {
     console.log("-Reset-");
 
-    chessControl.clear();
-    initGame();
+    resetGame();
 
-    setGameStart(false);
-    boardcastReset();
+    var obj = new Object();
+    obj.type = "ctlbtl_success";
+    obj.type1 = "reset";
+
+    var j = JSON.stringify(obj);
+    ws.send(j);
+
+    console.log("-Success-");
     return true;
 }
 
 function msg_start() {
     console.log("-Start-");
+    //检查是不是每个棋子都有人操控
+    var suc = true;
+    for (var i = 1; i <= 6; ++i) {
+        if (!chessChooseStatue[i]) {
+            suc = false;
+        }
+    }
+
+    if (!suc) {
+        console.log("-Failed-");
+        return true;
+    }
+
     boardcastStart();
     setGameStart(true);
+
+    console.log("-Success-");
     return true;
 }
