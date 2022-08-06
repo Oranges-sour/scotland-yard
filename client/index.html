@@ -1,35 +1,83 @@
 <!DOCTYPE html>
-<meta charset="UTF-8"/>
+<meta charset="UTF-8" />
+
+<html lang="zh-cn">
 
 <head>
     <link rel="stylesheet" type="text/css" href="idx.css">
 </head>
 
 <body>
-    <div style="text-align: center;">
+    <div style="text-align: left;">
         <canvas id="canvas" width="1200px" height="700px"></canvas>
         <canvas id="canvas_ui" width="350px" height="700px"></canvas>
 
+
+
         <div id="MenuShow">
-            <div type="text" id="Menu">Scotland Yard</div>
-            <div id="StartCtl">
-                <div style="color: white; font: 24px Verdana;">棋子选择</div>
-                <select id="selectChess">
-                    <option value="1">小偷</option>
-                    <option value="2">红绿</option>
-                    <option value="3">蓝黄</option>
-                    <option value="4">紫</option>
-                </select>
-                <br>
-                <br>
-                <button id="reset_btn">重置</button>
-                <br>
-                <br>
-                <button id="ok_btn">加入游戏</button>
-                <br>
-                <br>
-                <button id="start_btn">开始游戏</button>
+            <div id="Help">
+                <button id="Help_Close">关闭</button>
+                <div id="Help_Text">
+                    新闻文本，是指新闻作品或新闻报道的存在形式。广义的新闻文本与广义的新闻足对应的，包括消息文本和通讯文本；狭义仅指消息文本，即纯粹的新闻文本。新闻文本有四个基本特征，文本结构的简单性。结构形式相对单一，结构要素。内在要求缺一不可，易于新闻传播主体、收受主体把握和理解，叙事结构比较简单，大多采用与新闻事实客观结构（时空结构、因果逻辑等）相一致的方式展开。新闻文本，是指新闻作品或新闻报道的存在形式。广义的新闻文本与广义的新闻足对应的，包括消息文本和通讯文本；狭义仅指消息文本，即纯粹的新闻文本。新闻文本有四个基本特征，文本结构的简单性。结构形式相对单一，结构要素。内在要求缺一不可，易于新闻传播主体、收受主体把握和理解，叙事结构比较简单，大多采用与新闻事实客观结构（时空结构、因果逻辑等）相一致的方式展开。新闻文本，是指新闻作品或新闻报道的存在形式。广义的新闻文本与广义的新闻足对应的，包括消息文本和通讯文本；狭义仅指消息文本，即纯粹的新闻文本。新闻文本有四个基本特征，文本结构的简单性。结构形式相对单一，结构要素。内在要求缺一不可，易于新闻传播主体、收受主体把握和理解，叙事结构比较简单，大多采用与新闻事实客观结构（时空结构、因果逻辑等）相一致的方式展开。新闻文本，是指新闻作品或新闻报道的存在形式。广义的新闻文本与广义的新闻足对应的，包括消息文本和通讯文本；狭义仅指消息文本，即纯粹的新闻文本。新闻文本有四个基本特征，文本结构的简单性。结构形式相对单一，结构要素。内在要求缺一不可，易于新闻传播主体、收受主体把握和理解，叙事结构比较简单，大多采用与新闻事实客观结构（时空结构、因果逻辑等）相一致的方式展开。新闻文本，是指新闻作品或新闻报道的存在形式。广义的新闻文本与广义的新闻足对应的，包括消息文本和通讯文本；狭义仅指消息文本，即纯粹的新闻文本。新闻文本有四个基本特征，文本结构的简单性。结构形式相对单一，结构要素。内在要求缺一不可，易于新闻传播主体、收受主体把握和理解，叙事结构比较简单，大多采用与新闻事实客观结构（时空结构、因果逻辑等）相一致的方式展开。
+                </div>
             </div>
+
+
+            <div id="Start">
+                <button id="Start_Close">关闭</button>
+                <div id="Start_UUID" style="position: absolute; margin-top: 5px; margin-left: 5px; font: 12px Verdana;">
+                </div>
+                <div style="margin-top: 30px; font: 26px Verdana;">人数选择</div>
+                <select id="PlayerCntChoose">
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                </select>
+                <div style="margin-top: 30px; font: 26px Verdana;">棋子选择</div>
+                <select id="ChessChoose">
+                    <option value="1">小偷</option>
+                    <option value="2">3</option>
+                    <option value="3">4</option>
+                    <option value="4">5</option>
+                </select>
+                <div style="margin-top: 30px; font: 26px Verdana;">玩家状态</div>
+                <div>
+                    <div class="PlayerState" id="PlS_1"></div>
+                    <div class="PlayerState" id="PlS_2"></div>
+                    <div class="PlayerState" id="PlS_3"></div>
+                    <div class="PlayerState" id="PlS_4"></div>
+                    <div class="PlayerState" id="PlS_5"></div>
+                    <div class="PlayerState" id="PlS_6"></div>
+                </div>
+                <div style="margin-top: 30px; font: 26px Verdana;">控制</div>
+                <button id="BtnReset" class="Menu_Start_Ctl_Btn">重置游戏</button>
+                <div id="BtnReset_S" style="display: inline-block;">
+                </div>
+                <br />
+                <button id="BtnJoin" class="Menu_Start_Ctl_Btn">加入游戏</button>
+                <div id="BtnJoin_S" style="display: inline-block;">
+                </div>
+                <br />
+                <button id="BtnQuit" class="Menu_Start_Ctl_Btn">退出游戏</button>
+                <div id="BtnQuit_S" style="display: inline-block;">
+                </div>
+                <br />
+                <button id="BtnStart" class="Menu_Start_Ctl_Btn">开始游戏</button>
+                <div id="" style="display: inline-block;">
+                </div>
+            </div>
+
+
+            <div type="text" id="Menu">
+                <div style="font: 40px Verdana;">Scotland Yard</div>
+                <div style="font: 10px Verdana; margin-left: 150px;">——v1.1 Upd2022.8.6</div><br />
+
+                <button id="Menu_Start">开始</button><br />
+                <button id="Menu_Help">帮助</button>
+            </div>
+
         </div>
     </div>
 
@@ -38,4 +86,6 @@
 <script src="idx.js" type="module"></script>
 <script src="UICtl.js" type="module"></script>
 <script src="Web.js" type="module"></script>
-<script src="menuui.js" type="module"></script>
+<script src="MenuUI.js" type="module"></script>
+
+</html>
