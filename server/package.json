@@ -2,9 +2,9 @@
     "name": "123",
     "version": "1.0.0",
     "description": "123",
-    "main": "idx.js",
+    "main": "scyard.js",
     "scripts": {
-        "start": "node idx.js"
+        "start": "node scyard.js"
     },
     "type": "module",
     "author": "Author name",

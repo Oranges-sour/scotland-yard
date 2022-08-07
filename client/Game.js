@@ -19,7 +19,7 @@ class Game {
             this.gameData.thiefStepList[i] = 1;
         }
         //玩家能控制的棋
-        this.gameData.selfChessCtl = [1, 2, 3, 4, 5, 6];
+        this.gameData.selfChessCtl = [];
         //剩余的卡牌
         this.gameData.cardsLeft = new Array();
         for (var i = 1; i <= 6; ++i) {
@@ -83,6 +83,17 @@ class Game {
     }
 
     playChess(where) {
+        if(!this.onMyStep()){
+            return;
+        }
+
+
+        //到自己，发送下棋消息
+        web.playChess(where, this.gameData.cardSelect);
+    }
+
+    //是否到自己下棋
+    onMyStep() {
         //检查现在是不是到自己操控的棋子
         var k = -1;
         for (var i = 0; i < this.gameData.selfChessCtl.length; ++i) {
@@ -92,12 +103,19 @@ class Game {
         }
         //不到自己
         if (k == -1) {
-            return;
+            return false;
         }
 
+        return true;
+    }
 
-        //到自己，发送下棋消息
-        web.playChess(where, this.gameData.cardSelect);
+    //是否观战
+    isObserver() {
+        var l = this.gameData.selfChessCtl.length;
+        if (l == 0) {
+            return true;
+        }
+        return false;
     }
 
 }

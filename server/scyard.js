@@ -25,7 +25,7 @@ wss.on("connection", function (ws) {
     });
 });
 
-function resetGame(){
+function resetGame() {
     chessControl.clear();
     for (var i = 1; i <= 6; ++i) {
         chessChooseStatue[i] = false;
@@ -125,29 +125,37 @@ function boardcastStart() {
 }
 
 function processMessgae(ws, obj) {
+    
+
+    if (obj.type === undefined) {
+        return;
+    }
+
+    var type = obj.type;
+
     var r = false;
-    if (obj.type == "regist") {
+    if (type == "regist") {
         r = msg_regist(obj, ws);
     }
-    if (obj.type == "join") {
+    if (type == "join") {
         r = msg_join(obj, ws);
     }
-    if (obj.type == "play") {
+    if (type == "play") {
         r = msg_play(obj);
     }
-    if (obj.type == "reset") {
+    if (type == "reset") {
         r = msg_reset(obj, ws);
     }
-    if (obj.type == "start") {
+    if (type == "start") {
         r = msg_start(obj);
     }
-    if (obj.type == "quit") {
+    if (type == "quit") {
         r = msg_quit(obj, ws);
     }
-    if (obj.type == "heart_beat") {
+    if (type == "heart_beat") {
         r = msg_heardbeat(obj, ws);
     }
-    if (obj.type == "playercnt") {
+    if (type == "playercnt") {
         r = msg_playercnt(obj, ws);
     }
     if (r) {
@@ -160,6 +168,10 @@ function processMessgae(ws, obj) {
 }
 
 function msg_playercnt(obj) {
+    if (obj.cnt === undefined) {
+        return true;
+    }
+
     console.log("-ChangePlayerCnt-" + " Cnt:" + obj.cnt);
     playerCnt = obj.cnt;
 
@@ -173,6 +185,10 @@ function msg_heardbeat(obj, ws) {
 }
 
 function msg_regist(obj, ws) {
+    if (obj.name === undefined) {
+        return true;
+    }
+
 
     //初始化心跳
     heartBeatCnt.set(obj.name, 1);
@@ -181,6 +197,10 @@ function msg_regist(obj, ws) {
 }
 
 function msg_quit(obj, ws) {
+    if (obj.name === undefined) {
+        return true;
+    }
+
     console.log("-Quit-" + " Name:" + obj.name);
     var str = obj.name;
     if (!chessControl.has(str)) {
@@ -208,6 +228,10 @@ function msg_quit(obj, ws) {
 }
 
 function msg_join(obj, ws) {
+    if (obj.name === undefined || obj.controlChess === undefined) {
+        return true;
+    }
+
     console.log("-Join-" + " Name:" + obj.name + " CtlChess:" + obj.controlChess);
     var str = obj.name;
     var ctl = obj.controlChess;
@@ -258,12 +282,18 @@ var card4_goo = new Array();
 
 function msg_play(obj) {
     if (!gameStart) {
-        return;
+        return true;
+    }
+    if (obj.name === undefined || obj.card_type === undefined || obj.where === undefined) {
+        return true;
     }
 
     console.log("-Play- name:" + obj.name + " chessOn:" + chessStepOn + " where:" + obj.where + " cardType:" + obj.card_type);
-
     var str = obj.name;
+    if (!chessControl.has(str)) {
+        console.log("-Failed- Player is not in game.");
+        return true;
+    }
     //检查能不能走 
     var ctl = chessControl.get(str);
     var suc = false;
@@ -274,7 +304,7 @@ function msg_play(obj) {
         }
     }
     if (!suc) {
-        return;
+        return true;
     }
 
     function moveSuccess(type) {

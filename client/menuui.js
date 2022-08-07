@@ -145,9 +145,15 @@ export function updateMenuStatue(obj) {
 
 //游戏重置时被调用
 export function resetUI() {
-    // ele_menu.style.visibility = "visible";
-    // ele_help.style.visibility = "hidden";
-    // ele_start.style.visibility = "hidden";
+    var a = ele_menu.style.visibility;
+    var b = ele_help.style.visibility;
+    var c = ele_start.style.visibility;
+
+    if(a == "hidden" && b == "hidden" && c == "hidden"){
+        ele_menu.style.visibility = "visible";
+        ele_help.style.visibility = "hidden";
+        ele_start.style.visibility = "hidden";
+    }    
 }
 
 function joinGame() {
@@ -160,12 +166,10 @@ function joinGame() {
 }
 
 function startGame() {
-    game.startGame();
     web.startGame();
 }
 
 function resetGame() {
-    game.resetGame();
     web.resetGame();
 }
 

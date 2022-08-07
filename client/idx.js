@@ -352,6 +352,18 @@ function draw_main() {
             ctx.fillText("小偷胜利！", 300, 400);
         }
     }
+
+    //绘制观战提示
+    if (game.isObserver()) {
+        ctx.fillStyle = "rgb(239, 233, 218)";
+        ctx.fillRect(500, 0, 150, 80);
+
+        ctx.fillStyle = "rgb(67, 65, 65)";
+        ctx.font = "40px Verdana";
+
+
+        ctx.fillText("观战中", 510, 50);
+    }
 }
 
 var cardsDeckX = [0, 50, 105, 160, 220, 275];
@@ -371,14 +383,10 @@ function draw_ui() {
         arr[i][1].visit(ctx);
     }
 
-    //显示卡片堆的数量
-    var k = -1;
-    for (var i = 0; i < game.gameData.selfChessCtl.length; ++i) {
-        if (game.gameData.chessStepOn == game.gameData.selfChessCtl[i]) {
-            k = game.gameData.chessStepOn;
-        }
-    }
-    if (k != -1) {
+    //到自己下棋
+    if (game.onMyStep()) {
+        var k = game.gameData.chessStepOn;
+
         for (var i = 1; i <= 5; ++i) {
             ctx.save();
             var x = cardsDeckX[i];
@@ -401,6 +409,35 @@ function draw_ui() {
             ctx.restore();
         }
     }
+
+    //观战位
+    if (game.isObserver()) {
+        //到谁显示谁
+        var k = game.gameData.chessStepOn;
+        for (var i = 1; i <= 5; ++i) {
+            ctx.save();
+            var x = cardsDeckX[i];
+            var y = 240;
+            ctx.translate(x, y);
+
+            ctx.scale(1, 1);
+
+            ctx.fillStyle = "rgb(255,255,255)";
+            ctx.font = "20px Verdana";
+
+            var str;
+            if (game.gameData.cardsLeft[k][i] < 10) {
+                str = "0" + game.gameData.cardsLeft[k][i];
+            } else {
+                str = game.gameData.cardsLeft[k][i];
+            }
+
+            ctx.fillText(str, 0, 0);
+            ctx.restore();
+        }
+    }
+
+
 }
 
 export var sprites_main, sprites_ui, mouseDown, touchStartPos, touchEndPos, anchors, players;

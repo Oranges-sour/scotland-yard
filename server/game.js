@@ -101,6 +101,21 @@ export function checkPoliceWin() {
 
 //走棋
 export function chessMove(id, type, where) {
+    if(typeof(id) != "number" || typeof(type) != "number" || typeof(where) != "number"){
+        return 0;
+    }
+
+    if(id < 1 || id > 6){
+        return 0;
+    }
+    if(type < 1 || type > 5){
+        return 0;
+    }
+    if(where < 1 || where > 199){
+        return 0;
+    }
+
+
     //卡太少，走不了
     if (cardsLeft[id][type] <= 0) {
         return 0;
