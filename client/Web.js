@@ -23,7 +23,7 @@ class Web {
 
     webUpdate() {
         if (!this.connected && !this.onopen) {
-            this.ws = new WebSocket("ws://101.43.196.171:23480");
+            this.ws = new WebSocket("ws://127.0.0.1:23480");
             this.onopen = true;
 
             var that = this;

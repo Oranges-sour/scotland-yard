@@ -109,9 +109,9 @@ export function mapDataUpdate() {
             e.pos.set_p(mapSpriteData.mapPos);
         }
 
+        //设置锚点坐标
         var p0 = new Vec2();
         p0.set(190 / 2, 210 / 2);
-
         for (var i = 1; i <= 199; ++i) {
             var anc = anchors[i];
 
@@ -131,6 +131,7 @@ export function mapDataUpdate() {
             anc.pos.set_p(p2);
         }
 
+        //设置玩家位置
         for (var i = 1; i <= 6; ++i) {
             var k = game.gameData.playerAt[i];
 
@@ -150,7 +151,6 @@ export function mapDataUpdate() {
         game.gameData.gameRound == 13 || game.gameData.gameRound == 18 ||
         game.gameData.gameRound == 24) && game.gameData.chessStepOn >= 2)
         || game.gameData.selfChessCtl.includes(1)) {
-
         players[1].visible = true;
     } else {
         players[1].visible = false;

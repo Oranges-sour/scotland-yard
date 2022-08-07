@@ -262,8 +262,11 @@ function msg_play(obj) {
     }
 
     console.log("-Play- name:" + obj.name + " chessOn:" + chessStepOn + " where:" + obj.where + " cardType:" + obj.card_type);
-
     var str = obj.name;
+    if(!chessControl.has(str)){
+        console.log("-Failed- Player is not in game.");
+        return true;
+    }
     //检查能不能走 
     var ctl = chessControl.get(str);
     var suc = false;
@@ -274,7 +277,7 @@ function msg_play(obj) {
         }
     }
     if (!suc) {
-        return;
+        return true;
     }
 
     function moveSuccess(type) {
