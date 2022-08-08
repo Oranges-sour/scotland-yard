@@ -9,9 +9,9 @@ body {
 
     position: absolute;
 
-    margin-top: 10px;
+    margin-top: 5px;
 
-    margin-left: 10px;
+    margin-left: 2px;
 }
 
 #canvas_ui {
@@ -21,7 +21,7 @@ body {
 
     position: absolute;
 
-    margin-top: 10px;
+    margin-top: 5px;
 
     margin-left: 1210px;
 
@@ -228,7 +228,7 @@ body {
 .Menu_Start_Ctl_Btn {
     margin-top: 10px;
 
-    width: 120px;
+    width: 130px;
     height: 40px;
 
     background-color: rgb(67, 65, 65);
@@ -325,3 +325,23 @@ body {
     border-width: 2px;
 }
 
+#FlowCtl {
+    position: fixed;
+
+    background-color: rgb(239, 233, 218);
+
+    left: 20px;
+    top: 20px;
+
+    width: 80px;
+    height: 80px;
+
+    border-style: solid;
+    border-radius: 2px;
+    border-right: 4px;
+    border-color: rgb(131, 126, 115);
+
+    visibility: hidden;
+
+    z-index: 2;
+}

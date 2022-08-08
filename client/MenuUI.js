@@ -60,6 +60,8 @@ var ele_menu = document.getElementById("Menu");
 var ele_help = document.getElementById("Help");
 var ele_start = document.getElementById("Start");
 
+var ele_flowCtl = document.getElementById("FlowCtl");
+
 document.getElementById("BtnReset").onclick = function () {
     resetGame();
 };
@@ -86,6 +88,24 @@ document.getElementById("Start_Close").onclick = function () {
 };
 
 
+//浮动小窗，设置是否能拖动地图
+//用来防止游戏开始后页面位置改变
+//但在游戏状态下界面被禁止拖动的情况
+var uiCanMoveMap = true;
+document.getElementById("FlowCtl").onclick = function () {
+    if (uiCanMoveMap) {
+        uiCanMoveMap = false;
+    } else {
+        uiCanMoveMap = true;
+    }
+}
+
+//是否可以拖动地图
+export function uiCtlCanMoveMap() {
+    return uiCanMoveMap;
+}
+
+//按钮功能设置成功
 export function btnCtlSuccess(obj) {
     if (obj.type1 == "reset") {
         setCtlStatue("BtnReset_S");
@@ -131,6 +151,12 @@ function menuUpd() {
             ele_playerStatue[i].style.backgroundImage = "none";
         }
     }
+
+    if(uiCanMoveMap){
+        ele_flowCtl.style.backgroundImage = "url(\"src/move_0.png\")";
+    }else{
+        ele_flowCtl.style.backgroundImage = "url(\"src/move_1.png\")";
+    }
 }
 
 setInterval(function () {
@@ -149,11 +175,11 @@ export function resetUI() {
     var b = ele_help.style.visibility;
     var c = ele_start.style.visibility;
 
-    if(a == "hidden" && b == "hidden" && c == "hidden"){
+    if (a == "hidden" && b == "hidden" && c == "hidden") {
         ele_menu.style.visibility = "visible";
         ele_help.style.visibility = "hidden";
         ele_start.style.visibility = "hidden";
-    }    
+    }
 }
 
 function joinGame() {
@@ -182,6 +208,7 @@ export function closeUI() {
     ele_menu.style.visibility = "hidden";
     ele_help.style.visibility = "hidden";
     ele_start.style.visibility = "hidden";
+    ele_flowCtl.style.visibility = "visible";
 }
 
 function onMenuStart() {

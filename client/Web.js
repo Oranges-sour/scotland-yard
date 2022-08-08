@@ -2,7 +2,6 @@
 import {
     game
 } from "./Game.js";
-import { touchStartPos } from "./idx.js";
 
 import { resetUI, closeUI, updateMenuStatue, btnCtlSuccess } from "./MenuUI.js";
  
@@ -23,7 +22,7 @@ class Web {
 
     webUpdate() {
         if (!this.connected && !this.onopen) {
-            this.ws = new WebSocket("ws://127.0.0.1:23480");
+            this.ws = new WebSocket("ws://192.168.1.109:23480");
             this.onopen = true;
 
             var that = this;

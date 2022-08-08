@@ -10,7 +10,9 @@ import { initUI, uiUpdate, updateUIOnMouseUp } from "./UICtl.js";
 
 import { web } from "./Web.js";
 
-import { game } from "./Game.js"
+import { game } from "./Game.js";
+
+import { uiCtlCanMoveMap } from "./MenuUI.js";
 
 var sprites_main = new Map();
 var sprites_ui = new Map();
@@ -35,6 +37,7 @@ touchData.time0 = 0, touchData.time1 = 0, touchData.cnt = 1;
 touchData.startTowSpot = true;
 touchData.dist = 0;
 
+
 if (/ipad|iphone|midp|rv:1.2.3.4|ucweb|android|windows ce|windows mobile/.test(touchData.sUserAgent)) {
     console.log("phone");
     window.ontouchstart = function (e) {
@@ -42,6 +45,9 @@ if (/ipad|iphone|midp|rv:1.2.3.4|ucweb|android|windows ce|windows mobile/.test(t
         touchdown(e.pageX, e.pageY);
     }
     window.addEventListener("touchmove", function (e) {
+        if(uiCtlCanMoveMap()){
+            return;
+        }
         if (game.isGameStart()) {
             e.preventDefault();
         }
@@ -69,9 +75,12 @@ if (/ipad|iphone|midp|rv:1.2.3.4|ucweb|android|windows ce|windows mobile/.test(t
     }, { passive: false });
 
     window.addEventListener("touchend", function (e) {
-        if (game.isGameStart()) {
-            e.preventDefault();
-        }
+        // if(uiCtlCanMoveMap()){
+        //     return;
+        // }
+        // if (game.isGameStart()) {
+        //     e.preventDefault();
+        // }
 
         if (touchData.startTowSpot) {
             var ee = e.changedTouches[0];

@@ -7,6 +7,8 @@ import { game } from "./Game.js";
 import Sprite from "./Sprite.js";
 import Vec2 from "./Vec2.js";
 
+import { mapLocateNowChessOn } from "./GameMap.js";
+
 export function initUI() {
     var bk = new Sprite("src/play_ui.png");
     sprites_ui.set("play_ui", bk);
@@ -46,7 +48,7 @@ export function uiUpdate() {
             var kx = parseInt(i / 8);
             var ky = parseInt(i % 8);
 
-            var x = kx * 73 + 80;
+            var x = kx * 73 + 124;
             var y = ky * 42 + 320;
 
             e.pos.set(x, y);
@@ -70,6 +72,12 @@ export function updateUIOnMouseUp(p) {
             if (inside(pos, lrp, 55, 30)) {
                 game.setCardSelect(i);
             }
+        }
+
+        var lrp = new Vec2();
+        lrp.set(17, 310);
+        if (inside(pos, lrp, 80, 80)) {
+            mapLocateNowChessOn();
         }
     }
 }

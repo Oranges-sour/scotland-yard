@@ -173,3 +173,25 @@ export function dragMoveMapOnMove(p) {
         }
     }
 }
+
+//地图定位现在的棋子
+export function mapLocateNowChessOn() {
+    function locate() {
+        var p0 = mapSpriteData.mapPos.copy();
+        var p1 = players[game.gameData.chessStepOn].pos.copy();
+
+        var p2 = p0.add(p1.negtive());
+        p2.x += 600;
+        p2.y += 350;
+        mapSpriteData.mapPos.set_p(p2);
+    }
+    //控制的是小偷，那随意定位，如果不是小偷，则不能定位小偷
+    if (game.gameData.selfChessCtl.includes(1)) {
+        locate();
+    } else {
+        //现在不是1号（小偷）下棋，这样就不会定位到1号点
+        if (game.gameData.chessStepOn != 1) {
+            locate();
+        }
+    }
+}
