@@ -325,3 +325,18 @@ body {
     border-width: 2px;
 }
 
+#FlowCtl {
+    position: fixed;
+
+    background-color: aliceblue;
+
+    left: 20px;
+    top: 20px;
+
+    width: 80px;
+    height: 80px;
+
+    border-radius: 5px;
+
+    z-index: 2;
+}

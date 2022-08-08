@@ -10,7 +10,9 @@ import { initUI, uiUpdate, updateUIOnMouseUp } from "./UICtl.js";
 
 import { web } from "./Web.js";
 
-import { game } from "./Game.js"
+import { game } from "./Game.js";
+
+import { uiCtlCanMoveMap } from "./MenuUI.js";
 
 var sprites_main = new Map();
 var sprites_ui = new Map();
