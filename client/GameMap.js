@@ -1,6 +1,6 @@
 import Vec2 from "./Vec2.js";
 import Sprite from "./Sprite.js";
-import { sprites_main, anchors, mouseDown, touchStartPos, players, insideCanvas } from "./idx.js";
+import { sprites_main, anchors, mouseDown, touchStartPos, players, insideCanvas, renderData } from "./idx.js";
 import { imgPool } from "./ImagePool.js"
 import { game } from "./Game.js";
 
@@ -57,13 +57,13 @@ export function mapDataUpdate() {
     var w = e.width();
     var h = e.height();
     //左侧
-    mapSpriteData.mapPos.x = Math.min(mapSpriteData.mapPos.x, 600);
+    mapSpriteData.mapPos.x = Math.min(mapSpriteData.mapPos.x, renderData.width / 2);
     //右侧
-    mapSpriteData.mapPos.x = Math.max(mapSpriteData.mapPos.x, -w + 600);
+    mapSpriteData.mapPos.x = Math.max(mapSpriteData.mapPos.x, -w + renderData.width / 2);
     //上侧
-    mapSpriteData.mapPos.y = Math.min(mapSpriteData.mapPos.y, 350);
+    mapSpriteData.mapPos.y = Math.min(mapSpriteData.mapPos.y, renderData.height / 2);
     //下侧
-    mapSpriteData.mapPos.y = Math.max(mapSpriteData.mapPos.y, -h + 350);
+    mapSpriteData.mapPos.y = Math.max(mapSpriteData.mapPos.y, -h + renderData.height / 2);
 
     //计算地图移动
     {
@@ -181,8 +181,8 @@ export function mapLocateNowChessOn() {
         var p1 = players[game.gameData.chessStepOn].pos.copy();
 
         var p2 = p0.add(p1.negtive());
-        p2.x += 600;
-        p2.y += 350;
+        p2.x += renderData.width / 2;
+        p2.y += renderData.height / 2;
         mapSpriteData.mapPos.set_p(p2);
     }
     //控制的是小偷，那随意定位，如果不是小偷，则不能定位小偷
