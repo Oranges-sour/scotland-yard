@@ -134,6 +134,8 @@ function clearCtlStatue(ele_str) {
 
 
 function menuUpd() {
+    ele_menu.style.left = window.innerWidth / 2 - ele_menu.offsetWidth / 2 + "px";
+
     ele_uuid.innerHTML = "UUID: " + web.userName;
 
     var playerCnt = ele_PlayerCntChoose.value;
@@ -152,9 +154,9 @@ function menuUpd() {
         }
     }
 
-    if(uiCanMoveMap){
+    if (uiCanMoveMap) {
         ele_flowCtl.style.backgroundImage = "url(\"src/move_0.png\")";
-    }else{
+    } else {
         ele_flowCtl.style.backgroundImage = "url(\"src/move_1.png\")";
     }
 }

@@ -14,6 +14,9 @@ import { game } from "./Game.js";
 
 import { uiCtlCanMoveMap } from "./MenuUI.js";
 
+var ele_canvas = document.getElementById("canvas");
+var ele_canvas_ui = document.getElementById("canvas_ui");
+
 var sprites_main = new Map();
 var sprites_ui = new Map();
 
@@ -27,6 +30,11 @@ var touchEndPos = new Vec2();
 var mouseDown = false;
 
 
+var renderData = new Object();
+renderData.width = 1000;
+renderData.height = 700;
+
+
 window.onload = function () {
     init();
 }
@@ -37,7 +45,6 @@ touchData.time0 = 0, touchData.time1 = 0, touchData.cnt = 1;
 touchData.startTowSpot = true;
 touchData.dist = 0;
 
-
 if (/ipad|iphone|midp|rv:1.2.3.4|ucweb|android|windows ce|windows mobile/.test(touchData.sUserAgent)) {
     console.log("phone");
     window.ontouchstart = function (e) {
@@ -45,7 +52,7 @@ if (/ipad|iphone|midp|rv:1.2.3.4|ucweb|android|windows ce|windows mobile/.test(t
         touchdown(e.pageX, e.pageY);
     }
     window.addEventListener("touchmove", function (e) {
-        if(uiCtlCanMoveMap()){
+        if (uiCtlCanMoveMap()) {
             return;
         }
         if (game.isGameStart()) {
@@ -75,13 +82,6 @@ if (/ipad|iphone|midp|rv:1.2.3.4|ucweb|android|windows ce|windows mobile/.test(t
     }, { passive: false });
 
     window.addEventListener("touchend", function (e) {
-        // if(uiCtlCanMoveMap()){
-        //     return;
-        // }
-        // if (game.isGameStart()) {
-        //     e.preventDefault();
-        // }
-
         if (touchData.startTowSpot) {
             var ee = e.changedTouches[0];
 
@@ -146,9 +146,8 @@ export function inside(pos, lrp, w, h) {
 }
 
 export function convertInCanvas(pos) {
-    var canvas = document.getElementById("canvas");
-    var left = canvas.offsetLeft;
-    var top = canvas.offsetTop;
+    var left = ele_canvas.offsetLeft;
+    var top = ele_canvas.offsetTop;
 
     var ans = new Vec2();
     ans.x = pos.x - left;
@@ -158,9 +157,8 @@ export function convertInCanvas(pos) {
 }
 
 export function convertInUICanvas(pos) {
-    var canvas = document.getElementById("canvas_ui");
-    var left = canvas.offsetLeft;
-    var top = canvas.offsetTop;
+    var left = ele_canvas_ui.offsetLeft;
+    var top = ele_canvas_ui.offsetTop;
 
     var ans = new Vec2();
     ans.x = pos.x - left;
@@ -170,12 +168,11 @@ export function convertInUICanvas(pos) {
 }
 
 export function insideCanvas(pos) {
-    var canvas = document.getElementById("canvas");
 
-    var w = canvas.offsetWidth;
-    var h = canvas.offsetHeight;
-    var left = canvas.offsetLeft;
-    var top = canvas.offsetTop;
+    var w = ele_canvas.offsetWidth;
+    var h = ele_canvas.offsetHeight;
+    var left = ele_canvas.offsetLeft;
+    var top = ele_canvas.offsetTop;
 
     var p = new Vec2();
     p.set(left, top);
@@ -183,12 +180,11 @@ export function insideCanvas(pos) {
 }
 
 export function insideUICanvas(pos) {
-    var canvas = document.getElementById("canvas_ui");
 
-    var w = canvas.offsetWidth;
-    var h = canvas.offsetHeight;
-    var left = canvas.offsetLeft;
-    var top = canvas.offsetTop;
+    var w = ele_canvas_ui.offsetWidth;
+    var h = ele_canvas_ui.offsetHeight;
+    var left = ele_canvas_ui.offsetLeft;
+    var top = ele_canvas_ui.offsetTop;
 
     var p = new Vec2();
     p.set(left, top);
@@ -215,6 +211,18 @@ function init() {
 }
 
 function main_update() {
+    renderData.width = window.innerWidth - ele_canvas_ui.offsetWidth - 50;
+
+    ele_canvas_ui.style.left = renderData.width + 30 + "px";
+    // console.log(touchData.touchCnt);
+    // if (touchData.touchCnt == 0) {
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    // }
+
+
+    ele_canvas.width = renderData.width;
+    ele_canvas.height = renderData.height;
+
     draw_main();
     draw_ui();
     mapDataUpdate();
@@ -331,11 +339,10 @@ function playChessOnDblClick(p) {
 
 
 function draw_main() {
-    var canvas = document.getElementById("canvas");
-    var ctx = canvas.getContext("2d");
+    var ctx = ele_canvas.getContext("2d");
 
     ctx.fillStyle = "rgb(64, 61, 52)";
-    ctx.fillRect(0, 0, 1200, 700);
+    ctx.fillRect(0, 0, renderData.width, renderData.height);
 
     var arr = Array.from(sprites_main);
     arr.sort(function (a, b) {
@@ -365,21 +372,22 @@ function draw_main() {
     //绘制观战提示
     if (game.isObserver()) {
         ctx.fillStyle = "rgb(239, 233, 218)";
-        ctx.fillRect(500, 0, 150, 80);
+        const w = 150;
+        const h = 80;
+        ctx.fillRect(renderData.width / 2 - w / 2, 0, w, h);
 
         ctx.fillStyle = "rgb(67, 65, 65)";
         ctx.font = "40px Verdana";
 
 
-        ctx.fillText("观战中", 510, 50);
+        ctx.fillText("观战中", renderData.width / 2 - w / 2, 50);
     }
 }
 
 var cardsDeckX = [0, 50, 105, 160, 220, 275];
 
 function draw_ui() {
-    var canvas = document.getElementById("canvas_ui");
-    var ctx = canvas.getContext("2d");
+    var ctx = ele_canvas_ui.getContext("2d");
 
     ctx.fillRect(0, 0, 350, 700);
 
@@ -449,4 +457,4 @@ function draw_ui() {
 
 }
 
-export var sprites_main, sprites_ui, mouseDown, touchStartPos, touchEndPos, anchors, players;
+export var sprites_main, sprites_ui, mouseDown, touchStartPos, touchEndPos, anchors, players, renderData;
