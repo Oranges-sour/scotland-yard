@@ -92,7 +92,7 @@ document.getElementById("Start_Close").onclick = function () {
 //用来防止游戏开始后页面位置改变
 //但在游戏状态下界面被禁止拖动的情况
 var uiCanMoveMap = true;
-ele_flowCtl.onclick = function () {
+document.getElementById("FlowCtl").onclick = function () {
     if (uiCanMoveMap) {
         uiCanMoveMap = false;
     } else {
@@ -208,6 +208,7 @@ export function closeUI() {
     ele_menu.style.visibility = "hidden";
     ele_help.style.visibility = "hidden";
     ele_start.style.visibility = "hidden";
+    ele_flowCtl.style.visibility = "visible";
 }
 
 function onMenuStart() {
