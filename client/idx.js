@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 import Sprite from "./Sprite.js"
 import Vec2 from "./Vec2.js";
 
