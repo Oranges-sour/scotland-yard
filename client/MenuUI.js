@@ -134,7 +134,11 @@ function clearCtlStatue(ele_str) {
 
 
 function menuUpd() {
+    //使界面始终在中央
     ele_menu.style.left = window.innerWidth / 2 - ele_menu.offsetWidth / 2 + "px";
+    ele_start.style.left = window.innerWidth / 2 - ele_start.offsetWidth / 2 + "px";
+    ele_help.style.left = window.innerWidth / 2 - ele_help.offsetWidth / 2 + "px";
+    ///
 
     ele_uuid.innerHTML = "UUID: " + web.userName;
 
