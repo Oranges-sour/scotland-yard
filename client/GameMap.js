@@ -136,13 +136,13 @@ export function mapDataUpdate() {
         //设置玩家位置
         for (var i = 1; i <= 6; ++i) {
             var k = game.gameData.playerAt[i];
-
+            
             var anc = anchors[k];
 
             var p1 = new Vec2();
             p1.set_p(anc.pos);
-            p1.x += 10 * anc.scale;
-            p1.y -= 150 * anc.scale;
+            p1.x += -50 * anc.scale;
+            p1.y += -200 * anc.scale;
             players[i].pos.set_p(p1);
             players[i].scale = anc.scale + 1.2 * anc.scale;
         }
