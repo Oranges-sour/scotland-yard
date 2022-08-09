@@ -83,7 +83,7 @@ export function mapDataUpdate() {
     //检查缩放
     {
         var centerPos = new Vec2();
-        centerPos.set(600, 350);
+        centerPos.set(renderData.width / 2, renderData.height / 2);
 
         var deltaSc = mapSpriteData.scale - e.scale;
         var abs_deltaSc = Math.abs(deltaSc);
@@ -111,11 +111,13 @@ export function mapDataUpdate() {
 
         //设置锚点坐标
         var p0 = new Vec2();
-        p0.set(190 / 2, 210 / 2);
+        //锚点的宽高
+        const aw = 190, ah = 210;
+        p0.set(aw / 2, ah / 2);
         for (var i = 1; i <= 199; ++i) {
             var anc = anchors[i];
 
-            p0.set(190 / 2, 210 / 2);
+            p0.set(aw / 2, ah / 2);
 
             if (!anc.mouseon) {
                 anc.scale = Math.max(e.scale, 0.2);
@@ -134,22 +136,23 @@ export function mapDataUpdate() {
         //设置玩家位置
         for (var i = 1; i <= 6; ++i) {
             var k = game.gameData.playerAt[i];
-
+            
             var anc = anchors[k];
 
             var p1 = new Vec2();
             p1.set_p(anc.pos);
-            p1.x += 10 * anc.scale;
-            p1.y -= 150 * anc.scale;
+            p1.x += -50 * anc.scale;
+            p1.y += -200 * anc.scale;
             players[i].pos.set_p(p1);
             players[i].scale = anc.scale + 1.2 * anc.scale;
         }
     }
 
+    //小偷显示的轮
+    const thiefShowRound = [3, 8, 13, 18, 24];
+
     //小偷是否显示
-    if (((game.gameData.gameRound == 3 || game.gameData.gameRound == 8 ||
-        game.gameData.gameRound == 13 || game.gameData.gameRound == 18 ||
-        game.gameData.gameRound == 24) && game.gameData.chessStepOn >= 2)
+    if ((thiefShowRound.includes(game.gameData.gameRound) && game.gameData.chessStepOn >= 2)
         || game.gameData.selfChessCtl.includes(1)) {
         players[1].visible = true;
     } else {
@@ -185,11 +188,11 @@ export function mapLocateNowChessOn() {
         p2.y += renderData.height / 2;
         mapSpriteData.mapPos.set_p(p2);
     }
-    //控制的是小偷，那随意定位，如果不是小偷，则不能定位小偷
+    //控制的是小偷，那随意定位，如果不是小偷，则不能在小偷不显示的时候定位小偷
     if (game.gameData.selfChessCtl.includes(1)) {
         locate();
     } else {
-        //现在不是1号（小偷）下棋，这样就不会定位到1号点
+        //现在不是1号（小偷）下棋,随意定位
         if (game.gameData.chessStepOn != 1) {
             locate();
         }

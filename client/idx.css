@@ -54,7 +54,6 @@ body {
     height: 600px;
 
     margin-top: 30px;
-    margin-left: 580px;
 
     font: 18px Verdana;
 
@@ -113,7 +112,6 @@ body {
     height: 600px;
 
     margin-top: 30px;
-    margin-left: 580px;
 
     font: 18px Verdana;
 
@@ -277,7 +275,7 @@ body {
 
 #PlS_1 {
     background-image: url("src/ok.png");
-    background-color: rgb(97, 97, 97);
+    background-color: rgb(32, 171, 179);
 }
 
 #PlS_2 {
