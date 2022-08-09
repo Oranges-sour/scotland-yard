@@ -83,7 +83,7 @@ export function mapDataUpdate() {
     //检查缩放
     {
         var centerPos = new Vec2();
-        centerPos.set(600, 350);
+        centerPos.set(renderData.width / 2, renderData.height / 2);
 
         var deltaSc = mapSpriteData.scale - e.scale;
         var abs_deltaSc = Math.abs(deltaSc);
