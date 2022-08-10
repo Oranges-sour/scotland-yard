@@ -1,5 +1,5 @@
 'use strict';
-import Sprite from "./Sprite.js"
+import { Sprite, SpriteRect } from "./Sprite.js"
 import Vec2 from "./Vec2.js";
 
 
@@ -44,8 +44,10 @@ touchData.sUserAgent = navigator.userAgent.toLowerCase();
 touchData.time0 = 0, touchData.time1 = 0, touchData.cnt = 1;
 touchData.startTowSpot = true;
 touchData.dist = 0;
+var isDevicePC = true;
 
 if (/ipad|iphone|midp|rv:1.2.3.4|ucweb|android|windows ce|windows mobile/.test(touchData.sUserAgent)) {
+    isDevicePC = false;
     console.log("phone");
     window.ontouchstart = function (e) {
         var e = e.touches[0];
@@ -192,7 +194,6 @@ export function insideUICanvas(pos) {
 }
 
 function init() {
-    web.init();
 
     initUI();
 
@@ -200,6 +201,7 @@ function init() {
 
     anchorInit();
 
+    //初始化棋子
     for (var i = 1; i <= 6; ++i) {
         var str = "src/chess_" + i + ".png"
         var sp = new Sprite(str);
@@ -207,21 +209,79 @@ function init() {
         players[i] = sp;
     }
 
-    setInterval(main_update, 16);
+    //初始化胜利与失败显示
+    var vic = new Sprite("src/victory.png");
+    vic.visible = false;
+    vic.z_order = 3;
+    var def = new Sprite("src/defeat.png");
+    def.visible = false;
+    def.z_order = 3;
+    //胜利失败显示下面的一个黑色覆盖
+    var blackBk = new SpriteRect(0, 0, 0, 0);
+    blackBk.visible = false;
+    blackBk.z_order = 2;
+    blackBk.setRGBA("rgba(0, 0, 0, 0.6)");
+
+    sprites_main.set("victory", vic);
+    sprites_main.set("defeat", def);
+    sprites_main.set("blackBk", blackBk);
+
+    web.init();
+
+    setInterval(main_update, 15);
 }
 
 function main_update() {
-    renderData.width = window.innerWidth - ele_canvas_ui.offsetWidth - 50;
-
+    renderData.width = Math.max(1, window.innerWidth - ele_canvas_ui.offsetWidth - 50);
     ele_canvas_ui.style.left = renderData.width + 30 + "px";
-    // console.log(touchData.touchCnt);
-    // if (touchData.touchCnt == 0) {
+
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
-    // }
 
 
     ele_canvas.width = renderData.width;
     ele_canvas.height = renderData.height;
+
+    //设置胜利与失败显示位置
+    var vic = sprites_main.get("victory");
+    vic.pos.x = renderData.width / 2 - vic.width() / 2;
+    vic.pos.y = renderData.height / 2 - vic.height() / 2;
+
+    var def = sprites_main.get("defeat");
+    def.pos.x = renderData.width / 2 - def.width() / 2;
+    def.pos.y = renderData.height / 2 - def.height() / 2;
+
+    var blackBk = sprites_main.get("blackBk");
+    blackBk.w = renderData.width;
+    blackBk.h = renderData.height;
+
+    //绘制游戏胜利显示
+    if (game.gameData.gameWin != 0) {
+        blackBk.visible = true;
+        if (game.gameData.gameWin == 1) {
+
+            //警察赢，自己是警察
+            if (!game.gameData.selfChessCtl.includes(1)) {
+                vic.visible = true;
+            } else {
+                //警察赢，自己是小偷
+                def.visible = true;
+            }
+        }
+        if (game.gameData.gameWin == 2) {
+
+            //小偷赢，自己是小偷
+            if (game.gameData.selfChessCtl.includes(1)) {
+                vic.visible = true;
+            } else {
+                //小偷赢，自己是警察
+                def.visible = true;
+            }
+        }
+    } else {
+        vic.visible = false;
+        def.visible = false;
+        blackBk.visible = false;
+    }
 
     draw_main();
     draw_ui();
@@ -353,24 +413,8 @@ function draw_main() {
         arr[i][1].visit(ctx);
     }
 
-    //绘制游戏胜利显示
-    if (game.gameData.gameWin != 0) {
-        ctx.fillStyle = "rgb(40, 40, 40)";
-        ctx.fillRect(300, 200, 600, 300);
-
-        ctx.fillStyle = "rgb(255,255,255)";
-        ctx.font = "100px Verdana";
-
-        if (game.gameData.gameWin == 1) {
-            ctx.fillText("警察胜利！", 300, 400);
-        }
-        if (game.gameData.gameWin == 2) {
-            ctx.fillText("小偷胜利！", 300, 400);
-        }
-    }
-
     //绘制观战提示
-    if (game.isObserver()) {
+    if (game.isObserver() && game.isGameStart()) {
         ctx.fillStyle = "rgb(239, 233, 218)";
         const w = 150;
         const h = 80;
@@ -382,6 +426,50 @@ function draw_main() {
 
         ctx.fillText("观战中", renderData.width / 2 - w / 2, 50);
     }
+
+    //显示游戏时间
+    if (game.isGameStart()) {
+        const w = 150;
+        const h = 50;
+        ctx.fillStyle = "rgb(239, 233, 218)";
+        ctx.fillRect(renderData.width - w, 0, w, h);
+
+
+
+        var str = "_1_:_2_";
+        var str1 = ":_3_";
+        var t = game.getGameElapsedTime();
+
+        //1 时钟
+        var t1 = "" + parseInt(t / 3600);
+        if (t1 < 10) {
+            t1 = "0" + t1;
+        }
+        //2 分钟
+        var t2 = "" + parseInt((t % 3600) / 60);
+        if (t2 < 10) {
+            t2 = "0" + t2;
+        }
+
+        str = str.replace(/_1_/, t1);
+        str = str.replace(/_2_/, t2);
+
+        //3 秒钟
+        var t3 = "" + parseInt(t % 60);
+        if (t3 < 10) {
+            t3 = "0" + t3;
+        }
+        str1 = str1.replace(/_3_/, t3);
+
+
+
+        ctx.fillStyle = "rgb(67, 65, 65)";
+        ctx.font = "36px Verdana";
+        ctx.fillText(str, renderData.width - w, 40);
+        ctx.font = "20px Verdana";
+        ctx.fillText(str1, renderData.width - w + 110, 40);
+    }
+
 }
 
 var cardsDeckX = [0, 50, 105, 160, 220, 275];
@@ -457,4 +545,4 @@ function draw_ui() {
 
 }
 
-export var sprites_main, sprites_ui, mouseDown, touchStartPos, touchEndPos, anchors, players, renderData;
+export var sprites_main, sprites_ui, mouseDown, touchStartPos, touchEndPos, anchors, players, renderData, isDevicePC;

@@ -4,7 +4,7 @@ import {
 } from "./idx.js";
 import { game } from "./Game.js";
 
-import Sprite from "./Sprite.js";
+import { Sprite } from "./Sprite.js";
 import Vec2 from "./Vec2.js";
 
 import { mapLocateNowChessOn } from "./GameMap.js";

@@ -1,4 +1,4 @@
-import Sprite from "./Sprite.js";
+import { Sprite } from "./Sprite.js";
 import Vec2 from "./Vec2.js";
 
 
@@ -48,6 +48,7 @@ export class Anchor {
 
         canvas.scale(this.scale, this.scale);
 
+        canvas.fillStyle = "rgb(10, 10, 10)";
         canvas.font = "80px Verdana";
 
         canvas.fillText(this.outstr, 20, 140);

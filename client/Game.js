@@ -36,6 +36,9 @@ class Game {
 
         //游戏胜利，0:还在继续，1：警察赢，2：小偷赢
         this.gameData.gameWin = 0;
+
+        //游戏开始时的系统时间
+        this.gameData.gameStartTime = 0;
     }
 
     isGameStart() {
@@ -56,6 +59,7 @@ class Game {
     }
 
     startGame() {
+        this.gameData.gameStartTime = new Date().getTime();
         this.gameData.gameStart = true;
         this.gameData.gameWin = 0;
     }
@@ -65,12 +69,10 @@ class Game {
     }
 
     gamePoliceWin() {
-        this.gameData.gameStart = false;
         this.gameData.gameWin = 1;
     }
 
     gameThiefWin() {
-        this.gameData.gameStart = false;
         this.gameData.gameWin = 2;
     }
 
@@ -82,8 +84,17 @@ class Game {
         this.gameData.gameRound = obj.gameRound;
     }
 
+    //获得游戏开始到现在经过的时间（秒）
+    getGameElapsedTime() {
+        if (!this.gameData.gameStart) {
+            return 0;
+        }
+        var t1 = new Date().getTime();
+        return (t1 - this.gameData.gameStartTime) / 1000;
+    }
+
     playChess(where) {
-        if(!this.onMyStep()){
+        if (!this.onMyStep()) {
             return;
         }
 
