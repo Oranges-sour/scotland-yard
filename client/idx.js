@@ -220,11 +220,11 @@ function init() {
 
     web.init();
 
-    setInterval(main_update, 32);
+    setInterval(main_update, 15);
 }
 
 function main_update() {
-    renderData.width = window.innerWidth - ele_canvas_ui.offsetWidth - 50;
+    renderData.width = Math.max(1, window.innerWidth - ele_canvas_ui.offsetWidth - 50);
     ele_canvas_ui.style.left = renderData.width + 30 + "px";
 
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
@@ -386,7 +386,7 @@ function draw_main() {
     }
 
     //绘制观战提示
-    if (game.isObserver()) {
+    if (game.isObserver() && game.isGameStart()) {
         ctx.fillStyle = "rgb(239, 233, 218)";
         const w = 150;
         const h = 80;
@@ -398,6 +398,50 @@ function draw_main() {
 
         ctx.fillText("观战中", renderData.width / 2 - w / 2, 50);
     }
+
+    //显示游戏时间
+    if (game.isGameStart()) {
+        const w = 150;
+        const h = 50;
+        ctx.fillStyle = "rgb(239, 233, 218)";
+        ctx.fillRect(renderData.width - w, 0, w, h);
+
+
+
+        var str = "_1_:_2_";
+        var str1 = ":_3_";
+        var t = game.getGameElapsedTime();
+
+        //1 时钟
+        var t1 = "" + parseInt(t / 3600);
+        if (t1 < 10) {
+            t1 = "0" + t1;
+        }
+        //2 分钟
+        var t2 = "" + parseInt((t % 3600) / 60);
+        if (t2 < 10) {
+            t2 = "0" + t2;
+        }
+
+        str = str.replace(/_1_/, t1);
+        str = str.replace(/_2_/, t2);
+
+        //3 秒钟
+        var t3 = "" + parseInt(t % 60);
+        if (t3 < 10) {
+            t3 = "0" + t3;
+        }
+        str1 = str1.replace(/_3_/, t3);
+
+
+
+        ctx.fillStyle = "rgb(67, 65, 65)";
+        ctx.font = "36px Verdana";
+        ctx.fillText(str, renderData.width - w, 40);
+        ctx.font = "20px Verdana";
+        ctx.fillText(str1, renderData.width - w + 110, 40);
+    }
+
 }
 
 var cardsDeckX = [0, 50, 105, 160, 220, 275];

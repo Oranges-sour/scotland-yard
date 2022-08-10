@@ -125,7 +125,7 @@ function boardcastStart() {
 }
 
 function processMessgae(ws, obj) {
-    
+
 
     if (obj.type === undefined) {
         return;
