@@ -44,8 +44,10 @@ touchData.sUserAgent = navigator.userAgent.toLowerCase();
 touchData.time0 = 0, touchData.time1 = 0, touchData.cnt = 1;
 touchData.startTowSpot = true;
 touchData.dist = 0;
+var isDevicePC = true;
 
 if (/ipad|iphone|midp|rv:1.2.3.4|ucweb|android|windows ce|windows mobile/.test(touchData.sUserAgent)) {
+    isDevicePC = false;
     console.log("phone");
     window.ontouchstart = function (e) {
         var e = e.touches[0];
@@ -457,4 +459,4 @@ function draw_ui() {
 
 }
 
-export var sprites_main, sprites_ui, mouseDown, touchStartPos, touchEndPos, anchors, players, renderData;
+export var sprites_main, sprites_ui, mouseDown, touchStartPos, touchEndPos, anchors, players, renderData, isDevicePC;

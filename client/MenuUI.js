@@ -1,5 +1,6 @@
 import { web } from "./Web.js";
 import { game } from "./Game.js";
+import { isDevicePC } from "./idx.js";
 
 const chessChooseInnerHtml = [
     "", "",
@@ -214,7 +215,9 @@ export function closeUI() {
     ele_menu.style.visibility = "hidden";
     ele_help.style.visibility = "hidden";
     ele_start.style.visibility = "hidden";
-    ele_flowCtl.style.visibility = "visible";
+    if (!isDevicePC) {
+        ele_flowCtl.style.visibility = "visible";
+    }
 }
 
 function onMenuStart() {
