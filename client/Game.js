@@ -65,12 +65,10 @@ class Game {
     }
 
     gamePoliceWin() {
-        this.gameData.gameStart = false;
         this.gameData.gameWin = 1;
     }
 
     gameThiefWin() {
-        this.gameData.gameStart = false;
         this.gameData.gameWin = 2;
     }
 
