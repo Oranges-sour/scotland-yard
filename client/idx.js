@@ -194,7 +194,6 @@ export function insideUICanvas(pos) {
 }
 
 function init() {
-    web.init();
 
     initUI();
 
@@ -202,6 +201,7 @@ function init() {
 
     anchorInit();
 
+    //初始化棋子
     for (var i = 1; i <= 6; ++i) {
         var str = "src/chess_" + i + ".png"
         var sp = new Sprite(str);
@@ -209,21 +209,51 @@ function init() {
         players[i] = sp;
     }
 
-    setInterval(main_update, 16);
+    //初始化胜利与失败显示
+    var vic = new Sprite("src/victory.png");
+    vic.visible = false;
+    var def = new Sprite("src/defeat.png");
+    def.visible = false;
+
+    sprites_main.set("victory", vic);
+    sprites_main.set("defeat", def);
+
+    web.init();
+
+    setInterval(main_update, 32);
 }
 
 function main_update() {
     renderData.width = window.innerWidth - ele_canvas_ui.offsetWidth - 50;
-
     ele_canvas_ui.style.left = renderData.width + 30 + "px";
-    // console.log(touchData.touchCnt);
-    // if (touchData.touchCnt == 0) {
+
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
-    // }
 
 
     ele_canvas.width = renderData.width;
     ele_canvas.height = renderData.height;
+
+    //设置胜利与失败显示位置
+    var vic = sprites_main.get("victory");
+    vic.pos.x = renderData.width / 2 - vic.width() / 2;
+    vic.pos.y = renderData.height / 2 - vic.height() / 2;
+
+    var def = sprites_main.get("defeat");
+    def.pos.x = renderData.width / 2 - def.width() / 2;
+    def.pos.y = renderData.height / 2 - def.height() / 2;
+
+    //绘制游戏胜利显示
+    if (game.gameData.gameWin != 0) {
+        if (game.gameData.gameWin == 1 && !game.gameData.selfChessCtl.includes(1)) {
+            vic.visible = true;
+        }
+        if (game.gameData.gameWin == 2 && game.gameData.selfChessCtl.includes(1)) {
+            def.visible = true;
+        }
+    } else {
+        vic.visible = false;
+        def.visible = false;
+    }
 
     draw_main();
     draw_ui();
@@ -353,22 +383,6 @@ function draw_main() {
 
     for (var i = 0; i < arr.length; ++i) {
         arr[i][1].visit(ctx);
-    }
-
-    //绘制游戏胜利显示
-    if (game.gameData.gameWin != 0) {
-        ctx.fillStyle = "rgb(40, 40, 40)";
-        ctx.fillRect(300, 200, 600, 300);
-
-        ctx.fillStyle = "rgb(255,255,255)";
-        ctx.font = "100px Verdana";
-
-        if (game.gameData.gameWin == 1) {
-            ctx.fillText("警察胜利！", 300, 400);
-        }
-        if (game.gameData.gameWin == 2) {
-            ctx.fillText("小偷胜利！", 300, 400);
-        }
     }
 
     //绘制观战提示
