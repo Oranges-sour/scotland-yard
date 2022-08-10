@@ -1,5 +1,5 @@
 import Vec2 from "./Vec2.js";
-import Sprite from "./Sprite.js";
+import { Sprite } from "./Sprite.js";
 import { sprites_main, anchors, mouseDown, touchStartPos, players, insideCanvas, renderData } from "./idx.js";
 import { imgPool } from "./ImagePool.js"
 import { game } from "./Game.js";
@@ -136,7 +136,7 @@ export function mapDataUpdate() {
         //设置玩家位置
         for (var i = 1; i <= 6; ++i) {
             var k = game.gameData.playerAt[i];
-            
+
             var anc = anchors[k];
 
             var p1 = new Vec2();

@@ -1,5 +1,5 @@
 'use strict';
-import Sprite from "./Sprite.js"
+import { Sprite, SpriteRect } from "./Sprite.js"
 import Vec2 from "./Vec2.js";
 
 
@@ -212,11 +212,19 @@ function init() {
     //初始化胜利与失败显示
     var vic = new Sprite("src/victory.png");
     vic.visible = false;
+    vic.z_order = 3;
     var def = new Sprite("src/defeat.png");
     def.visible = false;
+    def.z_order = 3;
+    //胜利失败显示下面的一个黑色覆盖
+    var blackBk = new SpriteRect(0, 0, 0, 0);
+    blackBk.visible = false;
+    blackBk.z_order = 2;
+    blackBk.setRGBA("rgba(0, 0, 0, 0.6)");
 
     sprites_main.set("victory", vic);
     sprites_main.set("defeat", def);
+    sprites_main.set("blackBk", blackBk);
 
     web.init();
 
@@ -242,17 +250,37 @@ function main_update() {
     def.pos.x = renderData.width / 2 - def.width() / 2;
     def.pos.y = renderData.height / 2 - def.height() / 2;
 
+    var blackBk = sprites_main.get("blackBk");
+    blackBk.w = renderData.width;
+    blackBk.h = renderData.height;
+
     //绘制游戏胜利显示
     if (game.gameData.gameWin != 0) {
-        if (game.gameData.gameWin == 1 && !game.gameData.selfChessCtl.includes(1)) {
-            vic.visible = true;
+        blackBk.visible = true;
+        if (game.gameData.gameWin == 1) {
+
+            //警察赢，自己是警察
+            if (!game.gameData.selfChessCtl.includes(1)) {
+                vic.visible = true;
+            } else {
+                //警察赢，自己是小偷
+                def.visible = true;
+            }
         }
-        if (game.gameData.gameWin == 2 && game.gameData.selfChessCtl.includes(1)) {
-            def.visible = true;
+        if (game.gameData.gameWin == 2) {
+
+            //小偷赢，自己是小偷
+            if (game.gameData.selfChessCtl.includes(1)) {
+                vic.visible = true;
+            } else {
+                //小偷赢，自己是警察
+                def.visible = true;
+            }
         }
     } else {
         vic.visible = false;
         def.visible = false;
+        blackBk.visible = false;
     }
 
     draw_main();
