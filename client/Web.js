@@ -4,9 +4,9 @@ import {
 } from "./Game.js";
 
 import { resetUI, closeUI, updateMenuStatue, btnCtlSuccess } from "./MenuUI.js";
- 
 
-class Web {
+
+export class Web {
     constructor() {
         this.userName = randomString(true, 5, 8);
         this.connected = false;
@@ -20,9 +20,13 @@ class Web {
         }, 200);
     }
 
+    isServerConnected() {
+        return this.connected;
+    }
+
     webUpdate() {
         if (!this.connected && !this.onopen) {
-            this.ws = new WebSocket("ws://192.168.1.109:23480");
+            this.ws = new WebSocket("ws://127.0.0.1:23480");
             this.onopen = true;
 
             var that = this;

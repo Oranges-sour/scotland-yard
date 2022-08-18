@@ -1,5 +1,5 @@
-import { web } from "./Web.js";
-import { game } from "./Game.js";
+import { web, Web } from "./Web.js";
+import { game, Game } from "./Game.js";
 import { isDevicePC } from "./idx.js";
 
 const chessChooseInnerHtml = [
@@ -50,6 +50,9 @@ for (var i = 1; i <= 6; ++i) {
     playerChooseStatue[i] = false;
 }
 
+//恢复服务器连接时需要重置UI
+var serverConnectedReset = false;
+
 var ele_uuid = document.getElementById("Start_UUID");
 var ele_ChessChoose = document.getElementById("ChessChoose");
 var ele_PlayerCntChoose = document.getElementById("PlayerCntChoose");
@@ -62,6 +65,8 @@ var ele_help = document.getElementById("Help");
 var ele_start = document.getElementById("Start");
 
 var ele_flowCtl = document.getElementById("FlowCtl");
+
+var ele_serverStatueShow = document.getElementById("WebStatueShow");
 
 document.getElementById("BtnReset").onclick = function () {
     resetGame();
@@ -133,13 +138,29 @@ function clearCtlStatue(ele_str) {
     e.innerHTML = "";
 }
 
-
 function menuUpd() {
     //使界面始终在中央
     ele_menu.style.left = window.innerWidth / 2 - ele_menu.offsetWidth / 2 + "px";
     ele_start.style.left = window.innerWidth / 2 - ele_start.offsetWidth / 2 + "px";
     ele_help.style.left = window.innerWidth / 2 - ele_help.offsetWidth / 2 + "px";
+    ele_serverStatueShow.style.left = window.innerWidth / 2 - ele_serverStatueShow.offsetWidth / 2 + "px";
     ///
+
+    if (!web.isServerConnected()) {
+        ele_menu.style.visibility = "hidden";
+        ele_start.style.visibility = "hidden";
+        ele_help.style.visibility = "hidden";
+        ele_serverStatueShow.style.visibility = "visible";
+
+        
+        serverConnectedReset = false;
+    } else {
+        if (!serverConnectedReset) {
+            resetUI();
+            serverConnectedReset = true;
+        }
+
+    }
 
     ele_uuid.innerHTML = "UUID: " + web.userName;
 

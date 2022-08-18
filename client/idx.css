@@ -343,3 +343,28 @@ body {
 
     z-index: 2;
 }
+
+#WebStatueShow {
+    background-color: rgb(160, 160, 150);
+
+    border-style: solid;
+    border-width: 3px;
+    border-color: rgb(239, 233, 218);
+
+    position: absolute;
+
+    width: 800px;
+    height: 600px;
+
+    margin-top: 30px;
+
+    font: 64px Verdana;
+
+    color: white;
+
+    text-align: center;
+
+    visibility: visible;
+
+    z-index: 2;
+}
