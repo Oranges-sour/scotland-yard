@@ -152,14 +152,14 @@ function menuUpd() {
         ele_help.style.visibility = "hidden";
         ele_serverStatueShow.style.visibility = "visible";
 
-        
+
         serverConnectedReset = false;
     } else {
+        //console.log(serverConnectedReset);
         if (!serverConnectedReset) {
             resetUI();
             serverConnectedReset = true;
         }
-
     }
 
     ele_uuid.innerHTML = "UUID: " + web.userName;
@@ -208,6 +208,7 @@ export function resetUI() {
         ele_help.style.visibility = "hidden";
         ele_start.style.visibility = "hidden";
     }
+    ele_serverStatueShow.style.visibility = "hidden";
 }
 
 function joinGame() {
