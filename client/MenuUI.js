@@ -41,7 +41,8 @@ const chessCtl = [
     [[], [1], [2], [3], [4], [5], [6]]//6
 ];
 
-const CtlStatue = "<div class=\"CtlStatue\"></div>"
+const CtlStatueSuccess = "<div class=\"CtlStatueSuccess\"></div>";
+const CtlStatueFailed = "<div class=\"CtlStatueFailed\"></div>";
 
 var lastPlayerCnt = 0;
 
@@ -114,19 +115,46 @@ export function uiCtlCanMoveMap() {
 //按钮功能设置成功
 export function btnCtlSuccess(obj) {
     if (obj.type1 == "reset") {
-        setCtlStatue("BtnReset_S");
+        setCtlStatue("BtnReset_S", true);
     }
     if (obj.type1 == "join") {
-        setCtlStatue("BtnJoin_S");
+        var ctl = obj.append;
+        game.setSelfChessCtl(ctl);
+        
+        setCtlStatue("BtnJoin_S", true);
     }
     if (obj.type1 == "quit") {
-        setCtlStatue("BtnQuit_S");
+        setCtlStatue("BtnQuit_S", true);
+    }
+    if (obj.type1 == "start") {
+        setCtlStatue("BtnStart_S", true);
     }
 }
 
-function setCtlStatue(ele_str) {
+//按钮功能设置成功
+export function btnCtlFailed(obj) {
+    if (obj.type1 == "reset") {
+        setCtlStatue("BtnReset_S", false);
+    }
+    if (obj.type1 == "join") {
+        setCtlStatue("BtnJoin_S", false);
+    }
+    if (obj.type1 == "quit") {
+        setCtlStatue("BtnQuit_S", false);
+    }
+    if (obj.type1 == "start") {
+        setCtlStatue("BtnStart_S", false);
+    }
+}
+
+function setCtlStatue(ele_str, isSuc) {
     var e = document.getElementById(ele_str);
-    e.innerHTML = CtlStatue;
+    if (isSuc) {
+        e.innerHTML = CtlStatueSuccess;
+    } else {
+        e.innerHTML = CtlStatueFailed;
+    }
+
 
     setTimeout(function () {
         clearCtlStatue(ele_str);

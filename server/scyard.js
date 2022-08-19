@@ -124,6 +124,20 @@ function boardcastStart() {
     });
 }
 
+function sendCtlBtnStatue(ws, isSuc, type1, append_msg = "") {
+    var obj = new Object();
+    var type = "ctlbtl_success";
+    if (!isSuc) {
+        type = "ctlbtl_failed";
+    }
+    obj.type = type;
+    obj.type1 = type1;
+    obj.append = append_msg;
+
+    var j = JSON.stringify(obj);
+    ws.send(j);
+}
+
 function processMessgae(ws, obj) {
 
 
@@ -147,7 +161,7 @@ function processMessgae(ws, obj) {
         r = msg_reset(obj, ws);
     }
     if (type == "start") {
-        r = msg_start(obj);
+        r = msg_start(obj, ws);
     }
     if (type == "quit") {
         r = msg_quit(obj, ws);
@@ -204,6 +218,7 @@ function msg_quit(obj, ws) {
     console.log("-Quit-" + " Name:" + obj.name);
     var str = obj.name;
     if (!chessControl.has(str)) {
+        sendCtlBtnStatue(ws, false, "quit");
         console.log("-Failed- Didn't join before.");
         return true;
     }
@@ -214,14 +229,7 @@ function msg_quit(obj, ws) {
 
     chessControl.delete(str);
 
-    console.log(chessControl);
-
-    var obj = new Object();
-    obj.type = "ctlbtl_success";
-    obj.type1 = "quit";
-
-    var j = JSON.stringify(obj);
-    ws.send(j);
+    sendCtlBtnStatue(ws, true, "quit");
 
     console.log("-Success-");
     return true;
@@ -238,6 +246,8 @@ function msg_join(obj, ws) {
 
     //看看他是不是加入了其他的
     if (chessControl.has(str)) {
+        sendCtlBtnStatue(ws, false, "join");
+
         console.log("-Failed- Has joined before.");
         return true;
     }
@@ -251,6 +261,8 @@ function msg_join(obj, ws) {
         }
     }
     if (!suc) {
+        sendCtlBtnStatue(ws, false, "join");
+
         console.log("-Failed- Somebody has chosen the same chess before.");
         return true;
     }
@@ -261,12 +273,7 @@ function msg_join(obj, ws) {
         chessChooseStatue[ctl[i]] = true;
     }
 
-    var obj = new Object();
-    obj.type = "ctlbtl_success";
-    obj.type1 = "join";
-
-    var j = JSON.stringify(obj);
-    ws.send(j);
+    sendCtlBtnStatue(ws, true, "join", ctl);
 
     console.log("-Success-");
     return true;
@@ -406,18 +413,13 @@ function msg_reset(msg, ws) {
 
     resetGame();
 
-    var obj = new Object();
-    obj.type = "ctlbtl_success";
-    obj.type1 = "reset";
-
-    var j = JSON.stringify(obj);
-    ws.send(j);
+    sendCtlBtnStatue(ws, true, "reset");
 
     console.log("-Success-");
     return true;
 }
 
-function msg_start() {
+function msg_start(obj, ws) {
     console.log("-Start-");
     //检查是不是每个棋子都有人操控
     var suc = true;
@@ -429,6 +431,9 @@ function msg_start() {
 
     if (!suc) {
         console.log("-Failed-");
+
+        sendCtlBtnStatue(ws, false, "start");
+
         return true;
     }
 

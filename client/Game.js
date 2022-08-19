@@ -1,4 +1,4 @@
-import { web, Web } from "./Web.js";
+import { web } from "./Web.js";
 
 export class Game {
     constructor() {

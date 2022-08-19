@@ -3,7 +3,7 @@ import {
     game
 } from "./Game.js";
 
-import { resetUI, closeUI, updateMenuStatue, btnCtlSuccess } from "./MenuUI.js";
+import { resetUI, closeUI, updateMenuStatue, btnCtlSuccess, btnCtlFailed } from "./MenuUI.js";
 
 
 export class Web {
@@ -68,12 +68,11 @@ export class Web {
     }
 
     joinGame(ctl) {
-        game.setSelfChessCtl(ctl);
 
         var obj = new Object();
         obj.type = "join";
         obj.name = this.userName;
-        obj.controlChess = game.gameData.selfChessCtl;
+        obj.controlChess = ctl;
 
         var str = JSON.stringify(obj);
         this.ws.send(str);
@@ -147,6 +146,9 @@ export class Web {
         }
         if (obj.type == "ctlbtl_success") {
             btnCtlSuccess(obj);
+        }
+        if (obj.type == "ctlbtl_failed") {
+            btnCtlFailed(obj);
         }
     }
 }
