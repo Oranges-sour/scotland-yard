@@ -1,5 +1,5 @@
-import { web } from "./Web.js";
-import { game } from "./Game.js";
+import { web, Web } from "./Web.js";
+import { game, Game } from "./Game.js";
 import { isDevicePC } from "./idx.js";
 
 const chessChooseInnerHtml = [
@@ -41,7 +41,8 @@ const chessCtl = [
     [[], [1], [2], [3], [4], [5], [6]]//6
 ];
 
-const CtlStatue = "<div class=\"CtlStatue\"></div>"
+const CtlStatueSuccess = "<div class=\"CtlStatueSuccess\"></div>";
+const CtlStatueFailed = "<div class=\"CtlStatueFailed\"></div>";
 
 var lastPlayerCnt = 0;
 
@@ -49,6 +50,9 @@ var playerChooseStatue = new Array();
 for (var i = 1; i <= 6; ++i) {
     playerChooseStatue[i] = false;
 }
+
+//恢复服务器连接时需要重置UI
+var serverConnectedReset = false;
 
 var ele_uuid = document.getElementById("Start_UUID");
 var ele_ChessChoose = document.getElementById("ChessChoose");
@@ -62,6 +66,8 @@ var ele_help = document.getElementById("Help");
 var ele_start = document.getElementById("Start");
 
 var ele_flowCtl = document.getElementById("FlowCtl");
+
+var ele_serverStatueShow = document.getElementById("WebStatueShow");
 
 document.getElementById("BtnReset").onclick = function () {
     resetGame();
@@ -109,19 +115,46 @@ export function uiCtlCanMoveMap() {
 //按钮功能设置成功
 export function btnCtlSuccess(obj) {
     if (obj.type1 == "reset") {
-        setCtlStatue("BtnReset_S");
+        setCtlStatue("BtnReset_S", true);
     }
     if (obj.type1 == "join") {
-        setCtlStatue("BtnJoin_S");
+        var ctl = obj.append;
+        game.setSelfChessCtl(ctl);
+        
+        setCtlStatue("BtnJoin_S", true);
     }
     if (obj.type1 == "quit") {
-        setCtlStatue("BtnQuit_S");
+        setCtlStatue("BtnQuit_S", true);
+    }
+    if (obj.type1 == "start") {
+        setCtlStatue("BtnStart_S", true);
     }
 }
 
-function setCtlStatue(ele_str) {
+//按钮功能设置成功
+export function btnCtlFailed(obj) {
+    if (obj.type1 == "reset") {
+        setCtlStatue("BtnReset_S", false);
+    }
+    if (obj.type1 == "join") {
+        setCtlStatue("BtnJoin_S", false);
+    }
+    if (obj.type1 == "quit") {
+        setCtlStatue("BtnQuit_S", false);
+    }
+    if (obj.type1 == "start") {
+        setCtlStatue("BtnStart_S", false);
+    }
+}
+
+function setCtlStatue(ele_str, isSuc) {
     var e = document.getElementById(ele_str);
-    e.innerHTML = CtlStatue;
+    if (isSuc) {
+        e.innerHTML = CtlStatueSuccess;
+    } else {
+        e.innerHTML = CtlStatueFailed;
+    }
+
 
     setTimeout(function () {
         clearCtlStatue(ele_str);
@@ -133,13 +166,29 @@ function clearCtlStatue(ele_str) {
     e.innerHTML = "";
 }
 
-
 function menuUpd() {
     //使界面始终在中央
     ele_menu.style.left = window.innerWidth / 2 - ele_menu.offsetWidth / 2 + "px";
     ele_start.style.left = window.innerWidth / 2 - ele_start.offsetWidth / 2 + "px";
     ele_help.style.left = window.innerWidth / 2 - ele_help.offsetWidth / 2 + "px";
+    ele_serverStatueShow.style.left = window.innerWidth / 2 - ele_serverStatueShow.offsetWidth / 2 + "px";
     ///
+
+    if (!web.isServerConnected()) {
+        ele_menu.style.visibility = "hidden";
+        ele_start.style.visibility = "hidden";
+        ele_help.style.visibility = "hidden";
+        ele_serverStatueShow.style.visibility = "visible";
+
+
+        serverConnectedReset = false;
+    } else {
+        //console.log(serverConnectedReset);
+        if (!serverConnectedReset) {
+            resetUI();
+            serverConnectedReset = true;
+        }
+    }
 
     ele_uuid.innerHTML = "UUID: " + web.userName;
 
@@ -187,6 +236,7 @@ export function resetUI() {
         ele_help.style.visibility = "hidden";
         ele_start.style.visibility = "hidden";
     }
+    ele_serverStatueShow.style.visibility = "hidden";
 }
 
 function joinGame() {

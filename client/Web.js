@@ -3,10 +3,10 @@ import {
     game
 } from "./Game.js";
 
-import { resetUI, closeUI, updateMenuStatue, btnCtlSuccess } from "./MenuUI.js";
- 
+import { resetUI, closeUI, updateMenuStatue, btnCtlSuccess, btnCtlFailed } from "./MenuUI.js";
 
-class Web {
+
+export class Web {
     constructor() {
         this.userName = randomString(true, 5, 8);
         this.connected = false;
@@ -20,9 +20,13 @@ class Web {
         }, 200);
     }
 
+    isServerConnected() {
+        return this.connected;
+    }
+
     webUpdate() {
         if (!this.connected && !this.onopen) {
-            this.ws = new WebSocket("ws://192.168.1.109:23480");
+            this.ws = new WebSocket("ws://127.0.0.1:23480");
             this.onopen = true;
 
             var that = this;
@@ -64,12 +68,11 @@ class Web {
     }
 
     joinGame(ctl) {
-        game.setSelfChessCtl(ctl);
 
         var obj = new Object();
         obj.type = "join";
         obj.name = this.userName;
-        obj.controlChess = game.gameData.selfChessCtl;
+        obj.controlChess = ctl;
 
         var str = JSON.stringify(obj);
         this.ws.send(str);
@@ -143,6 +146,9 @@ class Web {
         }
         if (obj.type == "ctlbtl_success") {
             btnCtlSuccess(obj);
+        }
+        if (obj.type == "ctlbtl_failed") {
+            btnCtlFailed(obj);
         }
     }
 }

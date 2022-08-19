@@ -1,6 +1,6 @@
 import { web } from "./Web.js";
 
-class Game {
+export class Game {
     constructor() {
         this.init();
     }
