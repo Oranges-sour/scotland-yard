@@ -67,8 +67,6 @@ export function initGame() {
         }
         playerAt[i] = playerStart[p];
     }
-    playerAt[1] = 9;
-    playerAt[2] = 2;
 
     chessStepOn = 1;
     gameRound = 1;
