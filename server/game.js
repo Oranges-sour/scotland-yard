@@ -82,7 +82,7 @@ export function initGame() {
     cardsLeft[1][5] = 5;
 
     for (var i = 2; i <= 6; ++i) {
-        cardsLeft[i][1] = 10;
+        cardsLeft[i][1] = 12;
         cardsLeft[i][2] = 8;
         cardsLeft[i][3] = 4;
         cardsLeft[i][4] = 0;
