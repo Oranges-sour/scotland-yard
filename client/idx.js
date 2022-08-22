@@ -226,12 +226,24 @@ function init() {
     sprites_main.set("defeat", def);
     sprites_main.set("blackBk", blackBk);
 
+    //初始化棋子选择
+    var card_select_bar = new Sprite("src/card_select_bar.png");
+    card_select_bar.pos.set(0, 10);
+    card_select_bar.z_order = 4;
+    var card_select = new Sprite("src/card_select.png");
+    card_select.pos.set(0, 18);
+    card_select.z_order = 4;
+    sprites_main.set("card_select_bar", card_select_bar);
+    sprites_main.set("card_select", card_select);
+
+    //初始化网络
     web.init();
 
     setInterval(main_update, 15);
 }
 
 function main_update() {
+
     renderData.width = Math.max(1, window.innerWidth - ele_canvas_ui.offsetWidth - 50);
     ele_canvas_ui.style.left = renderData.width + 30 + "px";
 
@@ -253,6 +265,22 @@ function main_update() {
     var blackBk = sprites_main.get("blackBk");
     blackBk.w = renderData.width;
     blackBk.h = renderData.height;
+
+    //设置卡片选择位置
+    const pp = [0, 5, 100, 193, 288, 382];
+    var card_select_bar = sprites_main.get("card_select_bar");
+    var card_select = sprites_main.get("card_select");
+    card_select_bar.pos.x = renderData.width / 2 - card_select_bar.width() / 2;
+    card_select.pos.x = card_select_bar.pos.x + pp[game.gameData.cardSelect];
+
+    if (game.onMyStep() && game.isGameStart()) {
+        card_select_bar.visible = true;
+        card_select.visible = true;
+    } else {
+        card_select_bar.visible = false;
+        card_select.visible = false;
+    }
+
 
     //绘制游戏胜利显示
     if (game.gameData.gameWin != 0) {
@@ -304,6 +332,7 @@ function touchup(x, y) {
     p.set(x, y);
 
     updateUIOnMouseUp(p);
+    updateCardSelectOnMouseUp(p);
     anchorUpdate(p);
 }
 
@@ -356,6 +385,7 @@ function mouseup(x, y) {
     var p = new Vec2();
     p.set(x, y);
 
+    updateCardSelectOnMouseUp(p);
     updateUIOnMouseUp(p);
 }
 
@@ -376,6 +406,32 @@ function mousedblclick(x, y) {
     p.set(x, y);
 
     playChessOnDblClick(p);
+}
+
+function updateCardSelectOnMouseUp(p) {
+
+    if (!game.onMyStep() || !game.isGameStart()) {
+        return;
+    }
+    if (!insideCanvas(p)) {
+        return;
+    }
+
+    var p = convertInCanvas(p);
+    var card_select_bar = sprites_main.get("card_select_bar");
+    if (inside(p, card_select_bar.pos,
+        card_select_bar.width(), card_select_bar.height())) {
+
+        const pp = [0, 5, 100, 193, 288, 382, 600];
+
+        var dx = p.x - card_select_bar.pos.x;
+        for (var i = 1; i <= 5; ++i) {
+            if (dx >= pp[i] && dx < pp[i + 1]) {
+                game.setCardSelect(i);
+                break;
+            }
+        }
+    }
 }
 
 function playChessOnDblClick(p) {
