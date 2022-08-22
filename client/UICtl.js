@@ -16,13 +16,7 @@ export function initUI() {
     var stepOn = new Sprite("src/arrow.png");
     stepOn.pos.y = 84;
     sprites_ui.set("step_on", stepOn);
-
-    var selectOn = new Sprite("src/arrow.png");
-    selectOn.pos.y = 174;
-    sprites_ui.set("select_on", selectOn);
 }
-
-var chessSelectPos = [0, 52, 108, 162, 221, 275, 300];
 
 var chessStepOnPos = [0, 40, 88, 135, 181, 230, 280];
 
@@ -35,9 +29,6 @@ for (var i = 1; i <= 24; ++i) {
 export function uiUpdate() {
     var e = sprites_ui.get("step_on");
     e.pos.x = chessStepOnPos[game.gameData.chessStepOn];
-
-    var e = sprites_ui.get("select_on");
-    e.pos.x = chessSelectPos[game.gameData.cardSelect];
 
     for (var i = 0; i <= 23; ++i) {
         var j = i + 1;
@@ -64,15 +55,6 @@ export function uiUpdate() {
 export function updateUIOnMouseUp(p) {
     if (insideUICanvas(p)) {
         var pos = convertInUICanvas(p);
-
-        for (var i = 1; i <= 5; ++i) {
-            var lrp = new Vec2();
-            lrp.x = chessSelectPos[i] - 10;
-            lrp.y = 174 + 15;
-            if (inside(pos, lrp, 55, 30)) {
-                game.setCardSelect(i);
-            }
-        }
 
         var lrp = new Vec2();
         lrp.set(17, 310);
