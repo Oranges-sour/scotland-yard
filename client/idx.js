@@ -273,7 +273,7 @@ function main_update() {
     card_select_bar.pos.x = renderData.width / 2 - card_select_bar.width() / 2;
     card_select.pos.x = card_select_bar.pos.x + pp[game.gameData.cardSelect];
 
-    if (game.onMyStep() && game.isGameStart()) {
+    if (game.onMyStep() && game.isGameStart() && game.gameData.gameWin == 0) {
         card_select_bar.visible = true;
         card_select.visible = true;
     } else {
