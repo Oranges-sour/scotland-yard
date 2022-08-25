@@ -106,18 +106,22 @@ export function chessMove(id, type, where) {
     }
 
     if (id < 1 || id > 6) {
+        console.log("-Failed- Id out of the game.");
         return 0;
     }
     if (type < 1 || type > 5) {
+        console.log("-Failed- Type out of the game.");
         return 0;
     }
     if (where < 1 || where > 199) {
+        console.log("-Failed- Where out of the game.");
         return 0;
     }
 
 
     //卡太少，走不了
     if (cardsLeft[id][type] <= 0) {
+        console.log("-Failed- Doesn't have enough card to go.");
         return 0;
     }
 
@@ -126,6 +130,7 @@ export function chessMove(id, type, where) {
         //踩在其他棋子上了,不包括小偷
         for (var i = 2; i <= 6; ++i) {
             if (playerAt[i] == where) {
+                console.log("-Failed- This anchor has been occupied.");
                 return 0;
             }
         }
@@ -134,12 +139,14 @@ export function chessMove(id, type, where) {
             cardsLeft[1][type] += 1;
             playerAt[id] = where;
         } else {
+            console.log("-Failed- Can't go to this anchor.");
             return 0;
         }
     }
     if (id == 1) {
         //不能呆在原地
         if (playerAt[id] == where) {
+            console.log("-Failed- Can't stay where you are.");
             return 0;
         }
 
@@ -149,6 +156,7 @@ export function chessMove(id, type, where) {
                 cardsLeft[id][type] -= 1;
                 playerAt[id] = where;
             } else {
+                console.log("-Failed- Can't go to this anchor.");
                 return 0;
             }
         }
@@ -164,6 +172,7 @@ export function chessMove(id, type, where) {
                 }
             }
             if (!suc) {
+                console.log("-Failed- Can't go to this anchor.");
                 return 0;
             }
         }
@@ -198,6 +207,7 @@ export function chessMove(id, type, where) {
 }
 
 //能使用任何方式进行走棋(有卡是前提)
+//在检查轮空时使用
 export function canMoveCheck() {
     //小偷肯定能直接走，不用管
     if (chessStepOn >= 2) {
@@ -220,7 +230,6 @@ export function canMoveCheck() {
 
         var suc = false;
         for (var i = 1; i <= 3; ++i) {
-            console.log(goo[i]);
             if (goo[i] == true && cardsLeft[chessStepOn][i] > 0) {
                 suc = true;
             }

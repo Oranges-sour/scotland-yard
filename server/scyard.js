@@ -311,10 +311,12 @@ function msg_play(obj) {
         }
     }
     if (!suc) {
+        console.log("-Failed- Not this player's turn to go.");
         return true;
     }
 
     function moveSuccess(type) {
+        console.log("-Success- Now player statue: " + playerAt);
 
         if (chessStepOn == 1) {
             thiefStepList[gameRound] = type;
@@ -334,16 +336,18 @@ function msg_play(obj) {
                 break;
             }
             //不然直接跳过这个人
-            console.log("-Jump-" + chessStepOn);
+            console.log("-Jump- " + chessStepOn);
         }
 
 
         if (checkPoliceWin()) {
             boardcastPoliceWin();
+            console.log("-GameWin- Police.");
             //不需要在广播游戏状态
             return false;
         } else if (gameRound > 24) {
             boardcastThiefWin();
+            console.log("-GameWin- Thief.");
             return false;
         }
     }
@@ -351,6 +355,12 @@ function msg_play(obj) {
     var where = obj.where;
     var type = obj.card_type;
     if (type != 4) {
+        //使用x2卡走了一步，但是现在突然换卡了，要重置玩家的位置
+        if (card4_step != 1) {
+            playerAt[chessStepOn] = card4_orgOn;
+            card4_step = 1;
+        }
+
         var r = chessMove(chessStepOn, type, where);
         if (r == 4) {
             moveSuccess(type);
@@ -363,10 +373,10 @@ function msg_play(obj) {
             card4_orgOn = playerAt[chessStepOn];
             var r = chessMove(chessStepOn, type, where);
             if (r[0] == false) {
+                console.log("-Failed- Can't go to this anchor.");
                 return true;
             }
             card4_goo = r;
-
             card4_step += 1;
         }
         //第二次使用4号卡
@@ -378,6 +388,8 @@ function msg_play(obj) {
                 //不成功，要从头走棋
                 playerAt[chessStepOn] = card4_orgOn;
                 card4_step = 1;
+
+                console.log("-Failed- Can't go to this anchor.");
                 return true;
             }
 
@@ -396,7 +408,7 @@ function msg_play(obj) {
             }
             //两步不一样，要从头走棋
             if (!suc) {
-
+                console.log("-Failed- Two steps cannot use the same card.");
                 playerAt[chessStepOn] = card4_orgOn;
                 card4_step = 1;
             }
@@ -430,7 +442,7 @@ function msg_start(obj, ws) {
     }
 
     if (!suc) {
-        console.log("-Failed-");
+        console.log("-Failed- Some chesses have nobody control.");
 
         sendCtlBtnStatue(ws, false, "start");
 
