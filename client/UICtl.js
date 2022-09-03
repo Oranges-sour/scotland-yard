@@ -58,13 +58,13 @@ export function uiUpdate() {
 }
 
 export function updateUIOnMouseUp(p) {
-    if (insideUICanvas(p)) {
-        var pos = convertInUICanvas(p);
+    // if (insideUICanvas(p)) {
+    //     var pos = convertInUICanvas(p);
 
-        var lrp = new Vec2();
-        lrp.set(17, 310);
-        if (inside(pos, lrp, 80, 80)) {
-            mapLocateNowChessOn();
-        }
-    }
+    //     var lrp = new Vec2();
+    //     lrp.set(17, 310);
+    //     if (inside(pos, lrp, 80, 80)) {
+    //         mapLocateNowChessOn();
+    //     }
+    // }
 }

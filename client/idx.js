@@ -2,12 +2,13 @@ import { Sprite } from "./webdraw/Sprite.js";
 import { Label } from "./webdraw/Label.js";
 import { Node } from "./webdraw/Node.js";
 import { Vec2 } from "./webdraw/Vec2.js";
+import { Size } from "./webdraw/Size.js";
 import { ImagePool } from "./webdraw/ImagePool.js";
 import { Director, DirectorManager } from "./webdraw/Director.js";
 
 import { initUI } from "./UICtl.js";
 
-import { initMap, dragMoveMapOnMove, mapDataUpdate } from "./GameMap.js";
+import { initMap, dragMoveMapOnMove, updateMapOnMouseDown, mapUpdateOnWheel } from "./GameMap.js";
 
 import { initAnchor } from "./Anchor.js";
 
@@ -36,6 +37,20 @@ window.onload = function () {
     init();
 }
 
+
+//PC操作
+window.onmousedown = function (e) {
+    mousedown(e.pageX, e.pageY);
+}
+window.onmousemove = function (e) {
+    mousemove(e.pageX, e.pageY);
+}
+window.onmouseup = function (e) {
+    mouseup(e.pageX, e.pageY);
+}
+window.ondblclick = function (e) {
+    mousedblclick(e.pageX, e.pageY);
+}
 window.onwheel = function (e) {
     if (e.wheelDelta > 0) {
         mousewheel(e.pageX, e.pageY, 1);
@@ -120,11 +135,32 @@ function init() {
 
     //所有需要使用滚轮缩放的内容都添加进render_node
     var render_node = Node.new();
-    render_node.set_anchor_with_pos(0.5, 0.5);
     render_node.add_schedule(function () {
-        render_node.set_size_with_size(renderData.width, renderData.height);
+        var game_map = render_node.get_child_with_key("game_map");
+        if (game_map !== undefined) {
+            //console.log(game_map.get_size());
+            var size = Size.scalar(game_map.get_size(), game_map.get_scale());
+            var w = size.w / 2;
+            var h = size.h / 2;
+            render_node.set_position_with_pos(-w, -h);
+        }
+
     }, 1 / 60.0, 0);
-    main_director.add_child_with_key(render_node, "render_node");
+    //main_director.add_child_with_key(render_node, "render_node");
+
+    var scale_node = Node.new();
+    scale_node.set_anchor_with_pos(0.5, 0.5);
+    scale_node.add_schedule(function () {
+        scale_node.set_size_with_size(renderData.width, renderData.height);
+    }, 1 / 60.0, 0);
+    scale_node.add_child_with_key(render_node, "render_node");
+
+    var move_node = Node.new();
+    move_node.add_schedule(function () {
+        move_node.set_size_with_size(renderData.width, renderData.height);
+    }, 1 / 60.0, 0);
+    move_node.add_child_with_key(scale_node, "scale_node");
+    main_director.add_child_with_key(move_node, "move_node");
 
 
 
@@ -156,19 +192,18 @@ function init() {
     main_director.add_child_with_key(def, "defeat");
 
     //初始化棋子选择
-    var card_select = Node.new();
-    main_director.add_child_with_key(card_select, "card_select");
-
+    var card_select_node = Node.new();
+    main_director.add_child_with_key(card_select_node, "card_select");
 
     var card_select_bar = Sprite.new("src/card_select_bar.png");
     card_select_bar.set_position_with_pos(0, 10);
 
-    card_select_bar.z_order = 4;
-    var card_select = new Sprite("src/card_select.png");
-    card_select.pos.set(0, 18);
-    card_select.z_order = 4;
-    sprites_main.set("card_select_bar", card_select_bar);
-    sprites_main.set("card_select", card_select);
+    var card_select = Sprite.new("src/card_select.png");
+    card_select.set_position_with_pos(0, 18);
+
+    card_select_node.add_child_with_key(card_select_bar, "bar");
+    card_select_node.add_child_with_key(card_select, "select");
+
 
     //初始化网络
     web.init();
@@ -244,93 +279,42 @@ function main_update() {
     //uiUpdate();
 }
 
-//针对触控的操作
-function touchdown(x, y) {
-    mouseDown = true;
-    touchStartPos.set(x, y);
-    mapUpdateOnMouseDown(x, y);
-}
 
-function touchup(x, y) {
-    mouseDown = false;
-    touchEndPos.set(x, y);
-
-    var p = new Vec2();
-    p.set(x, y);
-
-    updateUIOnMouseUp(p);
-    updateCardSelectOnMouseUp(p);
-    anchorUpdate(p);
-}
-
-function touchmoveOneSpot(x, y) {
-    var p = new Vec2();
-    p.set(x, y);
-
-    dragMoveMapOnMove(p);
-}
-
-function touchmoveTwoSpot(x0, y0, x1, y1) {
-    var p0 = new Vec2();
-    p0.set(x0, y0);
-
-    var p1 = new Vec2();
-    p1.set(x1, y1);
-
-    var dx = x1 - x0;
-    var dy = y1 - y0;
-    var dd = Math.sqrt(dx * dx + dy * dy);
-
-    var k = parseInt((dd - touchData.dist) / 30);
-    if (Math.abs(k) >= 1) {
-        touchData.dist = dd;
-    }
-
-    mapUpdateOnWheel(x0, y0, k);
-    //dragMoveMapOnMove(p);
-}
-
-function touchdbl(x, y) {
-    var p = new Vec2();
-    p.set(x, y);
-
-    playChessOnDblClick(p);
-}
 
 //针对鼠标的操作
 
 function mousedown(x, y) {
     mouseDown = true;
-    touchStartPos.set(x, y);
-    mapUpdateOnMouseDown(x, y);
+    var p = Vec2.with_pos(x, y);
+
+    touchStartPos.set_with_other(p);
+    updateMapOnMouseDown(p);
 }
 
 function mouseup(x, y) {
     mouseDown = false;
-    touchEndPos.set(x, y);
+    var p = Vec2.with_pos(x, y);
 
-    var p = new Vec2();
-    p.set(x, y);
+    touchEndPos.set_with_other(p);
 
     updateCardSelectOnMouseUp(p);
-    updateUIOnMouseUp(p);
+    //updateUIOnMouseUp(p);
 }
 
 function mousemove(x, y) {
-    var p = Vec2.new();
-    p.set_with_pos(x, y);
+    var p = Vec2.with_pos(x, y);
 
     dragMoveMapOnMove(p);
-    anchorUpdate(p);
 }
 
 function mousewheel(x, y, k) {
-    mapUpdateOnWheel(x, y, k);
+    var p = Vec2.with_pos(x, y);
+
+    mapUpdateOnWheel(p, k);
 }
 
 function mousedblclick(x, y) {
-    var p = new Vec2();
-    p.set(x, y);
+    var p = Vec2.with_pos(x, y);
 
     playChessOnDblClick(p);
 }
@@ -345,13 +329,15 @@ function updateCardSelectOnMouseUp(p) {
     }
 
     var p = convertInCanvas(p);
-    var card_select_bar = sprites_main.get("card_select_bar");
-    if (inside(p, card_select_bar.pos,
-        card_select_bar.width(), card_select_bar.height())) {
+    var card_select_node = main_director.get("card_select");
+
+    var bar = card_select_node.get_child_with_key("bar");
+    if (inside(p, card_select_node.get_position(),
+        bar.width(), bar.height())) {
 
         const pp = [0, 5, 100, 193, 288, 382, 600];
 
-        var dx = p.x - card_select_bar.pos.x;
+        var dx = p.x - bar.get_position().x;
         for (var i = 1; i <= 5; ++i) {
             if (dx >= pp[i] && dx < pp[i + 1]) {
                 game.setCardSelect(i);
@@ -363,20 +349,20 @@ function updateCardSelectOnMouseUp(p) {
 
 function playChessOnDblClick(p) {
     if (insideCanvas(p)) {
-        var mark;
-        var cnt = 0;
-        for (var i = 1; i <= 199; ++i) {
-            var anc = anchors[i];
-            if (anc.mouseon) {
-                cnt += 1;
-                mark = i;
-            }
-        }
+        // var mark;
+        // var cnt = 0;
+        // for (var i = 1; i <= 199; ++i) {
+        //     var anc = anchors[i];
+        //     if (anc.mouseon) {
+        //         cnt += 1;
+        //         mark = i;
+        //     }
+        // }
 
-        //保证鼠标只点击一个棋子
-        if (cnt == 1) {
-            game.playChess(mark);
-        }
+        // //保证鼠标只点击一个棋子
+        // if (cnt == 1) {
+        //     game.playChess(mark);
+        // }
     }
 }
 

@@ -52,7 +52,10 @@ export function initAnchor() {
         node.set_position_with_pos(anchorData[i].x, anchorData[i].y);
 
 
-        var render_node = main_director.get_child_with_key("render_node");
+        var move_node = main_director.get_child_with_key("move_node");
+        var scale_node = move_node.get_child_with_key("scale_node");
+        var render_node = scale_node.get_child_with_key("render_node");
+        
         render_node.add_child_with_key(node, `anchor_${i}`);
     }
 }

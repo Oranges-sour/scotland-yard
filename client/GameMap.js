@@ -2,12 +2,13 @@ import { Sprite } from "./webdraw/Sprite.js";
 import { Label } from "./webdraw/Label.js";
 import { Node } from "./webdraw/Node.js";
 import { Vec2 } from "./webdraw/Vec2.js";
+import { Size } from "./webdraw/Size.js";
 import { ImagePool } from "./webdraw/ImagePool.js";
 import { Director, DirectorManager } from "./webdraw/Director.js";
 
 import { game } from "./Game.js";
 
-import { main_director } from "./idx.js";
+import { main_director, mouseDown, touchStartPos, insideCanvas, renderData } from "./idx.js";
 
 var mapSpriteData = new Object;
 mapSpriteData.touchStartMapPos = Vec2.new();
@@ -18,10 +19,19 @@ export function initMap() {
     var sp = Sprite.new("src/map.bmp");
     sp.set_scale(2.5);
 
-    var render_node = main_director.get_child_with_key("render_node");
+    var move_node = main_director.get_child_with_key("move_node");
+    var scale_node = move_node.get_child_with_key("scale_node");
+    var render_node = scale_node.get_child_with_key("render_node");
     render_node.add_child_with_key(sp, "game_map");
+
+    var upd_node = Node.new();
+    main_director.add_child_with_key(upd_node, "upd_map");
+
+    upd_node.add_schedule(function () {
+        mapDataUpdate();
+    }, 1 / 60.0, 0);
     //sp.orgscale = 10;
-   // mapSpriteData.mapPos.set(-2800, -2800);
+    // mapSpriteData.mapPos.set(-2800, -2800);
 
     //异步加载高分辨率的大地图
     // imgPool.load("src/map.bmp", function (src) {
@@ -31,39 +41,44 @@ export function initMap() {
     // });
 }
 
-export function mapUpdateOnWheel(x, y, k) {
+export function mapUpdateOnWheel(p, k) {
     if (!game.isGameStart()) {
         return;
     }
     const CS = 0.05;
 
-    var p = new Vec2();
-    p.set(x, y);
     if (insideCanvas(p)) {
         mapSpriteData.scale += CS * k;
 
         mapSpriteData.scale = Math.max(0.1, mapSpriteData.scale);
         mapSpriteData.scale = Math.min(2, mapSpriteData.scale);
     }
+
+    console.log(mapSpriteData.scale);
 }
 
-export function mapUpdateOnMouseDown(x, y) {
+export function updateMapOnMouseDown(p) {
     if (!game.isGameStart()) {
         return;
     }
-    mapSpriteData.touchStartMapPos.set_p(mapSpriteData.mapPos);
+    mapSpriteData.touchStartMapPos.set_with_other(mapSpriteData.mapPos);
 }
 
-export function mapDataUpdate() {
-    // var e = sprites_main.get("game_map");
+function mapDataUpdate() {
+    var move_node = main_director.get_child_with_key("move_node");
+    var scale_node = move_node.get_child_with_key("scale_node");
+    var render_node = scale_node.get_child_with_key("render_node");
 
-    // function calcuSpeed(x, a, b) {
-    //     return (x * x) / (b * (x + a));
-    // }
+    var game_map = render_node.get_child_with_key("game_map");
 
-    // //检查拖动
-    // var w = e.width();
-    // var h = e.height();
+    function calcuSpeed(x, a, b) {
+        return (x * x) / (b * (x + a));
+    }
+
+    //检查拖动
+    var size = Size.scalar(game_map.get_size(), game_map.get_scale());
+    var w = size.w;
+    var h = size.h;
     // //左侧
     // mapSpriteData.mapPos.x = Math.min(mapSpriteData.mapPos.x, renderData.width / 2);
     // //右侧
@@ -73,73 +88,62 @@ export function mapDataUpdate() {
     // //下侧
     // mapSpriteData.mapPos.y = Math.max(mapSpriteData.mapPos.y, -h + renderData.height / 2);
 
-    // //计算地图移动
-    // {
-    //     var nowPos = e.pos.copy();
-    //     var dPos = mapSpriteData.mapPos.add(nowPos.negtive());
-    //     var dis = dPos.dist();
+    //计算地图移动
+    {
+        var nowPos = scale_node.get_position();
+        var dPos = Vec2.sub(mapSpriteData.mapPos, nowPos);
+        var dis = dPos.dist();
 
-    //     var speed = calcuSpeed(dis, 3, 5);
-    //     var dx = nowPos.add(dPos.normal().plus_n(speed));
-    //     if (speed <= 0.003) {
-    //         dx = nowPos.add(dPos);
-    //     }
+        var speed = calcuSpeed(dis, 3, 5);
+        var dx = Vec2.add(nowPos, Vec2.scalar(Vec2.normalize(dPos), speed));
+        if (speed <= 0.003) {
+            dx.set_with_other(Vec2.add(nowPos, dPos));
+        }
 
-    //     e.pos.set_p(dx);
-    // }
+        scale_node.set_position_with_other(dx);
+    }
 
-    // //检查缩放
-    // {
-    //     var centerPos = new Vec2();
-    //     centerPos.set(renderData.width / 2, renderData.height / 2);
+    //检查缩放
+    {
 
-    //     var deltaSc = mapSpriteData.scale - e.scale;
-    //     var abs_deltaSc = Math.abs(deltaSc);
+        var deltaSc = mapSpriteData.scale - scale_node.get_scale();
+        var abs_deltaSc = Math.abs(deltaSc);
 
-    //     if (abs_deltaSc >= 0.00001) {
-    //         var sp = calcuSpeed(abs_deltaSc * 100, 3, 5) / 100;
-    //         if (abs_deltaSc <= 0.005) {
-    //             mapSpriteData.scale = e.scale;
-    //         }
+        if (abs_deltaSc >= 0.00001) {
+            var sp = calcuSpeed(abs_deltaSc * 100, 3, 5) / 100;
+            if (abs_deltaSc <= 0.005) {
+                mapSpriteData.scale = scale_node.get_scale();
+            }
 
-    //         var flag = deltaSc / abs_deltaSc;
-    //         var tar = e.scale + flag * sp;
+            var flag = deltaSc / abs_deltaSc;
+            var tar = scale_node.get_scale() + flag * sp;
 
-    //         var p0 = centerPos.add(mapSpriteData.mapPos.negtive());
+            scale_node.set_scale(tar);
+        }
 
-    //         var p1 = p0.plus_n(1 / e.scale);
-    //         e.scale = tar;
-    //         var p2 = p1.plus_n(tar);
+        // //设置锚点坐标
+        // var p0 = new Vec2();
+        // //锚点的宽高
+        // const aw = 190, ah = 210;
+        // p0.set(aw / 2, ah / 2);
+        // for (var i = 1; i <= 199; ++i) {
+        //     var anc = anchors[i];
 
-    //         var deltaP = p0.add(p2.negtive());
+        //     p0.set(aw / 2, ah / 2);
 
-    //         mapSpriteData.mapPos = mapSpriteData.mapPos.add(deltaP);
-    //         e.pos.set_p(mapSpriteData.mapPos);
-    //     }
+        //     if (!anc.mouseon) {
+        //         anc.scale = Math.max(e.scale, 0.2);
+        //         anc.z_order = 0;
+        //     } else {
+        //         anc.scale = Math.max(e.scale + 0.1, 0.3);
+        //         anc.z_order = 1;
+        //     }
 
-    //     //设置锚点坐标
-    //     var p0 = new Vec2();
-    //     //锚点的宽高
-    //     const aw = 190, ah = 210;
-    //     p0.set(aw / 2, ah / 2);
-    //     for (var i = 1; i <= 199; ++i) {
-    //         var anc = anchors[i];
-
-    //         p0.set(aw / 2, ah / 2);
-
-    //         if (!anc.mouseon) {
-    //             anc.scale = Math.max(e.scale, 0.2);
-    //             anc.z_order = 0;
-    //         } else {
-    //             anc.scale = Math.max(e.scale + 0.1, 0.3);
-    //             anc.z_order = 1;
-    //         }
-
-    //         p0 = p0.plus_n(-1 * anc.scale);
-    //         var p1 = anc.orgPos.plus_n(e.scale);
-    //         var p2 = p1.add(e.pos).add(p0);
-    //         anc.pos.set_p(p2);
-    //     }
+        //     p0 = p0.plus_n(-1 * anc.scale);
+        //     var p1 = anc.orgPos.plus_n(e.scale);
+        //     var p2 = p1.add(e.pos).add(p0);
+        //     anc.pos.set_p(p2);
+    }
 
     //     //设置玩家位置
     //     for (var i = 1; i <= 6; ++i) {
@@ -172,15 +176,20 @@ export function dragMoveMapOnMove(p) {
     if (!game.isGameStart()) {
         return;
     }
+
     if (mouseDown) {
         if (insideCanvas(p)) {
-            var dx = touchStartPos.add(p.negtive());
+            var dx = Vec2.sub(touchStartPos, p);
             dx.x = -dx.x;
             dx.y = -dx.y;
 
-            dx = dx.add(mapSpriteData.touchStartMapPos);
+            dx.set_with_other(Vec2.scalar(dx, 1 / mapSpriteData.scale));
 
-            mapSpriteData.mapPos.set_p(dx);
+            dx.add_eq(mapSpriteData.touchStartMapPos);
+
+           
+
+            mapSpriteData.mapPos.set_with_other(dx);
         }
     }
 }
