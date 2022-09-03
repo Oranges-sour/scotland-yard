@@ -1,21 +1,26 @@
+import { Sprite } from "./webdraw/Sprite.js";
+import { Label } from "./webdraw/Label.js";
+import { Node } from "./webdraw/Node.js";
+import { Vec2 } from "./webdraw/Vec2.js";
+import { ImagePool } from "./webdraw/ImagePool.js";
+import { Director, DirectorManager } from "./webdraw/Director.js";
+
 import {
-    sprites_ui, inside, insideUICanvas,
+    main_director, ui_director, inside, insideUICanvas,
     convertInUICanvas
 } from "./idx.js";
-import { game } from "./Game.js";
 
-import { Sprite } from "./Sprite.js";
-import Vec2 from "./Vec2.js";
+import { game } from "./Game.js";
 
 import { mapLocateNowChessOn } from "./GameMap.js";
 
 export function initUI() {
-    var bk = new Sprite("src/play_ui.png");
-    sprites_ui.set("play_ui", bk);
+    var bk = Sprite.new("src/play_ui.png");
+    ui_director.add_child_with_key(bk, "play_ui");
 
-    var stepOn = new Sprite("src/arrow.png");
-    stepOn.pos.y = 84;
-    sprites_ui.set("step_on", stepOn);
+    var stepOn = Sprite.new("src/arrow.png");
+    stepOn.set_position_with_pos(0, 84);
+    ui_director.add_child_with_key(bk, "step_on");
 }
 
 var chessStepOnPos = [0, 40, 88, 135, 181, 230, 280];

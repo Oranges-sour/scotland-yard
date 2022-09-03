@@ -13,7 +13,6 @@ anchorData[4] = { type: 1, x: 5470, y: 132};
 anchorData[5] = { type: 1, x: 8548, y: 213};
 anchorData[6] = { type: 1, x: 9517, y: 209};
 anchorData[7] = { type: 2, x: 10445, y: 272};
-
 anchorData[8] = { type: 1, x: 983, y: 794};
 anchorData[9] = { type: 1, x: 1792, y: 806};
 anchorData[10] = { type: 1, x: 4057, y: 740};

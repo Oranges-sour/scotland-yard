@@ -1,26 +1,34 @@
-import Vec2 from "./Vec2.js";
-import { Sprite } from "./Sprite.js";
-import { sprites_main, anchors, mouseDown, touchStartPos, players, insideCanvas, renderData } from "./idx.js";
-import { imgPool } from "./ImagePool.js"
+import { Sprite } from "./webdraw/Sprite.js";
+import { Label } from "./webdraw/Label.js";
+import { Node } from "./webdraw/Node.js";
+import { Vec2 } from "./webdraw/Vec2.js";
+import { ImagePool } from "./webdraw/ImagePool.js";
+import { Director, DirectorManager } from "./webdraw/Director.js";
+
 import { game } from "./Game.js";
 
+import { main_director } from "./idx.js";
+
 var mapSpriteData = new Object;
-mapSpriteData.touchStartMapPos = new Vec2();
-mapSpriteData.mapPos = new Vec2();
+mapSpriteData.touchStartMapPos = Vec2.new();
+mapSpriteData.mapPos = Vec2.new();
 mapSpriteData.scale = 1.0;
 
-export function mapInit() {
-    var sp = new Sprite("src/map_0.jpg");
-    sprites_main.set("game_map", sp);
-    sp.orgscale = 10;
-    mapSpriteData.mapPos.set(-2800, -2800);
+export function initMap() {
+    var sp = Sprite.new("src/map.bmp");
+    sp.set_scale(2.5);
+
+    var render_node = main_director.get_child_with_key("render_node");
+    render_node.add_child_with_key(sp, "game_map");
+    //sp.orgscale = 10;
+   // mapSpriteData.mapPos.set(-2800, -2800);
 
     //异步加载高分辨率的大地图
-    imgPool.load("src/map.bmp", function (src) {
-        var m = sprites_main.get("game_map");
-        m.img = imgPool.get(src);
-        sp.orgscale = 2.5;
-    });
+    // imgPool.load("src/map.bmp", function (src) {
+    //     var m = sprites_main.get("game_map");
+    //     m.img = imgPool.get(src);
+    //     sp.orgscale = 2.5;
+    // });
 }
 
 export function mapUpdateOnWheel(x, y, k) {
@@ -47,117 +55,117 @@ export function mapUpdateOnMouseDown(x, y) {
 }
 
 export function mapDataUpdate() {
-    var e = sprites_main.get("game_map");
+    // var e = sprites_main.get("game_map");
 
-    function calcuSpeed(x, a, b) {
-        return (x * x) / (b * (x + a));
-    }
+    // function calcuSpeed(x, a, b) {
+    //     return (x * x) / (b * (x + a));
+    // }
 
-    //检查拖动
-    var w = e.width();
-    var h = e.height();
-    //左侧
-    mapSpriteData.mapPos.x = Math.min(mapSpriteData.mapPos.x, renderData.width / 2);
-    //右侧
-    mapSpriteData.mapPos.x = Math.max(mapSpriteData.mapPos.x, -w + renderData.width / 2);
-    //上侧
-    mapSpriteData.mapPos.y = Math.min(mapSpriteData.mapPos.y, renderData.height / 2);
-    //下侧
-    mapSpriteData.mapPos.y = Math.max(mapSpriteData.mapPos.y, -h + renderData.height / 2);
+    // //检查拖动
+    // var w = e.width();
+    // var h = e.height();
+    // //左侧
+    // mapSpriteData.mapPos.x = Math.min(mapSpriteData.mapPos.x, renderData.width / 2);
+    // //右侧
+    // mapSpriteData.mapPos.x = Math.max(mapSpriteData.mapPos.x, -w + renderData.width / 2);
+    // //上侧
+    // mapSpriteData.mapPos.y = Math.min(mapSpriteData.mapPos.y, renderData.height / 2);
+    // //下侧
+    // mapSpriteData.mapPos.y = Math.max(mapSpriteData.mapPos.y, -h + renderData.height / 2);
 
-    //计算地图移动
-    {
-        var nowPos = e.pos.copy();
-        var dPos = mapSpriteData.mapPos.add(nowPos.negtive());
-        var dis = dPos.dist();
+    // //计算地图移动
+    // {
+    //     var nowPos = e.pos.copy();
+    //     var dPos = mapSpriteData.mapPos.add(nowPos.negtive());
+    //     var dis = dPos.dist();
 
-        var speed = calcuSpeed(dis, 3, 5);
-        var dx = nowPos.add(dPos.normal().plus_n(speed));
-        if (speed <= 0.003) {
-            dx = nowPos.add(dPos);
-        }
+    //     var speed = calcuSpeed(dis, 3, 5);
+    //     var dx = nowPos.add(dPos.normal().plus_n(speed));
+    //     if (speed <= 0.003) {
+    //         dx = nowPos.add(dPos);
+    //     }
 
-        e.pos.set_p(dx);
-    }
+    //     e.pos.set_p(dx);
+    // }
 
-    //检查缩放
-    {
-        var centerPos = new Vec2();
-        centerPos.set(renderData.width / 2, renderData.height / 2);
+    // //检查缩放
+    // {
+    //     var centerPos = new Vec2();
+    //     centerPos.set(renderData.width / 2, renderData.height / 2);
 
-        var deltaSc = mapSpriteData.scale - e.scale;
-        var abs_deltaSc = Math.abs(deltaSc);
+    //     var deltaSc = mapSpriteData.scale - e.scale;
+    //     var abs_deltaSc = Math.abs(deltaSc);
 
-        if (abs_deltaSc >= 0.00001) {
-            var sp = calcuSpeed(abs_deltaSc * 100, 3, 5) / 100;
-            if (abs_deltaSc <= 0.005) {
-                mapSpriteData.scale = e.scale;
-            }
+    //     if (abs_deltaSc >= 0.00001) {
+    //         var sp = calcuSpeed(abs_deltaSc * 100, 3, 5) / 100;
+    //         if (abs_deltaSc <= 0.005) {
+    //             mapSpriteData.scale = e.scale;
+    //         }
 
-            var flag = deltaSc / abs_deltaSc;
-            var tar = e.scale + flag * sp;
+    //         var flag = deltaSc / abs_deltaSc;
+    //         var tar = e.scale + flag * sp;
 
-            var p0 = centerPos.add(mapSpriteData.mapPos.negtive());
+    //         var p0 = centerPos.add(mapSpriteData.mapPos.negtive());
 
-            var p1 = p0.plus_n(1 / e.scale);
-            e.scale = tar;
-            var p2 = p1.plus_n(tar);
+    //         var p1 = p0.plus_n(1 / e.scale);
+    //         e.scale = tar;
+    //         var p2 = p1.plus_n(tar);
 
-            var deltaP = p0.add(p2.negtive());
+    //         var deltaP = p0.add(p2.negtive());
 
-            mapSpriteData.mapPos = mapSpriteData.mapPos.add(deltaP);
-            e.pos.set_p(mapSpriteData.mapPos);
-        }
+    //         mapSpriteData.mapPos = mapSpriteData.mapPos.add(deltaP);
+    //         e.pos.set_p(mapSpriteData.mapPos);
+    //     }
 
-        //设置锚点坐标
-        var p0 = new Vec2();
-        //锚点的宽高
-        const aw = 190, ah = 210;
-        p0.set(aw / 2, ah / 2);
-        for (var i = 1; i <= 199; ++i) {
-            var anc = anchors[i];
+    //     //设置锚点坐标
+    //     var p0 = new Vec2();
+    //     //锚点的宽高
+    //     const aw = 190, ah = 210;
+    //     p0.set(aw / 2, ah / 2);
+    //     for (var i = 1; i <= 199; ++i) {
+    //         var anc = anchors[i];
 
-            p0.set(aw / 2, ah / 2);
+    //         p0.set(aw / 2, ah / 2);
 
-            if (!anc.mouseon) {
-                anc.scale = Math.max(e.scale, 0.2);
-                anc.z_order = 0;
-            } else {
-                anc.scale = Math.max(e.scale + 0.1, 0.3);
-                anc.z_order = 1;
-            }
+    //         if (!anc.mouseon) {
+    //             anc.scale = Math.max(e.scale, 0.2);
+    //             anc.z_order = 0;
+    //         } else {
+    //             anc.scale = Math.max(e.scale + 0.1, 0.3);
+    //             anc.z_order = 1;
+    //         }
 
-            p0 = p0.plus_n(-1 * anc.scale);
-            var p1 = anc.orgPos.plus_n(e.scale);
-            var p2 = p1.add(e.pos).add(p0);
-            anc.pos.set_p(p2);
-        }
+    //         p0 = p0.plus_n(-1 * anc.scale);
+    //         var p1 = anc.orgPos.plus_n(e.scale);
+    //         var p2 = p1.add(e.pos).add(p0);
+    //         anc.pos.set_p(p2);
+    //     }
 
-        //设置玩家位置
-        for (var i = 1; i <= 6; ++i) {
-            var k = game.gameData.playerAt[i];
+    //     //设置玩家位置
+    //     for (var i = 1; i <= 6; ++i) {
+    //         var k = game.gameData.playerAt[i];
 
-            var anc = anchors[k];
+    //         var anc = anchors[k];
 
-            var p1 = new Vec2();
-            p1.set_p(anc.pos);
-            p1.x += -50 * anc.scale;
-            p1.y += -200 * anc.scale;
-            players[i].pos.set_p(p1);
-            players[i].scale = anc.scale + 1.2 * anc.scale;
-        }
-    }
+    //         var p1 = new Vec2();
+    //         p1.set_p(anc.pos);
+    //         p1.x += -50 * anc.scale;
+    //         p1.y += -200 * anc.scale;
+    //         players[i].pos.set_p(p1);
+    //         players[i].scale = anc.scale + 1.2 * anc.scale;
+    //     }
+    // }
 
-    //小偷显示的轮
-    const thiefShowRound = [3, 8, 13, 18, 24];
+    // //小偷显示的轮
+    // const thiefShowRound = [3, 8, 13, 18, 24];
 
-    //小偷是否显示
-    if ((thiefShowRound.includes(game.gameData.gameRound) && game.gameData.chessStepOn >= 2)
-        || game.gameData.selfChessCtl.includes(1)) {
-        players[1].visible = true;
-    } else {
-        players[1].visible = false;
-    }
+    // //小偷是否显示
+    // if ((thiefShowRound.includes(game.gameData.gameRound) && game.gameData.chessStepOn >= 2)
+    //     || game.gameData.selfChessCtl.includes(1)) {
+    //     players[1].visible = true;
+    // } else {
+    //     players[1].visible = false;
+    // }
 }
 
 export function dragMoveMapOnMove(p) {
