@@ -22,6 +22,9 @@ export function initUI() {
     var stepOn = Sprite.new("src/arrow.png");
     stepOn.set_position_with_pos(0, 84);
     ui_director.add_child_with_key(bk, "step_on");
+
+    var upd_node = Node.new();
+    ui_director.add_child_with_key(upd_node, "upd_node");
 }
 
 var chessStepOnPos = [0, 40, 88, 135, 181, 230, 280];

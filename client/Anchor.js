@@ -12,18 +12,15 @@ import { main_director, insideCanvas, convertInCanvas } from "./idx.js";
 
 export class Anchor {
     constructor(type, number) {
-        var str = "src/anchor_" + type + ".png";
+        let str = "src/anchor_" + type + ".png";
 
-        this.number = number;
-        this.mouseon = false;
-
-        var outstr = "";
-        if (this.number < 10) {
-            outstr = "00" + this.number;
-        } else if (this.number < 100) {
-            outstr = "0" + this.number;
+        let outstr = "";
+        if (number < 10) {
+            outstr = "00" + number;
+        } else if (number < 100) {
+            outstr = "0" + number;
         } else {
-            outstr = this.number;
+            outstr = number;
         }
 
         this.sp = Sprite.new(str);
@@ -34,7 +31,7 @@ export class Anchor {
     }
 
     static new(type, number) {
-        var anc = new Anchor(type, number);
+        let anc = new Anchor(type, number);
         return anc;
     }
 }
@@ -49,9 +46,10 @@ export function initAnchor() {
         node.add_child_with_key(sp.sp, "sp");
         node.set_anchor_with_pos(0.5, 0.5);
         node.set_size_with_other(sp.sp.get_size());
-
-
         node.set_position_with_pos(anchorData[i].x, anchorData[i].y);
+
+        node.add_component_with_key(i, "number");
+        node.add_component_with_key(false, "mouse_on");
 
 
         let scale_node = main_director.get_child_with_key("scale_node");

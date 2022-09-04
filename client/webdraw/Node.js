@@ -15,6 +15,8 @@ export class Node {
         this.rotation = 0.0;
         this.children = new Map();
 
+        this.component = new Map();
+
         this.key = new String();
         this.parent = null;
 
@@ -23,6 +25,24 @@ export class Node {
 
     static new() {
         return new Node();
+    }
+
+    add_component_with_key(obj, key) {
+        this.component.set(key, obj);
+    }
+
+    remove_component_with_key(key) {
+        if (!this.component.has(key)) {
+            return;
+        }
+        this.component.delete(key);
+    }
+
+    get_component_with_key(key) {
+        if (!this.component.has(key)) {
+            return undefined;
+        }
+        return this.component.get(key);
     }
 
     get_size() {
