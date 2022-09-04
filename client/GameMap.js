@@ -158,19 +158,20 @@ function mapDataUpdate() {
     }
 
 
-    // //小偷显示的轮
-    // const thiefShowRound = [3, 8, 13, 18, 24];
+    //小偷显示的轮
+    const thiefShowRound = [3, 8, 13, 18, 24];
 
-    // //小偷是否显示
-    // if ((thiefShowRound.includes(game.gameData.gameRound) && game.gameData.chessStepOn >= 2)
-    //     || game.gameData.selfChessCtl.includes(1)) {
-    //     players[1].visible = true;
-    // } else {
-    //     players[1].visible = false;
-    // }
+    let thief = render_node.get_child_with_key(`player_${1}`);
+    //小偷是否显示
+    if ((thiefShowRound.includes(game.gameData.gameRound) && game.gameData.chessStepOn >= 2)
+        || game.gameData.selfChessCtl.includes(1)) {
+        thief.set_visible(true);
+    } else {
+        thief.set_visible(false);
+    }
 }
 
-export function dragMoveMapOnMove(p) {
+export function updateMapOnMove(p) {
     if (!game.isGameStart()) {
         return;
     }

@@ -8,7 +8,7 @@ import { Director, DirectorManager } from "./webdraw/Director.js";
 
 import { initUI } from "./UICtl.js";
 
-import { initMap, dragMoveMapOnMove, updateMapOnMouseDown, mapUpdateOnWheel } from "./GameMap.js";
+import { initMap, updateMapOnMove, updateMapOnMouseDown, mapUpdateOnWheel } from "./GameMap.js";
 
 import { initAnchor } from "./Anchor.js";
 
@@ -290,7 +290,7 @@ function mouseup(x, y) {
 function mousemove(x, y) {
     var p = Vec2.with_pos(x, y);
 
-    dragMoveMapOnMove(p);
+    updateMapOnMove(p);
 }
 
 function mousewheel(x, y, k) {
