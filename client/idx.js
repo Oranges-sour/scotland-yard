@@ -118,6 +118,10 @@ export function insideUICanvas(pos) {
 }
 
 function init() {
+
+    //初始化网络
+    web.init();
+    
     main_director = DirectorManager.new_director(ele_canvas, 60);
     //用来更新渲染区域的大小
     let upd_node = Node.new();
@@ -171,10 +175,6 @@ function init() {
 
     //初始化观战显示
     initObserverShow();
-
-
-    //初始化网络
-    web.init();
 }
 
 function initObserverShow() {
@@ -182,9 +182,9 @@ function initObserverShow() {
     main_director.add_child_with_key(ob, "game_observer");
     ob.add_schedule(function () {
         if (game.isGameStart() && game.isObserver()) {
-            clock.set_visible(true);
+            ob.set_visible(true);
         } else {
-            clock.set_visible(false);
+            ob.set_visible(false);
         }
         ob.set_position_with_pos(renderData.width / 2 - 165 / 2, 0);
     }, 1 / 60);

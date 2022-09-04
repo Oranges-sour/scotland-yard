@@ -50,7 +50,6 @@ export class Web {
                 that.processMsg(obj);
             };
 
-
             this.ws.onclose = function () {
                 that.onopen = false;
                 that.connected = false;

@@ -30,7 +30,7 @@ export function initUI() {
     //更新卡片展示堆
     upd_node.add_schedule(function () {
         uiUpdate();
-    }, 1 / 60, 0);
+    }, 1 / 60);
 
     //初始化卡片数量显示
     let cards_num_show = Node.new();
