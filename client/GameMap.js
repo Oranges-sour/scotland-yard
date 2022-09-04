@@ -260,20 +260,20 @@ export function updateMapOnMove(p) {
 export function mapLocateNowChessOn() {
     function locate() {
 
-        let scale_node = main_director.get_child_with_key("scale_node");
-        let render_node = scale_node.get_child_with_key("render_node");
+        // let scale_node = main_director.get_child_with_key("scale_node");
+        // let render_node = scale_node.get_child_with_key("render_node");
 
-        let str = `player_${game.gameData.chessStepOn}`;
-        let player = render_node.get_child_with_key(str);
+        // let str = `player_${game.gameData.chessStepOn}`;
+        // let player = render_node.get_child_with_key(str);
 
-        let p0 = player.get_position();
+        // let p0 = player.get_position();
 
-        let p1 = Vec2.with_pos(renderData.width / 2, renderData.height / 2);
+        // let p1 = Vec2.with_pos(renderData.width / 2, renderData.height / 2);
 
-        let p2 = Vec2.sub(p1, p0);
+        // let p2 = Vec2.sub(p0, p1);
 
 
-        mapSpriteData.mapPos.add_eq(p2);
+        // mapSpriteData.mapPos.add_eq(p2);
     }
     //控制的是小偷，那随意定位，如果不是小偷，则不能在小偷不显示的时候定位小偷
     if (game.gameData.selfChessCtl.includes(1)) {
