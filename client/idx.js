@@ -174,9 +174,17 @@ function init() {
 
 function initVicDef() {
     let vic = Sprite.new("src/victory.png");
+    vic.add_schedule(function () {
+        vic.set_position_with_pos(renderData.width / 2, renderData.height / 2);
+    }, 1 / 60);
     vic.set_visible(false);
     vic.set_z_order(3);
+
+
     let def = Sprite.new("src/defeat.png");
+    def.add_schedule(function () {
+        def.set_position_with_pos(renderData.width / 2, renderData.height / 2);
+    }, 1 / 60);
     def.set_visible(false);
     def.set_z_order(3);
 
@@ -196,12 +204,9 @@ function initVicDef() {
     let upd_node_1 = Node.new();
     main_director.add_child_with_key(upd_node_1, "upd_node_1");
     upd_node_1.add_schedule(function () {
-
         if (game.gameData.gameWin != 0) {
+            bk.set_visible(true);
             if (game.gameData.gameWin == 1) {
-
-                bk.set_visible(true);
-
                 //警察赢，自己是警察
                 if (!game.gameData.selfChessCtl.includes(1)) {
                     vic.set_visible(true);
@@ -288,76 +293,6 @@ function initChess() {
         render_node.add_child_with_key(sp, `player_${i}`);
     }
 }
-
-function main_update() {
-
-
-
-    // //设置胜利与失败显示位置
-    // let vic = sprites_main.get("victory");
-    // vic.pos.x = renderData.width / 2 - vic.width() / 2;
-    // vic.pos.y = renderData.height / 2 - vic.height() / 2;
-
-    // let def = sprites_main.get("defeat");
-    // def.pos.x = renderData.width / 2 - def.width() / 2;
-    // def.pos.y = renderData.height / 2 - def.height() / 2;
-
-    // let blackBk = sprites_main.get("blackBk");
-    // blackBk.w = renderData.width;
-    // blackBk.h = renderData.height;
-
-    //设置卡片选择位置
-    // const pp = [0, 5, 100, 193, 288, 382];
-    // let card_select_bar = sprites_main.get("card_select_bar");
-    // let card_select = sprites_main.get("card_select");
-    // card_select_bar.pos.x = renderData.width / 2 - card_select_bar.width() / 2;
-    // card_select.pos.x = card_select_bar.pos.x + pp[game.gameData.cardSelect];
-
-    // if (game.onMyStep() && game.isGameStart() && game.gameData.gameWin == 0) {
-    //     card_select_bar.visible = true;
-    //     card_select.visible = true;
-    // } else {
-    //     card_select_bar.visible = false;
-    //     card_select.visible = false;
-    // }
-
-
-    //绘制游戏胜利显示
-    // if (game.gameData.gameWin != 0) {
-    //     blackBk.visible = true;
-    //     if (game.gameData.gameWin == 1) {
-
-    //         //警察赢，自己是警察
-    //         if (!game.gameData.selfChessCtl.includes(1)) {
-    //             vic.visible = true;
-    //         } else {
-    //             //警察赢，自己是小偷
-    //             def.visible = true;
-    //         }
-    //     }
-    //     if (game.gameData.gameWin == 2) {
-
-    //         //小偷赢，自己是小偷
-    //         if (game.gameData.selfChessCtl.includes(1)) {
-    //             vic.visible = true;
-    //         } else {
-    //             //小偷赢，自己是警察
-    //             def.visible = true;
-    //         }
-    //     }
-    // } else {
-    //     vic.visible = false;
-    //     def.visible = false;
-    //     blackBk.visible = false;
-    // }
-
-    //draw_main();
-    //draw_ui();
-    //mapDataUpdate();
-    //uiUpdate();
-}
-
-
 
 //针对鼠标的操作
 
