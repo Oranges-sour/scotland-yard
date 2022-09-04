@@ -1,3 +1,4 @@
+'use strict';
 var map = new Map();
 
 var load_regist = new Map();

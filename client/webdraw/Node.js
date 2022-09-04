@@ -1,3 +1,4 @@
+'use strict';
 import { Vec2 } from "./Vec2.js";
 import { Size } from "./Size.js";
 import { Tools } from "./Tools.js";
@@ -43,6 +44,10 @@ export class Node {
             return undefined;
         }
         return this.component.get(key);
+    }
+
+    get_scaled_size() {
+        return Size.scalar(this.get_size(), this.get_scale());
     }
 
     get_size() {

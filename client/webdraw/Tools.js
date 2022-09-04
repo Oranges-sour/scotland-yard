@@ -1,3 +1,4 @@
+'use strict';
 export class Tools {
     static generate_random_string(length) {
         var str = "",

@@ -15,57 +15,71 @@ import { game } from "./Game.js";
 import { mapLocateNowChessOn } from "./GameMap.js";
 
 export function initUI() {
-    var bk = Sprite.new("src/play_ui.png");
+    let bk = Sprite.new("src/play_ui.png");
     bk.set_anchor_with_pos(0, 0);
     ui_director.add_child_with_key(bk, "play_ui");
 
-    var stepOn = Sprite.new("src/arrow.png");
-    stepOn.set_position_with_pos(0, 84);
-    ui_director.add_child_with_key(bk, "step_on");
+    let step_on = Sprite.new("src/arrow.png");
+    step_on.set_anchor_with_pos(0, 0);
+    step_on.set_position_with_pos(0, 84);
+    ui_director.add_child_with_key(step_on, "step_on");
 
-    var upd_node = Node.new();
+    let upd_node = Node.new();
     ui_director.add_child_with_key(upd_node, "upd_node");
+
+    upd_node.add_schedule(function () {
+        uiUpdate();
+    }, 1 / 2, 0);
 }
 
-var chessStepOnPos = [0, 40, 88, 135, 181, 230, 280];
+let chessStepOnPos = [0, 40, 88, 135, 181, 230, 280];
 
 //小偷行动的步骤
-var thiefStepList_old = new Array();
-for (var i = 1; i <= 24; ++i) {
+let thiefStepList_old = new Array();
+for (let i = 1; i <= 24; ++i) {
     thiefStepList_old[i] = 0;
 }
 
-export function uiUpdate() {
-    var e = sprites_ui.get("step_on");
-    e.pos.x = chessStepOnPos[game.gameData.chessStepOn];
+function uiUpdate() {
+    let step_on = ui_director.get_child_with_key("step_on");
+    let p = step_on.get_position();
+    p.x = chessStepOnPos[game.gameData.chessStepOn];
+    step_on.set_position_with_other(p);
 
-    for (var i = 0; i <= 23; ++i) {
-        var j = i + 1;
+    for (let i = 0; i <= 23; ++i) {
+        let j = i + 1;
+        let str = `card_${j}`;
+
         if (thiefStepList_old[j] != game.gameData.thiefStepList[j] && game.gameData.thiefStepList[j] != 0) {
+            thiefStepList_old[j] = game.gameData.thiefStepList[j];
 
-            var e = new Sprite("src/card_" + game.gameData.thiefStepList[j] + ".png");
+            ui_director.remove_child(str);
 
-            var kx = parseInt(i / 8);
-            var ky = parseInt(i % 8);
+            let sp = Sprite.new("src/card_" + game.gameData.thiefStepList[j] + ".png");
+            sp.set_z_order(1);
 
-            var x = kx * 73 + 124;
-            var y = ky * 42 + 320;
+            let kx = parseInt(i / 8);
+            let ky = parseInt(i % 8);
 
-            e.pos.set(x, y);
+            let x = kx * 73 + 124;
+            let y = ky * 42 + 320;
 
-            sprites_ui.set("thief_card_" + j, e);
+            sp.set_anchor_with_pos(0, 0);
+            sp.set_position_with_pos(x, y);
+
+            ui_director.add_child_with_key(sp, str);
         }
         if (game.gameData.thiefStepList[j] == 0) {
-            sprites_ui.delete("thief_card_" + j);
+            ui_director.remove_child(str);
         }
     }
 }
 
 export function updateUIOnMouseUp(p) {
     // if (insideUICanvas(p)) {
-    //     var pos = convertInUICanvas(p);
+    //     let pos = convertInUICanvas(p);
 
-    //     var lrp = new Vec2();
+    //     let lrp = new Vec2();
     //     lrp.set(17, 310);
     //     if (inside(pos, lrp, 80, 80)) {
     //         mapLocateNowChessOn();

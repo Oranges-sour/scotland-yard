@@ -1,3 +1,4 @@
+'use strict';
 import { Node } from "./Node.js";
 
 export class Label extends Node {

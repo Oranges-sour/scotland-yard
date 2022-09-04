@@ -1,3 +1,4 @@
+'use strict';
 export class Vec2 {
     constructor(x, y) {
         this.x = x;

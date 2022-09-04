@@ -1,3 +1,4 @@
+'use strict';
 import { Sprite } from "./webdraw/Sprite.js";
 import { Label } from "./webdraw/Label.js";
 import { Node } from "./webdraw/Node.js";
@@ -18,8 +19,8 @@ import { game } from "./Game.js";
 
 import { uiCtlCanMoveMap } from "./MenuUI.js";
 
-var ele_canvas = document.getElementById("canvas");
-var ele_canvas_ui = document.getElementById("canvas_ui");
+let ele_canvas = document.getElementById("canvas");
+let ele_canvas_ui = document.getElementById("canvas_ui");
 
 var main_director, ui_director;
 
@@ -70,10 +71,10 @@ export function inside(pos, lrp, w, h) {
 }
 
 export function convertInCanvas(pos) {
-    var left = ele_canvas.offsetLeft;
-    var top = ele_canvas.offsetTop;
+    let left = ele_canvas.offsetLeft;
+    let top = ele_canvas.offsetTop;
 
-    var ans = Vec2.new();
+    let ans = Vec2.new();
     ans.x = pos.x - left;
     ans.y = pos.y - top;
 
@@ -81,10 +82,10 @@ export function convertInCanvas(pos) {
 }
 
 export function convertInUICanvas(pos) {
-    var left = ele_canvas_ui.offsetLeft;
-    var top = ele_canvas_ui.offsetTop;
+    let left = ele_canvas_ui.offsetLeft;
+    let top = ele_canvas_ui.offsetTop;
 
-    var ans = Vec2.new();
+    let ans = Vec2.new();
     ans.x = pos.x - left;
     ans.y = pos.y - top;
 
@@ -93,24 +94,24 @@ export function convertInUICanvas(pos) {
 
 export function insideCanvas(pos) {
 
-    var w = ele_canvas.offsetWidth;
-    var h = ele_canvas.offsetHeight;
-    var left = ele_canvas.offsetLeft;
-    var top = ele_canvas.offsetTop;
+    let w = ele_canvas.offsetWidth;
+    let h = ele_canvas.offsetHeight;
+    let left = ele_canvas.offsetLeft;
+    let top = ele_canvas.offsetTop;
 
-    var p = Vec2.new();
+    let p = Vec2.new();
     p.set_with_pos(left, top);
     return inside(pos, p, w, h);
 }
 
 export function insideUICanvas(pos) {
 
-    var w = ele_canvas_ui.offsetWidth;
-    var h = ele_canvas_ui.offsetHeight;
-    var left = ele_canvas_ui.offsetLeft;
-    var top = ele_canvas_ui.offsetTop;
+    let w = ele_canvas_ui.offsetWidth;
+    let h = ele_canvas_ui.offsetHeight;
+    let left = ele_canvas_ui.offsetLeft;
+    let top = ele_canvas_ui.offsetTop;
 
-    var p = Vec2.new();
+    let p = Vec2.new();
     p.set_with_pos(left, top);
     return inside(pos, p, w, h);
 }
@@ -118,7 +119,7 @@ export function insideUICanvas(pos) {
 function init() {
     main_director = DirectorManager.new_director(ele_canvas, 60);
     //用来更新渲染区域的大小
-    var upd_node = Node.new();
+    let upd_node = Node.new();
     upd_node.add_schedule(function () {
 
         renderData.width = Math.max(1, window.innerWidth - ele_canvas_ui.offsetWidth - 50);
@@ -134,7 +135,7 @@ function init() {
     main_director.add_child_with_key(upd_node, "upd_node");
 
     //所有需要使用滚轮缩放的内容都添加进render_node
-    var render_node = Node.new();
+    let render_node = Node.new();
 
     let scale_node = Node.new();
     scale_node.set_anchor_with_pos(0.5, 0.5);
@@ -147,7 +148,6 @@ function init() {
     main_director.add_child_with_key(scale_node, "scale_node");
 
 
-
     ui_director = DirectorManager.new_director(ele_canvas_ui, 60);
 
     initUI();
@@ -157,20 +157,13 @@ function init() {
     initAnchor();
 
     //初始化棋子
-    for (var i = 1; i <= 6; ++i) {
-        var str = "src/chess_" + i + ".png"
-        var sp = Sprite.new(str);
-
-        sp.set_anchor_with_pos(0.5, 0.7);
-
-        render_node.add_child_with_key(sp, `player_${i}`);
-    }
+    initChess();
 
     //初始化胜利与失败显示
-    var vic = Sprite.new("src/victory.png");
+    let vic = Sprite.new("src/victory.png");
     vic.set_visible(false);
     vic.set_z_order(3);
-    var def = Sprite.new("src/defeat.png");
+    let def = Sprite.new("src/defeat.png");
     def.set_visible(false);
     def.set_z_order(3);
 
@@ -178,14 +171,44 @@ function init() {
     main_director.add_child_with_key(def, "defeat");
 
     //初始化棋子选择
-    var card_select_node = Node.new();
+    let card_select_node = Node.new();
+    card_select_node.set_position_with_pos(0, 60);
+    card_select_node.add_schedule(function () {
+        let sp = card_select_node.get_child_with_key("bar");
+        card_select_node.set_size_with_other(sp.get_scaled_size());
+
+        let p = card_select_node.get_position();
+        p.x = renderData.width / 2;
+
+        card_select_node.set_position_with_other(p);
+
+        if (game.isGameStart() && game.onMyStep()) {
+            card_select_node.set_visible(true);
+        } else {
+            card_select_node.set_visible(false);
+        }
+    }, 1 / 60);
+
+    card_select_node.add_component_with_key([0, 5, 100, 193, 288, 382, 600], "deck_x");
+
     main_director.add_child_with_key(card_select_node, "card_select");
 
-    var card_select_bar = Sprite.new("src/card_select_bar.png");
+    let card_select_bar = Sprite.new("src/card_select_bar.png");
     card_select_bar.set_position_with_pos(0, 10);
 
-    var card_select = Sprite.new("src/card_select.png");
-    card_select.set_position_with_pos(0, 18);
+    let card_select = Sprite.new("src/card_select.png");
+    card_select.set_anchor_with_pos(0, 0.5);
+    card_select.add_schedule(function () {
+        let card_x = card_select_node.get_component_with_key("deck_x");
+        let x = card_x[game.gameData.cardSelect];
+
+        let p = card_select.get_position();
+        p.x = x - card_select_bar.get_size().w / 2;
+
+        card_select.set_position_with_other(p);
+
+    }, 1 / 60);
+    card_select.set_position_with_pos(0, 10);
 
     card_select_node.add_child_with_key(card_select_bar, "bar");
     card_select_node.add_child_with_key(card_select, "select");
@@ -197,27 +220,41 @@ function init() {
     //setInterval(main_update, 15);
 }
 
+function initChess() {
+    let scale_node = main_director.get_child_with_key("scale_node");
+    let render_node = scale_node.get_child_with_key("render_node");
+
+    for (let i = 1; i <= 6; ++i) {
+        let str = "src/chess_" + i + ".png"
+        let sp = Sprite.new(str);
+
+        sp.set_anchor_with_pos(0.5, 0.7);
+
+        render_node.add_child_with_key(sp, `player_${i}`);
+    }
+}
+
 function main_update() {
 
 
 
     // //设置胜利与失败显示位置
-    // var vic = sprites_main.get("victory");
+    // let vic = sprites_main.get("victory");
     // vic.pos.x = renderData.width / 2 - vic.width() / 2;
     // vic.pos.y = renderData.height / 2 - vic.height() / 2;
 
-    // var def = sprites_main.get("defeat");
+    // let def = sprites_main.get("defeat");
     // def.pos.x = renderData.width / 2 - def.width() / 2;
     // def.pos.y = renderData.height / 2 - def.height() / 2;
 
-    // var blackBk = sprites_main.get("blackBk");
+    // let blackBk = sprites_main.get("blackBk");
     // blackBk.w = renderData.width;
     // blackBk.h = renderData.height;
 
     //设置卡片选择位置
     // const pp = [0, 5, 100, 193, 288, 382];
-    // var card_select_bar = sprites_main.get("card_select_bar");
-    // var card_select = sprites_main.get("card_select");
+    // let card_select_bar = sprites_main.get("card_select_bar");
+    // let card_select = sprites_main.get("card_select");
     // card_select_bar.pos.x = renderData.width / 2 - card_select_bar.width() / 2;
     // card_select.pos.x = card_select_bar.pos.x + pp[game.gameData.cardSelect];
 
@@ -271,7 +308,7 @@ function main_update() {
 
 function mousedown(x, y) {
     mouseDown = true;
-    var p = Vec2.with_pos(x, y);
+    let p = Vec2.with_pos(x, y);
 
     touchStartPos.set_with_other(p);
     updateMapOnMouseDown(p);
@@ -279,7 +316,7 @@ function mousedown(x, y) {
 
 function mouseup(x, y) {
     mouseDown = false;
-    var p = Vec2.with_pos(x, y);
+    let p = Vec2.with_pos(x, y);
 
     touchEndPos.set_with_other(p);
 
@@ -288,19 +325,19 @@ function mouseup(x, y) {
 }
 
 function mousemove(x, y) {
-    var p = Vec2.with_pos(x, y);
+    let p = Vec2.with_pos(x, y);
 
     updateMapOnMove(p);
 }
 
 function mousewheel(x, y, k) {
-    var p = Vec2.with_pos(x, y);
+    let p = Vec2.with_pos(x, y);
 
     mapUpdateOnWheel(p, k);
 }
 
 function mousedblclick(x, y) {
-    var p = Vec2.with_pos(x, y);
+    let p = Vec2.with_pos(x, y);
 
     playChessOnDblClick(p);
 }
@@ -314,17 +351,20 @@ function updateCardSelectOnMouseUp(p) {
         return;
     }
 
-    var p = convertInCanvas(p);
-    var card_select_node = main_director.get("card_select");
+    let p1 = convertInCanvas(p);
+    let card_select_node = main_director.get_child_with_key("card_select");
 
-    var bar = card_select_node.get_child_with_key("bar");
-    if (inside(p, card_select_node.get_position(),
-        bar.width(), bar.height())) {
+    let bar = card_select_node.get_child_with_key("bar");
+    let size = bar.get_scaled_size();
 
-        const pp = [0, 5, 100, 193, 288, 382, 600];
+    let p2 = Vec2.sub(card_select_node.get_position(), Vec2.with_pos(size.w / 2, size.h / 2));
+    if (inside(p1, p2,
+        size.w, size.h)) {
 
-        var dx = p.x - bar.get_position().x;
-        for (var i = 1; i <= 5; ++i) {
+        let pp = card_select_node.get_component_with_key("deck_x");
+
+        let dx = p1.x - p2.x;
+        for (let i = 1; i <= 5; ++i) {
             if (dx >= pp[i] && dx < pp[i + 1]) {
                 game.setCardSelect(i);
                 break;
@@ -335,10 +375,10 @@ function updateCardSelectOnMouseUp(p) {
 
 function playChessOnDblClick(p) {
     if (insideCanvas(p)) {
-        // var mark;
-        // var cnt = 0;
-        // for (var i = 1; i <= 199; ++i) {
-        //     var anc = anchors[i];
+        // let mark;
+        // let cnt = 0;
+        // for (let i = 1; i <= 199; ++i) {
+        //     let anc = anchors[i];
         //     if (anc.mouseon) {
         //         cnt += 1;
         //         mark = i;
@@ -351,9 +391,6 @@ function playChessOnDblClick(p) {
         // }
     }
 }
-
-
-var cardsDeckX = [0, 50, 105, 160, 220, 275];
 
 
 export var main_director, ui_director, mouseDown, touchStartPos, touchEndPos, renderData, isDevicePC;
