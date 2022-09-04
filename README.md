@@ -2,6 +2,7 @@
 经典桌游复刻  
 一个web小游戏
 
+基于[WebDraw](https://github.com/Oranges-sour/WebDraw)
 
 ## Server
 ```
