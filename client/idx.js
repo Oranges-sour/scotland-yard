@@ -168,8 +168,6 @@ function init() {
 
     //初始化网络
     web.init();
-
-    //setInterval(main_update, 15);
 }
 
 function initVicDef() {
