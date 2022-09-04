@@ -415,8 +415,6 @@ function msg_play(obj) {
         }
     }
 
-
-
     return true;
 }
 
@@ -432,7 +430,20 @@ function msg_reset(msg, ws) {
 }
 
 function msg_start(obj, ws) {
+
     console.log("-Start-");
+    if (gameStart) {
+        console.log("-Failed- Game has already started. This player is set as observer.");
+
+        var obj = new Object();
+        obj.type = "start";
+
+        var j = JSON.stringify(obj);
+
+        ws.send(j);
+
+        return true;
+    }
     //检查是不是每个棋子都有人操控
     var suc = true;
     for (var i = 1; i <= 6; ++i) {

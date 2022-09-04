@@ -1,12 +1,18 @@
 'use strict';
-import { Sprite, SpriteRect } from "./Sprite.js"
-import Vec2 from "./Vec2.js";
+import { Sprite } from "./webdraw/Sprite.js";
+import { Label } from "./webdraw/Label.js";
+import { Node } from "./webdraw/Node.js";
+import { Vec2 } from "./webdraw/Vec2.js";
+import { Size } from "./webdraw/Size.js";
+import { DrawNode } from "./webdraw/DrawNode.js";
+import { ImagePool } from "./webdraw/ImagePool.js";
+import { Director, DirectorManager } from "./webdraw/Director.js";
 
+import { initUI, updateUIOnMouseUp } from "./UICtl.js";
 
-import { mapDataUpdate, dragMoveMapOnMove, mapInit, mapUpdateOnWheel, mapUpdateOnMouseDown } from "./GameMap.js"
-import { anchorInit, anchorUpdate } from "./Anchor.js";
+import { initMap, updateMapOnMove, updateMapOnMouseDown, mapUpdateOnWheel } from "./GameMap.js";
 
-import { initUI, uiUpdate, updateUIOnMouseUp } from "./UICtl.js";
+import { initAnchor } from "./Anchor.js";
 
 import { web } from "./Web.js";
 
@@ -14,19 +20,13 @@ import { game } from "./Game.js";
 
 import { uiCtlCanMoveMap } from "./MenuUI.js";
 
-var ele_canvas = document.getElementById("canvas");
-var ele_canvas_ui = document.getElementById("canvas_ui");
+let ele_canvas = document.getElementById("canvas");
+let ele_canvas_ui = document.getElementById("canvas_ui");
 
-var sprites_main = new Map();
-var sprites_ui = new Map();
+var main_director, ui_director;
 
-
-var anchors = new Array();
-var players = new Array();
-
-
-var touchStartPos = new Vec2();
-var touchEndPos = new Vec2();
+var touchStartPos = Vec2.new();
+var touchEndPos = Vec2.new();
 var mouseDown = false;
 
 
@@ -39,96 +39,20 @@ window.onload = function () {
     init();
 }
 
-var touchData = new Object();
-touchData.sUserAgent = navigator.userAgent.toLowerCase();
-touchData.time0 = 0, touchData.time1 = 0, touchData.cnt = 1;
-touchData.startTowSpot = true;
-touchData.dist = 0;
-var isDevicePC = true;
 
-if (/ipad|iphone|midp|rv:1.2.3.4|ucweb|android|windows ce|windows mobile/.test(touchData.sUserAgent)) {
-    isDevicePC = false;
-    console.log("phone");
-    window.ontouchstart = function (e) {
-        var e = e.touches[0];
-        touchdown(e.pageX, e.pageY);
-    }
-    window.addEventListener("touchmove", function (e) {
-        if (uiCtlCanMoveMap()) {
-            return;
-        }
-        if (game.isGameStart()) {
-            e.preventDefault();
-        }
-
-        if (e.touches.length == 1) {
-            var ee = e.touches[0];
-            touchmoveOneSpot(ee.pageX, ee.pageY);
-        }
-        if (e.touches.length >= 2) {
-
-            var ee0 = e.touches[0];
-            var ee1 = e.touches[1];
-
-            var x0 = ee0.pageX; var y0 = ee0.pageY; var x1 = ee1.pageX; var y1 = ee1.pageY;
-            if (touchData.startTowSpot) {
-                touchData.startTowSpot = false;
-                var dx = x1 - x0;
-                var dy = y1 - y0;
-                touchData.dist = Math.sqrt(dx * dx + dy * dy);
-            }
-            touchmoveTwoSpot(x0, y0, x1, y1);
-        }
-
-
-    }, { passive: false });
-
-    window.addEventListener("touchend", function (e) {
-        if (touchData.startTowSpot) {
-            var ee = e.changedTouches[0];
-
-            var tt = new Date().getTime();
-            if (touchData.cnt == 2 && tt - touchData.time0 > 300) {
-                touchData.cnt = 1;
-            }
-            if (touchData.cnt == 1) {
-                touchData.cnt += 1;
-                touchData.time0 = tt;
-            }
-            else if (touchData.cnt == 2) {
-                touchData.time1 = tt;
-                console.log(touchData.time1 - touchData.time0);
-                if (touchData.time1 - touchData.time0 < 300) {
-                    touchdbl(ee.pageX, ee.pageY);
-                }
-                touchData.cnt = 1;
-            }
-        }
-
-
-        touchData.startTowSpot = true;
-
-        var ee = e.changedTouches[0];
-        touchup(ee.pageX, ee.pageY);
-    }, { passive: false });
-
-} else {
-    //PC操作
-    window.onmousedown = function (e) {
-        mousedown(e.pageX, e.pageY);
-    }
-    window.onmousemove = function (e) {
-        mousemove(e.pageX, e.pageY);
-    }
-    window.onmouseup = function (e) {
-        mouseup(e.pageX, e.pageY);
-    }
-    window.ondblclick = function (e) {
-        mousedblclick(e.pageX, e.pageY);
-    }
+//PC操作
+window.onmousedown = function (e) {
+    mousedown(e.pageX, e.pageY);
 }
-
-
+window.onmousemove = function (e) {
+    mousemove(e.pageX, e.pageY);
+}
+window.onmouseup = function (e) {
+    mouseup(e.pageX, e.pageY);
+}
+window.ondblclick = function (e) {
+    mousedblclick(e.pageX, e.pageY);
+}
 window.onwheel = function (e) {
     if (e.wheelDelta > 0) {
         mousewheel(e.pageX, e.pageY, 1);
@@ -148,10 +72,10 @@ export function inside(pos, lrp, w, h) {
 }
 
 export function convertInCanvas(pos) {
-    var left = ele_canvas.offsetLeft;
-    var top = ele_canvas.offsetTop;
+    let left = ele_canvas.offsetLeft;
+    let top = ele_canvas.offsetTop;
 
-    var ans = new Vec2();
+    let ans = Vec2.new();
     ans.x = pos.x - left;
     ans.y = pos.y - top;
 
@@ -159,10 +83,10 @@ export function convertInCanvas(pos) {
 }
 
 export function convertInUICanvas(pos) {
-    var left = ele_canvas_ui.offsetLeft;
-    var top = ele_canvas_ui.offsetTop;
+    let left = ele_canvas_ui.offsetLeft;
+    let top = ele_canvas_ui.offsetTop;
 
-    var ans = new Vec2();
+    let ans = Vec2.new();
     ans.x = pos.x - left;
     ans.y = pos.y - top;
 
@@ -171,239 +95,334 @@ export function convertInUICanvas(pos) {
 
 export function insideCanvas(pos) {
 
-    var w = ele_canvas.offsetWidth;
-    var h = ele_canvas.offsetHeight;
-    var left = ele_canvas.offsetLeft;
-    var top = ele_canvas.offsetTop;
+    let w = ele_canvas.offsetWidth;
+    let h = ele_canvas.offsetHeight;
+    let left = ele_canvas.offsetLeft;
+    let top = ele_canvas.offsetTop;
 
-    var p = new Vec2();
-    p.set(left, top);
+    let p = Vec2.new();
+    p.set_with_pos(left, top);
     return inside(pos, p, w, h);
 }
 
 export function insideUICanvas(pos) {
 
-    var w = ele_canvas_ui.offsetWidth;
-    var h = ele_canvas_ui.offsetHeight;
-    var left = ele_canvas_ui.offsetLeft;
-    var top = ele_canvas_ui.offsetTop;
+    let w = ele_canvas_ui.offsetWidth;
+    let h = ele_canvas_ui.offsetHeight;
+    let left = ele_canvas_ui.offsetLeft;
+    let top = ele_canvas_ui.offsetTop;
 
-    var p = new Vec2();
-    p.set(left, top);
+    let p = Vec2.new();
+    p.set_with_pos(left, top);
     return inside(pos, p, w, h);
 }
 
 function init() {
 
-    initUI();
-
-    mapInit();
-
-    anchorInit();
-
-    //初始化棋子
-    for (var i = 1; i <= 6; ++i) {
-        var str = "src/chess_" + i + ".png"
-        var sp = new Sprite(str);
-        sprites_main.set(str, sp);
-        players[i] = sp;
-    }
-
-    //初始化胜利与失败显示
-    var vic = new Sprite("src/victory.png");
-    vic.visible = false;
-    vic.z_order = 3;
-    var def = new Sprite("src/defeat.png");
-    def.visible = false;
-    def.z_order = 3;
-    //胜利失败显示下面的一个黑色覆盖
-    var blackBk = new SpriteRect(0, 0, 0, 0);
-    blackBk.visible = false;
-    blackBk.z_order = 2;
-    blackBk.setRGBA("rgba(0, 0, 0, 0.6)");
-
-    sprites_main.set("victory", vic);
-    sprites_main.set("defeat", def);
-    sprites_main.set("blackBk", blackBk);
-
-    //初始化棋子选择
-    var card_select_bar = new Sprite("src/card_select_bar.png");
-    card_select_bar.pos.set(0, 10);
-    card_select_bar.z_order = 4;
-    var card_select = new Sprite("src/card_select.png");
-    card_select.pos.set(0, 18);
-    card_select.z_order = 4;
-    sprites_main.set("card_select_bar", card_select_bar);
-    sprites_main.set("card_select", card_select);
-
     //初始化网络
     web.init();
+    
+    main_director = DirectorManager.new_director(ele_canvas, 60);
+    //用来更新渲染区域的大小
+    let upd_node = Node.new();
+    upd_node.add_schedule(function () {
 
-    setInterval(main_update, 15);
+        renderData.width = Math.max(1, window.innerWidth - ele_canvas_ui.offsetWidth - 50);
+        ele_canvas_ui.style.left = renderData.width + 30 + "px";
+
+        window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+
+
+        ele_canvas.width = renderData.width;
+        ele_canvas.height = renderData.height;
+
+    }, 1 / 60.0, 0);
+    main_director.add_child_with_key(upd_node, "upd_node_0");
+
+    //所有需要使用滚轮缩放的内容都添加进render_node
+    let render_node = Node.new();
+
+    let scale_node = Node.new();
+    scale_node.set_anchor_with_pos(0.5, 0.5);
+    scale_node.add_schedule(function () {
+        scale_node.set_size_with_size(renderData.width, renderData.height);
+        scale_node.set_position_with_pos(renderData.width / 2, renderData.height / 2);
+    }, 1 / 60.0, 0);
+    scale_node.add_child_with_key(render_node, "render_node");
+
+    main_director.add_child_with_key(scale_node, "scale_node");
+
+
+    ui_director = DirectorManager.new_director(ele_canvas_ui, 60);
+
+    initUI();
+
+    initMap();
+
+    initAnchor();
+
+    //初始化棋子
+    initChess();
+
+    //初始化胜利与失败显示
+    initVicDef();
+
+    //初始化棋子选择
+    initCardSelect();
+
+    //初始化游戏时间显示
+    initGameClock();
+
+    //初始化观战显示
+    initObserverShow();
 }
 
-function main_update() {
-
-    renderData.width = Math.max(1, window.innerWidth - ele_canvas_ui.offsetWidth - 50);
-    ele_canvas_ui.style.left = renderData.width + 30 + "px";
-
-    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
-
-
-    ele_canvas.width = renderData.width;
-    ele_canvas.height = renderData.height;
-
-    //设置胜利与失败显示位置
-    var vic = sprites_main.get("victory");
-    vic.pos.x = renderData.width / 2 - vic.width() / 2;
-    vic.pos.y = renderData.height / 2 - vic.height() / 2;
-
-    var def = sprites_main.get("defeat");
-    def.pos.x = renderData.width / 2 - def.width() / 2;
-    def.pos.y = renderData.height / 2 - def.height() / 2;
-
-    var blackBk = sprites_main.get("blackBk");
-    blackBk.w = renderData.width;
-    blackBk.h = renderData.height;
-
-    //设置卡片选择位置
-    const pp = [0, 5, 100, 193, 288, 382];
-    var card_select_bar = sprites_main.get("card_select_bar");
-    var card_select = sprites_main.get("card_select");
-    card_select_bar.pos.x = renderData.width / 2 - card_select_bar.width() / 2;
-    card_select.pos.x = card_select_bar.pos.x + pp[game.gameData.cardSelect];
-
-    if (game.onMyStep() && game.isGameStart() && game.gameData.gameWin == 0) {
-        card_select_bar.visible = true;
-        card_select.visible = true;
-    } else {
-        card_select_bar.visible = false;
-        card_select.visible = false;
-    }
-
-
-    //绘制游戏胜利显示
-    if (game.gameData.gameWin != 0) {
-        blackBk.visible = true;
-        if (game.gameData.gameWin == 1) {
-
-            //警察赢，自己是警察
-            if (!game.gameData.selfChessCtl.includes(1)) {
-                vic.visible = true;
-            } else {
-                //警察赢，自己是小偷
-                def.visible = true;
-            }
+function initObserverShow() {
+    let ob = Node.new();
+    main_director.add_child_with_key(ob, "game_observer");
+    ob.add_schedule(function () {
+        if (game.isGameStart() && game.isObserver()) {
+            ob.set_visible(true);
+        } else {
+            ob.set_visible(false);
         }
-        if (game.gameData.gameWin == 2) {
+        ob.set_position_with_pos(renderData.width / 2 - 165 / 2, 0);
+    }, 1 / 60);
 
-            //小偷赢，自己是小偷
-            if (game.gameData.selfChessCtl.includes(1)) {
-                vic.visible = true;
-            } else {
-                //小偷赢，自己是警察
-                def.visible = true;
-            }
+    let bk = DrawNode.new();
+    bk.add_rect(Vec2.with_pos(0, 0), 165, 60, true, "#f5f5dc");
+
+    ob.add_child_with_key(bk, "bk");
+
+    let tex = Label.with_font_color(36, "Verdana", "rgb(67, 65, 65)");
+    ob.add_child_with_key(tex, "text");
+    tex.set_position_with_pos(30, 40);
+
+    tex.set_text("观战中");
+}
+
+function initGameClock() {
+
+    let clock = Node.new();
+    main_director.add_child_with_key(clock, "game_clock");
+
+    clock.add_schedule(function () {
+        if (game.isGameStart()) {
+            clock.set_visible(true);
+        } else {
+            clock.set_visible(false);
         }
-    } else {
-        vic.visible = false;
-        def.visible = false;
-        blackBk.visible = false;
+
+        clock.set_position_with_pos(renderData.width - 165, -10);
+    }, 1 / 60);
+
+    let bk = DrawNode.new();
+    bk.add_rect(Vec2.with_pos(0, 0), 165, 60, true, "#f5f5dc");
+    clock.add_child_with_key(bk, "bk");
+
+    let time0 = Label.with_font_color(36, "Verdana", "rgb(67, 65, 65)");
+    clock.add_child_with_key(time0, "time0");
+
+    time0.set_text("00:00");
+    time0.set_position_with_pos(10, 50);
+    time0.add_schedule(function () {
+        let str = "_1_:_2_";
+        let t = game.getGameElapsedTime();
+
+        //1 时钟
+        let t1 = "" + parseInt(t / 3600);
+        if (t1 < 10) {
+            t1 = "0" + t1;
+        }
+        //2 分钟
+        let t2 = "" + parseInt((t % 3600) / 60);
+        if (t2 < 10) {
+            t2 = "0" + t2;
+        }
+
+        str = str.replace(/_1_/, t1);
+        str = str.replace(/_2_/, t2);
+
+        time0.set_text(str);
+    }, 1 / 60);
+
+    let time1 = Label.with_font_color(20, "Verdana", "rgb(67, 65, 65)");
+    clock.add_child_with_key(time1, "time1");
+
+    time1.set_text(":00");
+    time1.set_position_with_pos(120, 50);
+    time1.add_schedule(function () {
+        let str = ":_3_";
+        let t = game.getGameElapsedTime();
+
+        //3 秒钟
+        let t3 = "" + parseInt(t % 60);
+        if (t3 < 10) {
+            t3 = "0" + t3;
+        }
+        str = str.replace(/_3_/, t3);
+
+        time1.set_text(str);
+
+    }, 1 / 60);
+}
+
+function initVicDef() {
+    let vic = Sprite.new("src/victory.png");
+    vic.add_schedule(function () {
+        vic.set_position_with_pos(renderData.width / 2, renderData.height / 2);
+    }, 1 / 60);
+    vic.set_visible(false);
+    vic.set_z_order(3);
+
+
+    let def = Sprite.new("src/defeat.png");
+    def.add_schedule(function () {
+        def.set_position_with_pos(renderData.width / 2, renderData.height / 2);
+    }, 1 / 60);
+    def.set_visible(false);
+    def.set_z_order(3);
+
+    let bk = DrawNode.new();
+    bk.set_visible(false);
+    bk.set_opacity(0.6);
+    bk.add_schedule(function () {
+        bk.clear_shape();
+        bk.add_rect(Vec2.with_pos(0, 0), renderData.width, renderData.height, true, "rgb(0,0,0)");
+    }, 1 / 60);
+    bk.set_z_order(2);
+
+    main_director.add_child_with_key(vic, "victory");
+    main_director.add_child_with_key(def, "defeat");
+    main_director.add_child_with_key(bk, "vic_def_bk");
+
+    let upd_node_1 = Node.new();
+    main_director.add_child_with_key(upd_node_1, "upd_node_1");
+    upd_node_1.add_schedule(function () {
+        if (game.gameData.gameWin != 0) {
+            bk.set_visible(true);
+            if (game.gameData.gameWin == 1) {
+                //警察赢，自己是警察
+                if (!game.gameData.selfChessCtl.includes(1)) {
+                    vic.set_visible(true);
+                } else {
+                    //警察赢，自己是小偷
+                    def.set_visible(true);
+                }
+            }
+            if (game.gameData.gameWin == 2) {
+
+                //小偷赢，自己是小偷
+                if (game.gameData.selfChessCtl.includes(1)) {
+                    vic.set_visible(true);
+                } else {
+                    //小偷赢，自己是警察
+                    def.set_visible(true);
+                }
+            }
+        } else {
+            vic.set_visible(false);
+            def.set_visible(false);
+            bk.set_visible(false);
+        }
+    }, 1 / 60);
+}
+
+function initCardSelect() {
+    let scale_node = main_director.get_child_with_key("scale_node");
+    let render_node = scale_node.get_child_with_key("render_node");
+
+    let card_select_node = Node.new();
+    card_select_node.set_position_with_pos(0, 60);
+    card_select_node.add_schedule(function () {
+        let sp = card_select_node.get_child_with_key("bar");
+        card_select_node.set_size_with_other(sp.get_scaled_size());
+
+        let p = card_select_node.get_position();
+        p.x = renderData.width / 2;
+
+        card_select_node.set_position_with_other(p);
+
+        if (game.isGameStart() && game.onMyStep()) {
+            card_select_node.set_visible(true);
+        } else {
+            card_select_node.set_visible(false);
+        }
+    }, 1 / 60);
+
+    card_select_node.add_component_with_key([0, 5, 100, 193, 288, 382, 600], "deck_x");
+
+    main_director.add_child_with_key(card_select_node, "card_select");
+
+    let card_select_bar = Sprite.new("src/card_select_bar.png");
+    card_select_bar.set_position_with_pos(0, 10);
+
+    let card_select = Sprite.new("src/card_select.png");
+    card_select.set_anchor_with_pos(0, 0.5);
+    card_select.add_schedule(function () {
+        let card_x = card_select_node.get_component_with_key("deck_x");
+        let x = card_x[game.gameData.cardSelect];
+
+        let p = card_select.get_position();
+        p.x = x - card_select_bar.get_size().w / 2;
+
+        card_select.set_position_with_other(p);
+
+    }, 1 / 60);
+    card_select.set_position_with_pos(0, 10);
+
+    card_select_node.add_child_with_key(card_select_bar, "bar");
+    card_select_node.add_child_with_key(card_select, "select");
+}
+
+function initChess() {
+    let scale_node = main_director.get_child_with_key("scale_node");
+    let render_node = scale_node.get_child_with_key("render_node");
+
+    for (let i = 1; i <= 6; ++i) {
+        let str = "src/chess_" + i + ".png"
+        let sp = Sprite.new(str);
+
+        sp.set_anchor_with_pos(0.5, 0.7);
+
+        render_node.add_child_with_key(sp, `player_${i}`);
     }
-
-    draw_main();
-    draw_ui();
-    mapDataUpdate();
-    uiUpdate();
-}
-
-//针对触控的操作
-function touchdown(x, y) {
-    mouseDown = true;
-    touchStartPos.set(x, y);
-    mapUpdateOnMouseDown(x, y);
-}
-
-function touchup(x, y) {
-    mouseDown = false;
-    touchEndPos.set(x, y);
-
-    var p = new Vec2();
-    p.set(x, y);
-
-    updateUIOnMouseUp(p);
-    updateCardSelectOnMouseUp(p);
-    anchorUpdate(p);
-}
-
-function touchmoveOneSpot(x, y) {
-    var p = new Vec2();
-    p.set(x, y);
-
-    dragMoveMapOnMove(p);
-}
-
-function touchmoveTwoSpot(x0, y0, x1, y1) {
-    var p0 = new Vec2();
-    p0.set(x0, y0);
-
-    var p1 = new Vec2();
-    p1.set(x1, y1);
-
-    var dx = x1 - x0;
-    var dy = y1 - y0;
-    var dd = Math.sqrt(dx * dx + dy * dy);
-
-    var k = parseInt((dd - touchData.dist) / 30);
-    if (Math.abs(k) >= 1) {
-        touchData.dist = dd;
-    }
-
-    mapUpdateOnWheel(x0, y0, k);
-    //dragMoveMapOnMove(p);
-}
-
-function touchdbl(x, y) {
-    var p = new Vec2();
-    p.set(x, y);
-
-    playChessOnDblClick(p);
 }
 
 //针对鼠标的操作
 
 function mousedown(x, y) {
     mouseDown = true;
-    touchStartPos.set(x, y);
-    mapUpdateOnMouseDown(x, y);
+    let p = Vec2.with_pos(x, y);
+
+    touchStartPos.set_with_other(p);
+    updateMapOnMouseDown(p);
 }
 
 function mouseup(x, y) {
     mouseDown = false;
-    touchEndPos.set(x, y);
+    let p = Vec2.with_pos(x, y);
 
-    var p = new Vec2();
-    p.set(x, y);
+    touchEndPos.set_with_other(p);
 
     updateCardSelectOnMouseUp(p);
     updateUIOnMouseUp(p);
 }
 
 function mousemove(x, y) {
-    var p = new Vec2();
-    p.set(x, y);
+    let p = Vec2.with_pos(x, y);
 
-    dragMoveMapOnMove(p);
-    anchorUpdate(p);
+    updateMapOnMove(p);
 }
 
 function mousewheel(x, y, k) {
-    mapUpdateOnWheel(x, y, k);
+    let p = Vec2.with_pos(x, y);
+
+    mapUpdateOnWheel(p, k);
 }
 
 function mousedblclick(x, y) {
-    var p = new Vec2();
-    p.set(x, y);
+    let p = Vec2.with_pos(x, y);
 
     playChessOnDblClick(p);
 }
@@ -417,15 +436,20 @@ function updateCardSelectOnMouseUp(p) {
         return;
     }
 
-    var p = convertInCanvas(p);
-    var card_select_bar = sprites_main.get("card_select_bar");
-    if (inside(p, card_select_bar.pos,
-        card_select_bar.width(), card_select_bar.height())) {
+    let p1 = convertInCanvas(p);
+    let card_select_node = main_director.get_child_with_key("card_select");
 
-        const pp = [0, 5, 100, 193, 288, 382, 600];
+    let bar = card_select_node.get_child_with_key("bar");
+    let size = bar.get_scaled_size();
 
-        var dx = p.x - card_select_bar.pos.x;
-        for (var i = 1; i <= 5; ++i) {
+    let p2 = Vec2.sub(card_select_node.get_position(), Vec2.with_pos(size.w / 2, size.h / 2));
+    if (inside(p1, p2,
+        size.w, size.h)) {
+
+        let pp = card_select_node.get_component_with_key("deck_x");
+
+        let dx = p1.x - p2.x;
+        for (let i = 1; i <= 5; ++i) {
             if (dx >= pp[i] && dx < pp[i + 1]) {
                 game.setCardSelect(i);
                 break;
@@ -436,11 +460,18 @@ function updateCardSelectOnMouseUp(p) {
 
 function playChessOnDblClick(p) {
     if (insideCanvas(p)) {
-        var mark;
-        var cnt = 0;
-        for (var i = 1; i <= 199; ++i) {
-            var anc = anchors[i];
-            if (anc.mouseon) {
+        let mark;
+        let cnt = 0;
+
+        let scale_node = main_director.get_child_with_key("scale_node");
+        let render_node = scale_node.get_child_with_key("render_node");
+
+        for (let i = 1; i <= 199; ++i) {
+            var str = `anchor_${i}`;
+
+            let anc = render_node.get_child_with_key(str);
+            let mouseon = anc.get_component_with_key("mouse_on");
+            if (mouseon) {
                 cnt += 1;
                 mark = i;
             }
@@ -454,151 +485,4 @@ function playChessOnDblClick(p) {
 }
 
 
-function draw_main() {
-    var ctx = ele_canvas.getContext("2d");
-
-    ctx.fillStyle = "rgb(64, 61, 52)";
-    ctx.fillRect(0, 0, renderData.width, renderData.height);
-
-    var arr = Array.from(sprites_main);
-    arr.sort(function (a, b) {
-        return a[1].z_order - b[1].z_order;
-    });
-
-    for (var i = 0; i < arr.length; ++i) {
-        arr[i][1].visit(ctx);
-    }
-
-    //绘制观战提示
-    if (game.isObserver() && game.isGameStart()) {
-        ctx.fillStyle = "rgb(239, 233, 218)";
-        const w = 150;
-        const h = 80;
-        ctx.fillRect(renderData.width / 2 - w / 2, 0, w, h);
-
-        ctx.fillStyle = "rgb(67, 65, 65)";
-        ctx.font = "40px Verdana";
-
-
-        ctx.fillText("观战中", renderData.width / 2 - w / 2, 50);
-    }
-
-    //显示游戏时间
-    if (game.isGameStart()) {
-        const w = 150;
-        const h = 50;
-        ctx.fillStyle = "rgb(239, 233, 218)";
-        ctx.fillRect(renderData.width - w, 0, w, h);
-
-
-
-        var str = "_1_:_2_";
-        var str1 = ":_3_";
-        var t = game.getGameElapsedTime();
-
-        //1 时钟
-        var t1 = "" + parseInt(t / 3600);
-        if (t1 < 10) {
-            t1 = "0" + t1;
-        }
-        //2 分钟
-        var t2 = "" + parseInt((t % 3600) / 60);
-        if (t2 < 10) {
-            t2 = "0" + t2;
-        }
-
-        str = str.replace(/_1_/, t1);
-        str = str.replace(/_2_/, t2);
-
-        //3 秒钟
-        var t3 = "" + parseInt(t % 60);
-        if (t3 < 10) {
-            t3 = "0" + t3;
-        }
-        str1 = str1.replace(/_3_/, t3);
-
-
-
-        ctx.fillStyle = "rgb(67, 65, 65)";
-        ctx.font = "36px Verdana";
-        ctx.fillText(str, renderData.width - w, 40);
-        ctx.font = "20px Verdana";
-        ctx.fillText(str1, renderData.width - w + 110, 40);
-    }
-
-}
-
-var cardsDeckX = [0, 50, 105, 160, 220, 275];
-
-function draw_ui() {
-    var ctx = ele_canvas_ui.getContext("2d");
-
-    ctx.fillRect(0, 0, 350, 700);
-
-    var arr = Array.from(sprites_ui);
-    arr.sort(function (a, b) {
-        return a[1].z_order - b[1].z_order;
-    });
-
-    for (var i = 0; i < arr.length; ++i) {
-        arr[i][1].visit(ctx);
-    }
-
-    //到自己下棋
-    if (game.onMyStep()) {
-        var k = game.gameData.chessStepOn;
-
-        for (var i = 1; i <= 5; ++i) {
-            ctx.save();
-            var x = cardsDeckX[i];
-            var y = 240;
-            ctx.translate(x, y);
-
-            ctx.scale(1, 1);
-
-            ctx.fillStyle = "rgb(255,255,255)";
-            ctx.font = "20px Verdana";
-
-            var str;
-            if (game.gameData.cardsLeft[k][i] < 10) {
-                str = "0" + game.gameData.cardsLeft[k][i];
-            } else {
-                str = game.gameData.cardsLeft[k][i];
-            }
-
-            ctx.fillText(str, 0, 0);
-            ctx.restore();
-        }
-    }
-
-    //观战位
-    if (game.isObserver()) {
-        //到谁显示谁
-        var k = game.gameData.chessStepOn;
-        for (var i = 1; i <= 5; ++i) {
-            ctx.save();
-            var x = cardsDeckX[i];
-            var y = 240;
-            ctx.translate(x, y);
-
-            ctx.scale(1, 1);
-
-            ctx.fillStyle = "rgb(255,255,255)";
-            ctx.font = "20px Verdana";
-
-            var str;
-            if (game.gameData.cardsLeft[k][i] < 10) {
-                str = "0" + game.gameData.cardsLeft[k][i];
-            } else {
-                str = game.gameData.cardsLeft[k][i];
-            }
-
-            ctx.fillText(str, 0, 0);
-            ctx.restore();
-        }
-    }
-
-
-}
-
-export var sprites_main, sprites_ui, mouseDown, touchStartPos, touchEndPos, anchors, players, renderData, isDevicePC;
+export var main_director, ui_director, mouseDown, touchStartPos, touchEndPos, renderData, isDevicePC;

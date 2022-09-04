@@ -1,36 +1,62 @@
-import Vec2 from "./Vec2.js";
-import { Sprite } from "./Sprite.js";
-import { sprites_main, anchors, mouseDown, touchStartPos, players, insideCanvas, renderData } from "./idx.js";
-import { imgPool } from "./ImagePool.js"
+import { Sprite } from "./webdraw/Sprite.js";
+import { Label } from "./webdraw/Label.js";
+import { Node } from "./webdraw/Node.js";
+import { Vec2 } from "./webdraw/Vec2.js";
+import { Size } from "./webdraw/Size.js";
+import { ImagePool } from "./webdraw/ImagePool.js";
+import { Director, DirectorManager } from "./webdraw/Director.js";
+
 import { game } from "./Game.js";
 
-var mapSpriteData = new Object;
-mapSpriteData.touchStartMapPos = new Vec2();
-mapSpriteData.mapPos = new Vec2();
+import { main_director, mouseDown, touchStartPos, insideCanvas, renderData, convertInCanvas, inside } from "./idx.js";
+
+let mapSpriteData = new Object;
+mapSpriteData.touchStartMapPos = Vec2.new();
+mapSpriteData.mapPos = Vec2.new();
 mapSpriteData.scale = 1.0;
 
-export function mapInit() {
-    var sp = new Sprite("src/map_0.jpg");
-    sprites_main.set("game_map", sp);
-    sp.orgscale = 10;
-    mapSpriteData.mapPos.set(-2800, -2800);
+export function initMap() {
+    mapSpriteData.mapPos.set_with_pos(-2000, -2000);
 
-    //异步加载高分辨率的大地图
-    imgPool.load("src/map.bmp", function (src) {
-        var m = sprites_main.get("game_map");
-        m.img = imgPool.get(src);
-        sp.orgscale = 2.5;
+    let sp = Sprite.new("src/map_0.jpg");
+    sp.set_position_with_pos(0, 0);
+    sp.set_anchor_with_pos(0, 0);
+    sp.set_scale(10.0);
+
+    //设置ImagePool异步加载大图片
+    ImagePool.load("src/map.bmp", function () {
+        let new_sp = Sprite.new("src/map.bmp");
+        new_sp.set_position_with_pos(0, 0);
+        new_sp.set_anchor_with_pos(0, 0);
+        new_sp.set_scale(2.5);
+        new_sp.set_z_order(-1);
+
+        sp.remove_from_parent();
+
+        let scale_node = main_director.get_child_with_key("scale_node");
+        let render_node = scale_node.get_child_with_key("render_node");
+        render_node.add_child_with_key(new_sp, "game_map");
     });
+
+
+    let scale_node = main_director.get_child_with_key("scale_node");
+    let render_node = scale_node.get_child_with_key("render_node");
+    render_node.add_child_with_key(sp, "game_map");
+
+    let upd_node = Node.new();
+    main_director.add_child_with_key(upd_node, "upd_map");
+
+    upd_node.add_schedule(function () {
+        mapDataUpdate();
+    }, 1 / 60.0, 0);
 }
 
-export function mapUpdateOnWheel(x, y, k) {
+export function mapUpdateOnWheel(p, k) {
     if (!game.isGameStart()) {
         return;
     }
     const CS = 0.05;
 
-    var p = new Vec2();
-    p.set(x, y);
     if (insideCanvas(p)) {
         mapSpriteData.scale += CS * k;
 
@@ -39,140 +65,199 @@ export function mapUpdateOnWheel(x, y, k) {
     }
 }
 
-export function mapUpdateOnMouseDown(x, y) {
+export function updateMapOnMouseDown(p) {
     if (!game.isGameStart()) {
         return;
     }
-    mapSpriteData.touchStartMapPos.set_p(mapSpriteData.mapPos);
+    mapSpriteData.touchStartMapPos.set_with_other(mapSpriteData.mapPos);
 }
 
-export function mapDataUpdate() {
-    var e = sprites_main.get("game_map");
+function mapDataUpdate() {
+    let scale_node = main_director.get_child_with_key("scale_node");
+    let render_node = scale_node.get_child_with_key("render_node");
+
+    let game_map = render_node.get_child_with_key("game_map");
 
     function calcuSpeed(x, a, b) {
         return (x * x) / (b * (x + a));
     }
 
     //检查拖动
-    var w = e.width();
-    var h = e.height();
-    //左侧
-    mapSpriteData.mapPos.x = Math.min(mapSpriteData.mapPos.x, renderData.width / 2);
-    //右侧
-    mapSpriteData.mapPos.x = Math.max(mapSpriteData.mapPos.x, -w + renderData.width / 2);
-    //上侧
-    mapSpriteData.mapPos.y = Math.min(mapSpriteData.mapPos.y, renderData.height / 2);
-    //下侧
-    mapSpriteData.mapPos.y = Math.max(mapSpriteData.mapPos.y, -h + renderData.height / 2);
+    let size = Size.scalar(game_map.get_size(), game_map.get_scale());
+    let w = size.w;
+    let h = size.h;
+    // //左侧
+    // mapSpriteData.mapPos.x = Math.min(mapSpriteData.mapPos.x, renderData.width / 2);
+    // //右侧
+    // mapSpriteData.mapPos.x = Math.max(mapSpriteData.mapPos.x, -w + renderData.width / 2);
+    // //上侧
+    // mapSpriteData.mapPos.y = Math.min(mapSpriteData.mapPos.y, renderData.height / 2);
+    // //下侧
+    // mapSpriteData.mapPos.y = Math.max(mapSpriteData.mapPos.y, -h + renderData.height / 2);
 
     //计算地图移动
     {
-        var nowPos = e.pos.copy();
-        var dPos = mapSpriteData.mapPos.add(nowPos.negtive());
-        var dis = dPos.dist();
+        let nowPos = render_node.get_position();
+        let dPos = Vec2.sub(mapSpriteData.mapPos, nowPos);
+        let dis = dPos.dist();
 
-        var speed = calcuSpeed(dis, 3, 5);
-        var dx = nowPos.add(dPos.normal().plus_n(speed));
+        let speed = calcuSpeed(dis, 3, 5);
+        let dx = Vec2.add(nowPos, Vec2.scalar(Vec2.normalize(dPos), speed));
+
         if (speed <= 0.003) {
-            dx = nowPos.add(dPos);
+            dx.set_with_other(Vec2.add(nowPos, dPos));
         }
 
-        e.pos.set_p(dx);
+        render_node.set_position_with_other(dx);
     }
 
     //检查缩放
     {
-        var centerPos = new Vec2();
-        centerPos.set(renderData.width / 2, renderData.height / 2);
 
-        var deltaSc = mapSpriteData.scale - e.scale;
-        var abs_deltaSc = Math.abs(deltaSc);
+        let deltaSc = mapSpriteData.scale - scale_node.get_scale();
+        let abs_deltaSc = Math.abs(deltaSc);
 
         if (abs_deltaSc >= 0.00001) {
-            var sp = calcuSpeed(abs_deltaSc * 100, 3, 5) / 100;
+            let sp = calcuSpeed(abs_deltaSc * 100, 3, 5) / 100;
             if (abs_deltaSc <= 0.005) {
-                mapSpriteData.scale = e.scale;
+                mapSpriteData.scale = scale_node.get_scale();
             }
 
-            var flag = deltaSc / abs_deltaSc;
-            var tar = e.scale + flag * sp;
+            let flag = deltaSc / abs_deltaSc;
+            let tar = scale_node.get_scale() + flag * sp;
 
-            var p0 = centerPos.add(mapSpriteData.mapPos.negtive());
-
-            var p1 = p0.plus_n(1 / e.scale);
-            e.scale = tar;
-            var p2 = p1.plus_n(tar);
-
-            var deltaP = p0.add(p2.negtive());
-
-            mapSpriteData.mapPos = mapSpriteData.mapPos.add(deltaP);
-            e.pos.set_p(mapSpriteData.mapPos);
-        }
-
-        //设置锚点坐标
-        var p0 = new Vec2();
-        //锚点的宽高
-        const aw = 190, ah = 210;
-        p0.set(aw / 2, ah / 2);
-        for (var i = 1; i <= 199; ++i) {
-            var anc = anchors[i];
-
-            p0.set(aw / 2, ah / 2);
-
-            if (!anc.mouseon) {
-                anc.scale = Math.max(e.scale, 0.2);
-                anc.z_order = 0;
-            } else {
-                anc.scale = Math.max(e.scale + 0.1, 0.3);
-                anc.z_order = 1;
-            }
-
-            p0 = p0.plus_n(-1 * anc.scale);
-            var p1 = anc.orgPos.plus_n(e.scale);
-            var p2 = p1.add(e.pos).add(p0);
-            anc.pos.set_p(p2);
-        }
-
-        //设置玩家位置
-        for (var i = 1; i <= 6; ++i) {
-            var k = game.gameData.playerAt[i];
-
-            var anc = anchors[k];
-
-            var p1 = new Vec2();
-            p1.set_p(anc.pos);
-            p1.x += -50 * anc.scale;
-            p1.y += -200 * anc.scale;
-            players[i].pos.set_p(p1);
-            players[i].scale = anc.scale + 1.2 * anc.scale;
+            scale_node.set_scale(tar);
         }
     }
+
+    for (let i = 1; i <= 199; ++i) {
+        let str = `anchor_${i}`;
+        let anc = render_node.get_child_with_key(str);
+
+        let s = scale_node.get_scale();
+        let mouseon = anc.get_component_with_key("mouse_on");
+        if (!mouseon) {
+            if (s < 0.4) {
+                anc.set_scale(1 + ((0.4 - s) / 0.4) * 1.5);
+            } else {
+                anc.set_scale(1);
+            }
+            anc.z_order = 0;
+        } else {
+            if (s < 0.4) {
+                anc.set_scale(1.3 + ((0.4 - s) / 0.4) * 2);
+            } else {
+                anc.set_scale(1.3);
+            }
+            anc.z_order = 1;
+        }
+    }
+
+
+    //设置玩家位置
+    for (let i = 1; i <= 6; ++i) {
+        let k = game.gameData.playerAt[i];
+
+        let anc = render_node.get_child_with_key(`anchor_${k}`);
+        let mouseon = anc.get_component_with_key("mouse_on");
+        let player = render_node.get_child_with_key(`player_${i}`);
+
+        player.set_position_with_other(anc.get_position());
+
+        let s = scale_node.get_scale();
+        if (!mouseon) {
+            if (s < 0.4) {
+                player.set_scale(3 + ((0.4 - s) / 0.4) * 1.5);
+            } else {
+                player.set_scale(3);
+            }
+        } else {
+            if (s < 0.4) {
+                player.set_scale(3.5 + ((0.4 - s) / 0.4) * 2.5);
+            } else {
+                player.set_scale(3.5);
+            }
+        }
+
+    }
+
 
     //小偷显示的轮
     const thiefShowRound = [3, 8, 13, 18, 24];
 
+    let thief = render_node.get_child_with_key(`player_${1}`);
     //小偷是否显示
     if ((thiefShowRound.includes(game.gameData.gameRound) && game.gameData.chessStepOn >= 2)
         || game.gameData.selfChessCtl.includes(1)) {
-        players[1].visible = true;
+        thief.set_visible(true);
     } else {
-        players[1].visible = false;
+        thief.set_visible(false);
     }
 }
 
-export function dragMoveMapOnMove(p) {
+export function convertInMap(p) {
+    let scale_node = main_director.get_child_with_key("scale_node");
+    let render_node = scale_node.get_child_with_key("render_node");
+
+    //将点击的坐标转换进render_node中的坐标
+    let p0 = scale_node.get_position();
+
+    //转换到相同的缩放点
+    let p1 = Vec2.sub(p, p0);
+
+    let p2 = Vec2.scalar(p1, 1 / scale_node.get_scale());
+
+    let p3 = Vec2.add(p0, p2);
+
+    let rmap_p = render_node.get_position();
+
+    let map_p = Vec2.add(rmap_p, p0);
+
+    let rp = Vec2.sub(p3, map_p);
+
+    return rp;
+}
+
+export function updateMapOnMove(p) {
     if (!game.isGameStart()) {
         return;
     }
+
     if (mouseDown) {
         if (insideCanvas(p)) {
-            var dx = touchStartPos.add(p.negtive());
+            let dx = Vec2.sub(touchStartPos, p);
             dx.x = -dx.x;
             dx.y = -dx.y;
 
-            dx = dx.add(mapSpriteData.touchStartMapPos);
+            dx.set_with_other(Vec2.scalar(dx, 1 / mapSpriteData.scale));
 
-            mapSpriteData.mapPos.set_p(dx);
+            dx.add_eq(mapSpriteData.touchStartMapPos);
+
+            mapSpriteData.mapPos.set_with_other(dx);
+        }
+    }
+    //检查鼠标是否在锚点之上
+    if (!mouseDown) {
+        if (insideCanvas(p)) {
+            let conv_p = convertInCanvas(p);
+
+            let rp = convertInMap(conv_p);
+
+            let scale_node = main_director.get_child_with_key("scale_node");
+            let render_node = scale_node.get_child_with_key("render_node");
+
+            for (let i = 1; i <= 199; ++i) {
+                let str = `anchor_${i}`;
+                let anc = render_node.get_child_with_key(str);
+
+                let size = anc.get_scaled_size();
+                let lrp = Vec2.sub(anc.get_position(), Vec2.with_pos(size.w / 2, size.h / 2));
+                if (inside(rp, lrp, size.w, size.h)) {
+                    anc.add_component_with_key(true, "mouse_on");
+                } else {
+                    anc.add_component_with_key(false, "mouse_on");
+                }
+            }
         }
     }
 }
@@ -180,13 +265,21 @@ export function dragMoveMapOnMove(p) {
 //地图定位现在的棋子
 export function mapLocateNowChessOn() {
     function locate() {
-        var p0 = mapSpriteData.mapPos.copy();
-        var p1 = players[game.gameData.chessStepOn].pos.copy();
 
-        var p2 = p0.add(p1.negtive());
-        p2.x += renderData.width / 2;
-        p2.y += renderData.height / 2;
-        mapSpriteData.mapPos.set_p(p2);
+        // let scale_node = main_director.get_child_with_key("scale_node");
+        // let render_node = scale_node.get_child_with_key("render_node");
+
+        // let str = `player_${game.gameData.chessStepOn}`;
+        // let player = render_node.get_child_with_key(str);
+
+        // let p0 = player.get_position();
+
+        // let p1 = Vec2.with_pos(renderData.width / 2, renderData.height / 2);
+
+        // let p2 = Vec2.sub(p0, p1);
+
+
+        // mapSpriteData.mapPos.add_eq(p2);
     }
     //控制的是小偷，那随意定位，如果不是小偷，则不能在小偷不显示的时候定位小偷
     if (game.gameData.selfChessCtl.includes(1)) {
