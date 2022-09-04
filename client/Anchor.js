@@ -45,7 +45,9 @@ export function initAnchor() {
         node.add_child_with_key(sp.sp_num, "sp_num");
         node.add_child_with_key(sp.sp, "sp");
         node.set_anchor_with_pos(0.5, 0.5);
-        node.set_size_with_other(sp.sp.get_size());
+        node.add_schedule(function () {
+            node.set_size_with_other(sp.sp.get_size());
+        }, 1 / 60);
         node.set_position_with_pos(anchorData[i].x, anchorData[i].y);
 
         node.add_component_with_key(i, "number");

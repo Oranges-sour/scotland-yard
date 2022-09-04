@@ -8,7 +8,7 @@ import { Director, DirectorManager } from "./webdraw/Director.js";
 
 import { game } from "./Game.js";
 
-import { main_director, mouseDown, touchStartPos, insideCanvas, renderData, convertInCanvas } from "./idx.js";
+import { main_director, mouseDown, touchStartPos, insideCanvas, renderData, convertInCanvas, inside } from "./idx.js";
 
 let mapSpriteData = new Object;
 mapSpriteData.touchStartMapPos = Vec2.new();
@@ -129,7 +129,8 @@ function mapDataUpdate() {
         let anc = render_node.get_child_with_key(str);
 
         let s = scale_node.get_scale();
-        if (!anc.mouseon) {
+        let mouseon = anc.get_component_with_key("mouse_on");
+        if (!mouseon) {
             if (s < 0.4) {
                 anc.set_scale(1 + ((0.4 - s) / 0.4) * 1.5);
             } else {
@@ -137,6 +138,11 @@ function mapDataUpdate() {
             }
             anc.z_order = 0;
         } else {
+            if (s < 0.4) {
+                anc.set_scale(1.3 + ((0.4 - s) / 0.4) * 2);
+            } else {
+                anc.set_scale(1.3);
+            }
             anc.z_order = 1;
         }
     }
@@ -147,16 +153,26 @@ function mapDataUpdate() {
         let k = game.gameData.playerAt[i];
 
         let anc = render_node.get_child_with_key(`anchor_${k}`);
+        let mouseon = anc.get_component_with_key("mouse_on");
         let player = render_node.get_child_with_key(`player_${i}`);
 
         player.set_position_with_other(anc.get_position());
 
         let s = scale_node.get_scale();
-        if (s < 0.4) {
-            player.set_scale(3 + ((0.4 - s) / 0.4) * 1.5);
+        if (!mouseon) {
+            if (s < 0.4) {
+                player.set_scale(3 + ((0.4 - s) / 0.4) * 1.5);
+            } else {
+                player.set_scale(3);
+            }
         } else {
-            player.set_scale(3);
+            if (s < 0.4) {
+                player.set_scale(3.5 + ((0.4 - s) / 0.4) * 2.5);
+            } else {
+                player.set_scale(3.5);
+            }
         }
+
     }
 
 
@@ -221,8 +237,20 @@ export function updateMapOnMove(p) {
 
             let rp = convertInMap(conv_p);
 
-            for(let i = 1;i <= 199;++i){
-                
+            let scale_node = main_director.get_child_with_key("scale_node");
+            let render_node = scale_node.get_child_with_key("render_node");
+
+            for (let i = 1; i <= 199; ++i) {
+                let str = `anchor_${i}`;
+                let anc = render_node.get_child_with_key(str);
+
+                let size = anc.get_scaled_size();
+                let lrp = Vec2.sub(anc.get_position(), Vec2.with_pos(size.w / 2, size.h / 2));
+                if (inside(rp, lrp, size.w, size.h)) {
+                    anc.add_component_with_key(true, "mouse_on");
+                } else {
+                    anc.add_component_with_key(false, "mouse_on");
+                }
             }
         }
     }
@@ -231,13 +259,21 @@ export function updateMapOnMove(p) {
 //地图定位现在的棋子
 export function mapLocateNowChessOn() {
     function locate() {
-        let p0 = mapSpriteData.mapPos.copy();
-        let p1 = players[game.gameData.chessStepOn].pos.copy();
 
-        let p2 = p0.add(p1.negtive());
-        p2.x += renderData.width / 2;
-        p2.y += renderData.height / 2;
-        mapSpriteData.mapPos.set_p(p2);
+        let scale_node = main_director.get_child_with_key("scale_node");
+        let render_node = scale_node.get_child_with_key("render_node");
+
+        let str = `player_${game.gameData.chessStepOn}`;
+        let player = render_node.get_child_with_key(str);
+
+        let p0 = player.get_position();
+
+        let p1 = Vec2.with_pos(renderData.width / 2, renderData.height / 2);
+
+        let p2 = Vec2.sub(p1, p0);
+
+
+        mapSpriteData.mapPos.add_eq(p2);
     }
     //控制的是小偷，那随意定位，如果不是小偷，则不能在小偷不显示的时候定位小偷
     if (game.gameData.selfChessCtl.includes(1)) {

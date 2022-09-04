@@ -106,13 +106,12 @@ function uiUpdate() {
 }
 
 export function updateUIOnMouseUp(p) {
-    // if (insideUICanvas(p)) {
-    //     let pos = convertInUICanvas(p);
+    if (insideUICanvas(p)) {
+        let pos = convertInUICanvas(p);
 
-    //     let lrp = new Vec2();
-    //     lrp.set(17, 310);
-    //     if (inside(pos, lrp, 80, 80)) {
-    //         mapLocateNowChessOn();
-    //     }
-    // }
+        let lrp = Vec2.with_pos(17, 310);
+        if (inside(pos, lrp, 80, 80)) {
+            mapLocateNowChessOn();
+        }
+    }
 }

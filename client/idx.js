@@ -7,7 +7,7 @@ import { Size } from "./webdraw/Size.js";
 import { ImagePool } from "./webdraw/ImagePool.js";
 import { Director, DirectorManager } from "./webdraw/Director.js";
 
-import { initUI } from "./UICtl.js";
+import { initUI, updateUIOnMouseUp } from "./UICtl.js";
 
 import { initMap, updateMapOnMove, updateMapOnMouseDown, mapUpdateOnWheel } from "./GameMap.js";
 
@@ -327,7 +327,7 @@ function mouseup(x, y) {
     touchEndPos.set_with_other(p);
 
     updateCardSelectOnMouseUp(p);
-    //updateUIOnMouseUp(p);
+    updateUIOnMouseUp(p);
 }
 
 function mousemove(x, y) {
@@ -381,20 +381,27 @@ function updateCardSelectOnMouseUp(p) {
 
 function playChessOnDblClick(p) {
     if (insideCanvas(p)) {
-        // let mark;
-        // let cnt = 0;
-        // for (let i = 1; i <= 199; ++i) {
-        //     let anc = anchors[i];
-        //     if (anc.mouseon) {
-        //         cnt += 1;
-        //         mark = i;
-        //     }
-        // }
+        let mark;
+        let cnt = 0;
 
-        // //保证鼠标只点击一个棋子
-        // if (cnt == 1) {
-        //     game.playChess(mark);
-        // }
+        let scale_node = main_director.get_child_with_key("scale_node");
+        let render_node = scale_node.get_child_with_key("render_node");
+
+        for (let i = 1; i <= 199; ++i) {
+            var str = `anchor_${i}`;
+
+            let anc = render_node.get_child_with_key(str);
+            let mouseon = anc.get_component_with_key("mouse_on");
+            if (mouseon) {
+                cnt += 1;
+                mark = i;
+            }
+        }
+
+        //保证鼠标只点击一个棋子
+        if (cnt == 1) {
+            game.playChess(mark);
+        }
     }
 }
 
