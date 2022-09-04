@@ -171,6 +171,18 @@ function init() {
     main_director.add_child_with_key(def, "defeat");
 
     //初始化棋子选择
+    initCardSelect();
+
+    //初始化网络
+    web.init();
+
+    //setInterval(main_update, 15);
+}
+
+function initCardSelect() {
+    let scale_node = main_director.get_child_with_key("scale_node");
+    let render_node = scale_node.get_child_with_key("render_node");
+
     let card_select_node = Node.new();
     card_select_node.set_position_with_pos(0, 60);
     card_select_node.add_schedule(function () {
@@ -212,12 +224,6 @@ function init() {
 
     card_select_node.add_child_with_key(card_select_bar, "bar");
     card_select_node.add_child_with_key(card_select, "select");
-
-
-    //初始化网络
-    web.init();
-
-    //setInterval(main_update, 15);
 }
 
 function initChess() {
