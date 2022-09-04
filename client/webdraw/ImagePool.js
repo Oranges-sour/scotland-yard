@@ -27,7 +27,7 @@ export class ImagePool {
         img.onload = function () {
             var arr = load_regist.get(src);
             arr.forEach(ele => {
-                ele[1]();
+                ele();
             });
             load_regist.delete(src);
         }

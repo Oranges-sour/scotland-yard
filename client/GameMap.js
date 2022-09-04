@@ -18,10 +18,25 @@ mapSpriteData.scale = 1.0;
 export function initMap() {
     mapSpriteData.mapPos.set_with_pos(-2000, -2000);
 
-    let sp = Sprite.new("src/map.bmp");
+    let sp = Sprite.new("src/map_0.jpg");
     sp.set_position_with_pos(0, 0);
     sp.set_anchor_with_pos(0, 0);
-    sp.set_scale(2.5);
+    sp.set_scale(10.0);
+
+    //设置ImagePool异步加载大图片
+    ImagePool.load("src/map.bmp", function () {
+        let new_sp = Sprite.new("src/map.bmp");
+        new_sp.set_position_with_pos(0, 0);
+        new_sp.set_anchor_with_pos(0, 0);
+        new_sp.set_scale(2.5);
+        new_sp.set_z_order(-1);
+
+        sp.remove_from_parent();
+
+        let scale_node = main_director.get_child_with_key("scale_node");
+        let render_node = scale_node.get_child_with_key("render_node");
+        render_node.add_child_with_key(new_sp, "game_map");
+    });
 
 
     let scale_node = main_director.get_child_with_key("scale_node");
@@ -34,15 +49,6 @@ export function initMap() {
     upd_node.add_schedule(function () {
         mapDataUpdate();
     }, 1 / 60.0, 0);
-    //sp.orgscale = 10;
-    // mapSpriteData.mapPos.set(-2800, -2800);
-
-    //异步加载高分辨率的大地图
-    // imgPool.load("src/map.bmp", function (src) {
-    //     let m = sprites_main.get("game_map");
-    //     m.img = imgPool.get(src);
-    //     sp.orgscale = 2.5;
-    // });
 }
 
 export function mapUpdateOnWheel(p, k) {
