@@ -13,7 +13,7 @@ export class DrawNode extends Node {
     }
 
     clear_shape() {
-        this.shape.clear();
+        this.shape = new Array();
     }
 
     add_rect(lrp, w, h, solid = false, color = "rgb(255,255,255)") {

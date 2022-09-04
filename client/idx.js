@@ -4,6 +4,7 @@ import { Label } from "./webdraw/Label.js";
 import { Node } from "./webdraw/Node.js";
 import { Vec2 } from "./webdraw/Vec2.js";
 import { Size } from "./webdraw/Size.js";
+import { DrawNode } from "./webdraw/DrawNode.js";
 import { ImagePool } from "./webdraw/ImagePool.js";
 import { Director, DirectorManager } from "./webdraw/Director.js";
 
@@ -132,7 +133,7 @@ function init() {
         ele_canvas.height = renderData.height;
 
     }, 1 / 60.0, 0);
-    main_director.add_child_with_key(upd_node, "upd_node");
+    main_director.add_child_with_key(upd_node, "upd_node_0");
 
     //所有需要使用滚轮缩放的内容都添加进render_node
     let render_node = Node.new();
@@ -160,15 +161,7 @@ function init() {
     initChess();
 
     //初始化胜利与失败显示
-    let vic = Sprite.new("src/victory.png");
-    vic.set_visible(false);
-    vic.set_z_order(3);
-    let def = Sprite.new("src/defeat.png");
-    def.set_visible(false);
-    def.set_z_order(3);
-
-    main_director.add_child_with_key(vic, "victory");
-    main_director.add_child_with_key(def, "defeat");
+    initVicDef();
 
     //初始化棋子选择
     initCardSelect();
@@ -177,6 +170,62 @@ function init() {
     web.init();
 
     //setInterval(main_update, 15);
+}
+
+function initVicDef() {
+    let vic = Sprite.new("src/victory.png");
+    vic.set_visible(false);
+    vic.set_z_order(3);
+    let def = Sprite.new("src/defeat.png");
+    def.set_visible(false);
+    def.set_z_order(3);
+
+    let bk = DrawNode.new();
+    bk.set_visible(false);
+    bk.set_opacity(0.6);
+    bk.add_schedule(function () {
+        bk.clear_shape();
+        bk.add_rect(Vec2.with_pos(0, 0), renderData.width, renderData.height, true, "rgb(0,0,0)");
+    }, 1 / 60);
+    bk.set_z_order(2);
+
+    main_director.add_child_with_key(vic, "victory");
+    main_director.add_child_with_key(def, "defeat");
+    main_director.add_child_with_key(bk, "vic_def_bk");
+
+    let upd_node_1 = Node.new();
+    main_director.add_child_with_key(upd_node_1, "upd_node_1");
+    upd_node_1.add_schedule(function () {
+
+        if (game.gameData.gameWin != 0) {
+            if (game.gameData.gameWin == 1) {
+
+                bk.set_visible(true);
+
+                //警察赢，自己是警察
+                if (!game.gameData.selfChessCtl.includes(1)) {
+                    vic.set_visible(true);
+                } else {
+                    //警察赢，自己是小偷
+                    def.set_visible(true);
+                }
+            }
+            if (game.gameData.gameWin == 2) {
+
+                //小偷赢，自己是小偷
+                if (game.gameData.selfChessCtl.includes(1)) {
+                    vic.set_visible(true);
+                } else {
+                    //小偷赢，自己是警察
+                    def.set_visible(true);
+                }
+            }
+        } else {
+            vic.set_visible(false);
+            def.set_visible(false);
+            bk.set_visible(false);
+        }
+    }, 1 / 60);
 }
 
 function initCardSelect() {
