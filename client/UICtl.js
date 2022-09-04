@@ -16,6 +16,7 @@ import { mapLocateNowChessOn } from "./GameMap.js";
 
 export function initUI() {
     var bk = Sprite.new("src/play_ui.png");
+    bk.set_anchor_with_pos(0, 0);
     ui_director.add_child_with_key(bk, "play_ui");
 
     var stepOn = Sprite.new("src/arrow.png");

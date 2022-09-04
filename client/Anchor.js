@@ -27,9 +27,9 @@ export class Anchor {
         }
 
         this.sp = Sprite.new(str);
-        this.sp_num = Label.with_font_color(80, "Verdana", "rgb(10,1 0, 10)");
+        this.sp_num = Label.with_font_color(80, "Verdana", "rgb(10,10, 10)");
         this.sp_num.set_text(outstr);
-        this.sp_num.set_position_with_pos(20, 140);
+        this.sp_num.set_position_with_pos(-80, 30);
         this.sp_num.set_z_order(1);
     }
 
@@ -41,21 +41,22 @@ export class Anchor {
 
 export function initAnchor() {
     //创建节点
-    for (var i = 1; i <= 199; ++i) {
-        var sp = Anchor.new(anchorData[i].type, i);
+    for (let i = 1; i <= 199; ++i) {
+        let sp = Anchor.new(anchorData[i].type, i);
 
-        var node = Node.new();
+        let node = Node.new();
         node.add_child_with_key(sp.sp_num, "sp_num");
         node.add_child_with_key(sp.sp, "sp");
+        node.set_anchor_with_pos(0.5, 0.5);
+        node.set_size_with_other(sp.sp.get_size());
 
 
         node.set_position_with_pos(anchorData[i].x, anchorData[i].y);
 
 
-        var move_node = main_director.get_child_with_key("move_node");
-        var scale_node = move_node.get_child_with_key("scale_node");
-        var render_node = scale_node.get_child_with_key("render_node");
-        
+        let scale_node = main_director.get_child_with_key("scale_node");
+        let render_node = scale_node.get_child_with_key("render_node");
+
         render_node.add_child_with_key(node, `anchor_${i}`);
     }
 }

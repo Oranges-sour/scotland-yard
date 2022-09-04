@@ -226,8 +226,9 @@ export class Node {
         ctx.globalAlpha = ctx.globalAlpha * this.opacity;
         var dx = this.size.w * this.anchor.x;
         var dy = this.size.h * this.anchor.y;
+
+        ctx.translate(x, y);
         ctx.scale(this.scale, this.scale);
-        ctx.translate(x + dx, y + dy);
         ctx.rotate(this.rotation);
 
         var p = 0;

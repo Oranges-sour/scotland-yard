@@ -70,8 +70,8 @@ export class Label extends Node {
         ctx.globalAlpha = ctx.globalAlpha * this.opacity;
         var dx = 0;
         var dy = 0;
+        ctx.translate(x, y);
         ctx.scale(this.scale, this.scale);
-        ctx.translate(x + dx, y + dy);
         ctx.rotate(this.rotation);
 
         var p = 0;

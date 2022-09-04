@@ -135,32 +135,16 @@ function init() {
 
     //所有需要使用滚轮缩放的内容都添加进render_node
     var render_node = Node.new();
-    render_node.add_schedule(function () {
-        var game_map = render_node.get_child_with_key("game_map");
-        if (game_map !== undefined) {
-            //console.log(game_map.get_size());
-            var size = Size.scalar(game_map.get_size(), game_map.get_scale());
-            var w = size.w / 2;
-            var h = size.h / 2;
-            render_node.set_position_with_pos(-w, -h);
-        }
 
-    }, 1 / 60.0, 0);
-    //main_director.add_child_with_key(render_node, "render_node");
-
-    var scale_node = Node.new();
+    let scale_node = Node.new();
     scale_node.set_anchor_with_pos(0.5, 0.5);
     scale_node.add_schedule(function () {
         scale_node.set_size_with_size(renderData.width, renderData.height);
+        scale_node.set_position_with_pos(renderData.width / 2, renderData.height / 2);
     }, 1 / 60.0, 0);
     scale_node.add_child_with_key(render_node, "render_node");
 
-    var move_node = Node.new();
-    move_node.add_schedule(function () {
-        move_node.set_size_with_size(renderData.width, renderData.height);
-    }, 1 / 60.0, 0);
-    move_node.add_child_with_key(scale_node, "scale_node");
-    main_director.add_child_with_key(move_node, "move_node");
+    main_director.add_child_with_key(scale_node, "scale_node");
 
 
 
@@ -176,6 +160,8 @@ function init() {
     for (var i = 1; i <= 6; ++i) {
         var str = "src/chess_" + i + ".png"
         var sp = Sprite.new(str);
+
+        sp.set_anchor_with_pos(0.5, 0.7);
 
         render_node.add_child_with_key(sp, `player_${i}`);
     }
