@@ -415,8 +415,6 @@ function msg_play(obj) {
         }
     }
 
-
-
     return true;
 }
 
@@ -435,7 +433,7 @@ function msg_start(obj, ws) {
 
     console.log("-Start-");
     if (gameStart) {
-        console.log("-Failed - Game has already started. This player is set in observer.");
+        console.log("-Failed- Game has already started. This player is set as observer.");
 
         var obj = new Object();
         obj.type = "start";
