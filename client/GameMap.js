@@ -8,7 +8,7 @@ import { Director, DirectorManager } from "./webdraw/Director.js";
 
 import { game } from "./Game.js";
 
-import { main_director, mouseDown, touchStartPos, insideCanvas, renderData } from "./idx.js";
+import { main_director, mouseDown, touchStartPos, insideCanvas, renderData, convertInCanvas } from "./idx.js";
 
 let mapSpriteData = new Object;
 mapSpriteData.touchStartMapPos = Vec2.new();
@@ -19,8 +19,10 @@ export function initMap() {
     mapSpriteData.mapPos.set_with_pos(-2000, -2000);
 
     let sp = Sprite.new("src/map.bmp");
+    sp.set_position_with_pos(0, 0);
     sp.set_anchor_with_pos(0, 0);
     sp.set_scale(2.5);
+
 
     let scale_node = main_director.get_child_with_key("scale_node");
     let render_node = scale_node.get_child_with_key("render_node");
@@ -171,6 +173,29 @@ function mapDataUpdate() {
     }
 }
 
+export function convertInMap(p) {
+    let scale_node = main_director.get_child_with_key("scale_node");
+    let render_node = scale_node.get_child_with_key("render_node");
+
+    //将点击的坐标转换进render_node中的坐标
+    let p0 = scale_node.get_position();
+
+    //转换到相同的缩放点
+    let p1 = Vec2.sub(p, p0);
+
+    let p2 = Vec2.scalar(p1, 1 / scale_node.get_scale());
+
+    let p3 = Vec2.add(p0, p2);
+
+    let rmap_p = render_node.get_position();
+
+    let map_p = Vec2.add(rmap_p, p0);
+
+    let rp = Vec2.sub(p3, map_p);
+
+    return rp;
+}
+
 export function updateMapOnMove(p) {
     if (!game.isGameStart()) {
         return;
@@ -187,6 +212,18 @@ export function updateMapOnMove(p) {
             dx.add_eq(mapSpriteData.touchStartMapPos);
 
             mapSpriteData.mapPos.set_with_other(dx);
+        }
+    }
+    //检查鼠标是否在锚点之上
+    if (!mouseDown) {
+        if (insideCanvas(p)) {
+            let conv_p = convertInCanvas(p);
+
+            let rp = convertInMap(conv_p);
+
+            for(let i = 1;i <= 199;++i){
+                
+            }
         }
     }
 }
