@@ -166,8 +166,77 @@ function init() {
     //初始化棋子选择
     initCardSelect();
 
+    //初始化游戏时间显示
+    initGameClock();
+
     //初始化网络
     web.init();
+}
+
+function initGameClock() {
+
+    let clock = Node.new();
+    main_director.add_child_with_key(clock, "game_clock");
+
+    clock.add_schedule(function () {
+        if (game.isGameStart()) {
+            clock.set_visible(true);
+        } else {
+            clock.set_visible(false);
+        }
+
+        clock.set_position_with_pos(renderData.width - 165, -10);
+    }, 1 / 60);
+
+    let bk = DrawNode.new();
+    bk.add_rect(Vec2.with_pos(0, 0), 165, 60, true, "#f5f5dc");
+    clock.add_child_with_key(bk, "bk");
+
+    let time0 = Label.with_font_color(36, "Verdana", "rgb(67, 65, 65)");
+    clock.add_child_with_key(time0, "time0");
+
+    time0.set_text("00:00");
+    time0.set_position_with_pos(10, 50);
+    time0.add_schedule(function () {
+        let str = "_1_:_2_";
+        let t = game.getGameElapsedTime();
+
+        //1 时钟
+        let t1 = "" + parseInt(t / 3600);
+        if (t1 < 10) {
+            t1 = "0" + t1;
+        }
+        //2 分钟
+        let t2 = "" + parseInt((t % 3600) / 60);
+        if (t2 < 10) {
+            t2 = "0" + t2;
+        }
+
+        str = str.replace(/_1_/, t1);
+        str = str.replace(/_2_/, t2);
+
+        time0.set_text(str);
+    }, 1 / 60);
+
+    let time1 = Label.with_font_color(20, "Verdana", "rgb(67, 65, 65)");
+    clock.add_child_with_key(time1, "time1");
+
+    time1.set_text(":00");
+    time1.set_position_with_pos(120, 50);
+    time1.add_schedule(function () {
+        let str = ":_3_";
+        let t = game.getGameElapsedTime();
+
+        //3 秒钟
+        let t3 = "" + parseInt(t % 60);
+        if (t3 < 10) {
+            t3 = "0" + t3;
+        }
+        str = str.replace(/_3_/, t3);
+
+        time1.set_text(str);
+
+    }, 1 / 60);
 }
 
 function initVicDef() {

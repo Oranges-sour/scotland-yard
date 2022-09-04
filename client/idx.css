@@ -5,7 +5,7 @@ body {
 #canvas {
     border-style: solid;
     border-width: 5px;
-    border-color: beige;
+    border-color: #f5f5dc;
 
     position: absolute;
 
