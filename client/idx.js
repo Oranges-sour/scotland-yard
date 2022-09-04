@@ -169,8 +169,36 @@ function init() {
     //初始化游戏时间显示
     initGameClock();
 
+    //初始化观战显示
+    initObserverShow();
+
+
     //初始化网络
     web.init();
+}
+
+function initObserverShow() {
+    let ob = Node.new();
+    main_director.add_child_with_key(ob, "game_observer");
+    ob.add_schedule(function () {
+        if (game.isGameStart() && game.isObserver()) {
+            clock.set_visible(true);
+        } else {
+            clock.set_visible(false);
+        }
+        ob.set_position_with_pos(renderData.width / 2 - 165 / 2, 0);
+    }, 1 / 60);
+
+    let bk = DrawNode.new();
+    bk.add_rect(Vec2.with_pos(0, 0), 165, 60, true, "#f5f5dc");
+
+    ob.add_child_with_key(bk, "bk");
+
+    let tex = Label.with_font_color(36, "Verdana", "rgb(67, 65, 65)");
+    ob.add_child_with_key(tex, "text");
+    tex.set_position_with_pos(30, 40);
+
+    tex.set_text("观战中");
 }
 
 function initGameClock() {
