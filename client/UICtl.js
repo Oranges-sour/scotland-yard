@@ -15,17 +15,48 @@ import { game } from "./Game.js";
 import { mapLocateNowChessOn } from "./GameMap.js";
 
 export function initUI() {
+    //用来移动显示用的节点
+    let move_node = Node.new();
+    ui_director.add_child_with_key(move_node, "move_node");
+
+    let up_down = Sprite.new("src/play_ui_up_down.png");
+    ui_director.add_child_with_key(up_down, "up_down");
+
+    up_down.add_component_with_key(false, "tog");
+
+    up_down.set_z_order(1);
+    up_down.set_position_with_pos(20, 20);
+
+    up_down.add_schedule(function () {
+        let move_node = ui_director.get_child_with_key("move_node");
+
+        let t = up_down.get_component_with_key("tog");
+
+        if (t) {
+            move_node.set_position_with_pos(0, -400);
+
+            up_down.set_rotation(-Math.PI);
+        } else {
+            move_node.set_position_with_pos(0, 0);
+
+            up_down.set_rotation(0);
+        }
+
+    }, 1 / 60);
+
+    //移动节点内的元素
+
     let bk = Sprite.new("src/play_ui.png");
     bk.set_anchor_with_pos(0, 0);
-    ui_director.add_child_with_key(bk, "play_ui");
+    move_node.add_child_with_key(bk, "play_ui");
 
     let step_on = Sprite.new("src/arrow.png");
     step_on.set_anchor_with_pos(0, 0);
     step_on.set_position_with_pos(0, 84);
-    ui_director.add_child_with_key(step_on, "step_on");
+    move_node.add_child_with_key(step_on, "step_on");
 
     let upd_node = Node.new();
-    ui_director.add_child_with_key(upd_node, "upd_node");
+    move_node.add_child_with_key(upd_node, "upd_node");
 
     //更新卡片展示堆
     upd_node.add_schedule(function () {
@@ -59,7 +90,7 @@ export function initUI() {
 
     }
 
-    ui_director.add_child_with_key(cards_num_show, "cards_num");
+    move_node.add_child_with_key(cards_num_show, "cards_num");
 }
 
 let chessStepOnPos = [0, 40, 88, 135, 181, 230, 280];
@@ -71,7 +102,9 @@ for (let i = 1; i <= 24; ++i) {
 }
 
 function uiUpdate() {
-    let step_on = ui_director.get_child_with_key("step_on");
+    let move_node = ui_director.get_child_with_key("move_node");
+
+    let step_on = move_node.get_child_with_key("step_on");
     let p = step_on.get_position();
     p.x = chessStepOnPos[game.gameData.chessStepOn];
     step_on.set_position_with_other(p);
@@ -83,7 +116,7 @@ function uiUpdate() {
         if (thiefStepList_old[j] != game.gameData.thiefStepList[j] && game.gameData.thiefStepList[j] != 0) {
             thiefStepList_old[j] = game.gameData.thiefStepList[j];
 
-            ui_director.remove_child(str);
+            move_node.remove_child(str);
 
             let sp = Sprite.new("src/card_" + game.gameData.thiefStepList[j] + ".png");
             sp.set_z_order(1);
@@ -97,10 +130,10 @@ function uiUpdate() {
             sp.set_anchor_with_pos(0, 0);
             sp.set_position_with_pos(x, y);
 
-            ui_director.add_child_with_key(sp, str);
+            move_node.add_child_with_key(sp, str);
         }
         if (game.gameData.thiefStepList[j] == 0) {
-            ui_director.remove_child(str);
+            move_node.remove_child(str);
         }
     }
 }
@@ -108,10 +141,22 @@ function uiUpdate() {
 export function updateUIOnMouseUp(p) {
     if (insideUICanvas(p)) {
         let pos = convertInUICanvas(p);
+        {
+            let lrp = Vec2.with_pos(17, 310);
+            if (inside(pos, lrp, 80, 80)) {
+                mapLocateNowChessOn();
+            }
+        }
 
-        let lrp = Vec2.with_pos(17, 310);
-        if (inside(pos, lrp, 80, 80)) {
-            mapLocateNowChessOn();
+
+        let up_down = ui_director.get_child_with_key("up_down");
+        let size = up_down.get_size();
+        let pp = up_down.get_position();
+        let lrp = Vec2.with_pos(pp.x - size.w / 2, pp.y - size.h / 2);
+
+        if (inside(pos, lrp, size.w, size.h)) {
+            let t = up_down.get_component_with_key("tog");
+            up_down.add_component_with_key(!t, "tog");
         }
     }
 }

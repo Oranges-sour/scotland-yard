@@ -121,22 +121,25 @@ function init() {
 
     //初始化网络
     web.init();
-    
+
     main_director = DirectorManager.new_director(ele_canvas, 60);
     //用来更新渲染区域的大小
     let upd_node = Node.new();
     upd_node.add_schedule(function () {
 
+        //更新宽度
         renderData.width = Math.max(1, window.innerWidth - ele_canvas_ui.offsetWidth - 50);
         ele_canvas_ui.style.left = renderData.width + 30 + "px";
 
-        window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+        //更新高度
+        renderData.height = window.innerHeight - 60;
 
+        //window.scrollTo({ top: 0, left: 0, behavior: "auto" });
 
         ele_canvas.width = renderData.width;
         ele_canvas.height = renderData.height;
 
-    }, 1 / 60.0, 0);
+    }, 1 / 60);
     main_director.add_child_with_key(upd_node, "upd_node_0");
 
     //所有需要使用滚轮缩放的内容都添加进render_node
@@ -154,6 +157,16 @@ function init() {
 
 
     ui_director = DirectorManager.new_director(ele_canvas_ui, 60);
+
+    //更新UI渲染区域大小
+    let upd_node_ui = Node.new();
+    ui_director.add_child(upd_node_ui);
+
+    upd_node_ui.add_schedule(function () {
+
+        //更新UI位置的大小
+        ele_canvas_ui.height = renderData.height;
+    }, 1 / 60);
 
     initUI();
 
