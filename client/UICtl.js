@@ -133,6 +133,7 @@ function uiUpdate() {
             move_node.add_child_with_key(sp, str);
         }
         if (game.gameData.thiefStepList[j] == 0) {
+            thiefStepList_old[j] = 0;
             move_node.remove_child(str);
         }
     }
