@@ -9,6 +9,7 @@ import { Director, DirectorManager } from "./webdraw/Director.js";
 import { game } from "./Game.js";
 
 import { main_director, mouseDown, touchStartPos, insideCanvas, renderData, convertInCanvas, inside } from "./idx.js";
+import { DrawNode } from "./webdraw/DrawNode.js";
 
 let mapSpriteData = new Object;
 mapSpriteData.touchStartMapPos = Vec2.new();
@@ -23,6 +24,23 @@ export function initMap() {
     sp.set_anchor_with_pos(0, 0);
     sp.set_scale(10.0);
 
+    //显示地图未加载完成
+    {
+        let no = Node.new();
+        main_director.add_child_with_key(no, "map_load_show");
+
+        let bk = DrawNode.new();
+        bk.add_rect(Vec2.with_pos(0, 0), 185, 40, true, "#f5f5dc");
+        no.add_child_with_key(bk, "map_load_show_bk");
+
+        let text = Label.with_font_color(18, "Verdana", "rgb(67, 65, 65)");
+        text.set_position_with_pos(0, 20);
+        text.set_text("高清贴图正在加载中...");
+        no.add_child_with_key(text, "map_load_show_text");
+    }
+
+
+
     //设置ImagePool异步加载大图片
     ImagePool.load("src/map.bmp", function () {
         let new_sp = Sprite.new("src/map.bmp");
@@ -36,7 +54,14 @@ export function initMap() {
         let scale_node = main_director.get_child_with_key("scale_node");
         let render_node = scale_node.get_child_with_key("render_node");
         render_node.add_child_with_key(new_sp, "game_map");
+
+        //取消显示
+        let load_show = main_director.get_child_with_key("map_load_show");
+        load_show.set_visible(false);
     });
+
+
+
 
 
     let scale_node = main_director.get_child_with_key("scale_node");
