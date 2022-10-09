@@ -62,8 +62,6 @@ export function initMap() {
 
 
 
-
-
     let scale_node = main_director.get_child_with_key("scale_node");
     let render_node = scale_node.get_child_with_key("render_node");
     render_node.add_child_with_key(sp, "game_map");
