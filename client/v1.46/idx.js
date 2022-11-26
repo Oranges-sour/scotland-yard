@@ -10,15 +10,13 @@ import { Director, DirectorManager } from "./webdraw/Director.js";
 
 import { initUI, updateUIOnMouseUp } from "./UICtl.js";
 
-import { initMap, updateMapOnMove, updateMapOnMouseDown, mapUpdateOnWheel } from "./GameMap.js";
+import { initMap, updateMapOnMove, updateMapOnMouseDown, mapUpdateOnWheel, mapUpdateOnTouchScale } from "./GameMap.js";
 
 import { initAnchor } from "./Anchor.js";
 
 import { web } from "./Web.js";
 
 import { game } from "./Game.js";
-
-import { uiCtlCanMoveMap } from "./MenuUI.js";
 
 let ele_canvas = document.getElementById("canvas");
 let ele_canvas_ui = document.getElementById("canvas_ui");
@@ -33,6 +31,7 @@ var mouseDown = false;
 var renderData = new Object();
 renderData.width = 1000;
 renderData.height = 700;
+renderData.zoom = 1.0;
 
 
 window.onload = function () {
@@ -55,13 +54,6 @@ if (/ipad|iphone|midp|rv:1.2.3.4|ucweb|android|windows ce|windows mobile/.test(t
         touchdown(e.pageX, e.pageY);
     }
     window.addEventListener("touchmove", function (e) {
-        if (uiCtlCanMoveMap()) {
-            return;
-        }
-        if (game.isGameStart()) {
-            e.preventDefault();
-        }
-
         if (e.touches.length == 1) {
             var ee = e.touches[0];
             touchmoveOneSpot(ee.pageX, ee.pageY);
@@ -82,7 +74,7 @@ if (/ipad|iphone|midp|rv:1.2.3.4|ucweb|android|windows ce|windows mobile/.test(t
         }
 
 
-    }, { passive: false });
+    }, { passive: true });
 
     window.addEventListener("touchend", function (e) {
         if (touchData.startTowSpot) {
@@ -111,7 +103,7 @@ if (/ipad|iphone|midp|rv:1.2.3.4|ucweb|android|windows ce|windows mobile/.test(t
 
         var ee = e.changedTouches[0];
         touchup(ee.pageX, ee.pageY);
-    }, { passive: false });
+    }, { passive: true });
 } else {
     //PC操作
     window.onmousedown = function (e) {
@@ -171,6 +163,7 @@ export function convertInUICanvas(pos) {
 }
 
 export function insideCanvas(pos) {
+    let zoom = document.documentElement.style.zoom;
 
     let w = ele_canvas.offsetWidth;
     let h = ele_canvas.offsetHeight;
@@ -188,7 +181,7 @@ export function insideUICanvas(pos) {
     let h = ele_canvas_ui.offsetHeight;
     let left = ele_canvas_ui.offsetLeft;
     let top = ele_canvas_ui.offsetTop;
-
+    
     let p = Vec2.new();
     p.set_with_pos(left, top);
     return inside(pos, p, w, h);
@@ -203,20 +196,31 @@ function init() {
     //用来更新渲染区域的大小
     let upd_node = Node.new();
     upd_node.add_schedule(function () {
+        if (!isDevicePC) {
+            renderData.zoom = 0.5;
+        } else {
+            renderData.zoom = 1.0;
+        }
+        document.documentElement.style.zoom = renderData.zoom;
+
+        let zoom = renderData.zoom;
+
+        let doc_w = document.documentElement.clientWidth / zoom;
+        let doc_h = document.documentElement.clientHeight / zoom;
 
         //更新宽度
-        renderData.width = Math.max(1, window.innerWidth - ele_canvas_ui.offsetWidth - 50);
-        ele_canvas_ui.style.left = renderData.width + 30 + "px";
+        renderData.width = Math.max(1, doc_w - ele_canvas_ui.offsetWidth);
+        ele_canvas_ui.style.left = renderData.width + "px";
 
         //更新高度
-        renderData.height = window.innerHeight - 60;
+        renderData.height = doc_h - 10;
 
         //window.scrollTo({ top: 0, left: 0, behavior: "auto" });
 
         ele_canvas.width = renderData.width;
         ele_canvas.height = renderData.height;
 
-    }, 1 / 60);
+    }, 1 / 20);
     main_director.add_child_with_key(upd_node, "upd_node_0");
 
     //所有需要使用滚轮缩放的内容都添加进render_node
@@ -483,6 +487,9 @@ function initChess() {
 function touchdown(x, y) {
     mouseDown = true;
     let p = Vec2.with_pos(x, y);
+    let zoom = document.documentElement.style.zoom;
+    p.set_with_other(Vec2.scalar(p, 1 / zoom));
+
 
     touchStartPos.set_with_other(p);
     updateMapOnMouseDown(p);
@@ -491,6 +498,8 @@ function touchdown(x, y) {
 function touchup(x, y) {
     mouseDown = false;
     let p = Vec2.with_pos(x, y);
+    let zoom = document.documentElement.style.zoom;
+    p.set_with_other(Vec2.scalar(p, 1 / zoom));
 
     touchEndPos.set_with_other(p);
 
@@ -501,6 +510,9 @@ function touchup(x, y) {
 
 function touchmoveOneSpot(x, y) {
     let p = Vec2.with_pos(x, y);
+    let zoom = document.documentElement.style.zoom;
+    p.set_with_other(Vec2.scalar(p, 1 / zoom));
+
 
     updateMapOnMove(p);
 }
@@ -510,21 +522,31 @@ function touchmoveTwoSpot(x0, y0, x1, y1) {
 
     let p1 = Vec2.with_pos(x1, y1);
 
+    let zoom = document.documentElement.style.zoom;
+    p0.set_with_other(Vec2.scalar(p0, 1 / zoom));
+
+    p1.set_with_other(Vec2.scalar(p1, 1 / zoom));
+
+
     let dx = x1 - x0;
     let dy = y1 - y0;
     let dd = Math.sqrt(dx * dx + dy * dy);
 
-    let k = parseInt((dd - touchData.dist) / 30);
+    let k = parseInt((dd - touchData.dist) / 5);
     if (Math.abs(k) >= 1) {
         touchData.dist = dd;
     }
 
-    mapUpdateOnWheel(p0, k);
+    mapUpdateOnTouchScale(p0, k);
     //dragMoveMapOnMove(p);
 }
 
 function touchdbl(x, y) {
     var p = Vec2.with_pos(x, y);
+    let zoom = document.documentElement.style.zoom;
+
+    p.set_with_other(Vec2.scalar(p, 1 / zoom));
+
     playChessOnDblClick(p);
 }
 
