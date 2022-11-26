@@ -88,6 +88,20 @@ export function mapUpdateOnWheel(p, k) {
     }
 }
 
+export function mapUpdateOnTouchScale(p, k) {
+    if (!game.isGameStart()) {
+        return;
+    }
+    const CS = 0.007;
+
+    if (insideCanvas(p)) {
+        mapSpriteData.scale += CS * k;
+
+        mapSpriteData.scale = Math.max(0.1, mapSpriteData.scale);
+        mapSpriteData.scale = Math.min(2, mapSpriteData.scale);
+    }
+}
+
 export function updateMapOnMouseDown(p) {
     if (!game.isGameStart()) {
         return;

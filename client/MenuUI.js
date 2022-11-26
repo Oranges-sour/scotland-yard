@@ -65,8 +65,6 @@ var ele_menu = document.getElementById("Menu");
 var ele_help = document.getElementById("Help");
 var ele_start = document.getElementById("Start");
 
-var ele_flowCtl = document.getElementById("FlowCtl");
-
 var ele_serverStatueShow = document.getElementById("WebStatueShow");
 
 document.getElementById("BtnReset").onclick = function () {
@@ -87,30 +85,15 @@ document.getElementById("Menu_Start").onclick = function () {
 document.getElementById("Menu_Help").onclick = function () {
     onMenuHelp();
 };
+document.getElementById("Menu_Fullscreen").onclick = function () {
+    onMenuFullscreen();
+};
 document.getElementById("Help_Close").onclick = function () {
     onMenuBack();
 };
 document.getElementById("Start_Close").onclick = function () {
     onMenuBack();
 };
-
-
-//浮动小窗，设置是否能拖动地图
-//用来防止游戏开始后页面位置改变
-//但在游戏状态下界面被禁止拖动的情况
-var uiCanMoveMap = true;
-document.getElementById("FlowCtl").onclick = function () {
-    if (uiCanMoveMap) {
-        uiCanMoveMap = false;
-    } else {
-        uiCanMoveMap = true;
-    }
-}
-
-//是否可以拖动地图
-export function uiCtlCanMoveMap() {
-    return uiCanMoveMap;
-}
 
 //按钮功能设置成功
 export function btnCtlSuccess(obj) {
@@ -120,7 +103,7 @@ export function btnCtlSuccess(obj) {
     if (obj.type1 == "join") {
         var ctl = obj.append;
         game.setSelfChessCtl(ctl);
-        
+
         setCtlStatue("BtnJoin_S", true);
     }
     if (obj.type1 == "quit") {
@@ -168,10 +151,14 @@ function clearCtlStatue(ele_str) {
 
 function menuUpd() {
     //使界面始终在中央
-    ele_menu.style.left = window.innerWidth / 2 - ele_menu.offsetWidth / 2 + "px";
-    ele_start.style.left = window.innerWidth / 2 - ele_start.offsetWidth / 2 + "px";
-    ele_help.style.left = window.innerWidth / 2 - ele_help.offsetWidth / 2 + "px";
-    ele_serverStatueShow.style.left = window.innerWidth / 2 - ele_serverStatueShow.offsetWidth / 2 + "px";
+    let zoom = document.documentElement.style.zoom;
+    let doc_w = document.documentElement.clientWidth / zoom;
+    let doc_h = document.documentElement.clientHeight / zoom;
+
+    ele_menu.style.left = doc_w / 2 - ele_menu.offsetWidth / 2 + "px";
+    ele_start.style.left = doc_w / 2 - ele_start.offsetWidth / 2 + "px";
+    ele_help.style.left = doc_w / 2 - ele_help.offsetWidth / 2 + "px";
+    ele_serverStatueShow.style.left = doc_w / 2 - ele_serverStatueShow.offsetWidth / 2 + "px";
     ///
 
     if (!web.isServerConnected()) {
@@ -207,17 +194,11 @@ function menuUpd() {
             ele_playerStatue[i].style.backgroundImage = "none";
         }
     }
-
-    if (uiCanMoveMap) {
-        ele_flowCtl.style.backgroundImage = "url(\"src/move_0.png\")";
-    } else {
-        ele_flowCtl.style.backgroundImage = "url(\"src/move_1.png\")";
-    }
 }
 
 setInterval(function () {
     menuUpd();
-}, 32);
+}, 100);
 
 //web更新当前的玩家选择状态
 export function updateMenuStatue(obj) {
@@ -265,9 +246,6 @@ export function closeUI() {
     ele_menu.style.visibility = "hidden";
     ele_help.style.visibility = "hidden";
     ele_start.style.visibility = "hidden";
-    if (!isDevicePC) {
-        ele_flowCtl.style.visibility = "visible";
-    }
 }
 
 function onMenuStart() {
@@ -283,5 +261,10 @@ function onMenuBack() {
     ele_menu.style.visibility = "visible";
     ele_help.style.visibility = "hidden";
     ele_start.style.visibility = "hidden";
+}
+
+function onMenuFullscreen() {
+    document.documentElement.requestFullscreen();
+    //document.body.style.zoom = 0.5;
 }
 

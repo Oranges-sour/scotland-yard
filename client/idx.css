@@ -9,9 +9,9 @@ body {
 
     position: absolute;
 
-    margin-top: 5px;
+    top: 0px;
 
-    left: 10px;
+    left: 0px;
 }
 
 #canvas_ui {
@@ -21,21 +21,17 @@ body {
 
     position: absolute;
 
-    margin-top: 5px;
-
-    right: 10px;
-
+    top: 0px;
 }
 
 #MenuShow {
     position: absolute;
 
-    /* background-color: azure; */
-
     margin-top: 10px;
     margin-left: 10px;
 
-    height: 710px;
+    width: 400px;
+    height: min(80%, 600px);
 
     text-align: left;
 }
@@ -50,7 +46,7 @@ body {
     position: absolute;
 
     width: 400px;
-    height: 600px;
+    height: 100%;
 
     margin-top: 30px;
 
@@ -93,7 +89,7 @@ body {
     margin-left: 10px;
 
     width: 390px;
-    height: 570px;
+    height: calc(100% - 30px);
 
     overflow-y: auto;
 }
@@ -107,8 +103,8 @@ body {
 
     position: absolute;
 
-    width: 400px;
-    height: 600px;
+    width: 100%;
+    height: 100%;
 
     margin-top: 30px;
 
@@ -122,6 +118,7 @@ body {
 
     z-index: 1;
 
+    overflow-y: auto;
 }
 
 #Start_Close {
@@ -155,8 +152,8 @@ body {
 
     position: absolute;
 
-    width: 400px;
-    height: 600px;
+    width: 100%;
+    height: 100%;
 
     /* margin-left: 580px; */
     margin-top: 30px;
@@ -164,6 +161,8 @@ body {
     text-align: center;
 
     font: 24px Verdana;
+
+    overflow-y: auto;
 
     color: white;
 }
@@ -173,6 +172,43 @@ body {
     height: 40px;
 
     margin-top: 60px;
+
+    background-color: rgb(67, 65, 65);
+
+    color: aliceblue;
+
+    font: 20px Verdana;
+
+    border-style: solid;
+    border-color: aliceblue;
+    border-radius: 3px;
+    border-width: 2px;
+}
+
+#Menu_Help {
+
+    width: 160px;
+    height: 40px;
+
+    margin-top: 30px;
+
+    background-color: rgb(67, 65, 65);
+
+    color: aliceblue;
+
+    font: 20px Verdana;
+
+    border-style: solid;
+    border-color: aliceblue;
+    border-radius: 3px;
+    border-width: 2px;
+}
+
+#Menu_Fullscreen {
+    width: 160px;
+    height: 40px;
+
+    margin-top: 30px;
 
     background-color: rgb(67, 65, 65);
 
@@ -315,47 +351,6 @@ body {
     background-color: rgb(86, 26, 141);
 }
 
-
-#Menu_Help {
-
-    width: 160px;
-    height: 40px;
-
-    margin-top: 30px;
-
-    background-color: rgb(67, 65, 65);
-
-    color: aliceblue;
-
-    font: 20px Verdana;
-
-    border-style: solid;
-    border-color: aliceblue;
-    border-radius: 3px;
-    border-width: 2px;
-}
-
-#FlowCtl {
-    position: fixed;
-
-    background-color: rgb(239, 233, 218);
-
-    left: 20px;
-    top: 20px;
-
-    width: 80px;
-    height: 80px;
-
-    border-style: solid;
-    border-radius: 2px;
-    border-right: 4px;
-    border-color: rgb(131, 126, 115);
-
-    visibility: hidden;
-
-    z-index: 2;
-}
-
 #WebStatueShow {
     background-color: rgb(160, 160, 150);
 
@@ -365,8 +360,8 @@ body {
 
     position: absolute;
 
-    width: 800px;
-    height: 600px;
+    width: 100%;
+    height: 80%;
 
     margin-top: 30px;
 
