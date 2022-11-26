@@ -175,10 +175,10 @@ function menuUpd() {
     ///
 
     if (!web.isServerConnected()) {
-        ele_menu.style.display = "none";
-        ele_start.style.display = "none";
-        ele_help.style.display = "none";
-        ele_serverStatueShow.style.display = "block";
+        ele_menu.style.visibility = "hidden";
+        ele_start.style.visibility = "hidden";
+        ele_help.style.visibility = "hidden";
+        ele_serverStatueShow.style.visibility = "visible";
 
 
         serverConnectedReset = false;
@@ -227,16 +227,16 @@ export function updateMenuStatue(obj) {
 
 //游戏重置时被调用
 export function resetUI() {
-    var a = ele_menu.style.display;
-    var b = ele_help.style.display;
-    var c = ele_start.style.display;
+    var a = ele_menu.style.visibility;
+    var b = ele_help.style.visibility;
+    var c = ele_start.style.visibility;
 
-    if (a == "none" && b == "none" && c == "none") {
-        ele_menu.style.display = "block";
-        ele_help.style.display = "none";
-        ele_start.style.display = "none";
+    if (a == "hidden" && b == "hidden" && c == "hidden") {
+        ele_menu.style.visibility = "visible";
+        ele_help.style.visibility = "hidden";
+        ele_start.style.visibility = "hidden";
     }
-    ele_serverStatueShow.style.display = "none";
+    ele_serverStatueShow.style.visibility = "hidden";
 }
 
 function joinGame() {
@@ -262,26 +262,26 @@ function quitGame() {
 }
 
 export function closeUI() {
-    ele_menu.style.display = "none";
-    ele_help.style.display = "none";
-    ele_start.style.display = "none";
+    ele_menu.style.visibility = "hidden";
+    ele_help.style.visibility = "hidden";
+    ele_start.style.visibility = "hidden";
     if (!isDevicePC) {
-        ele_flowCtl.style.visibility = "block";
+        ele_flowCtl.style.visibility = "visible";
     }
 }
 
 function onMenuStart() {
-    ele_menu.style.display = "none";
-    ele_start.style.display = "block";
+    ele_menu.style.visibility = "hidden";
+    ele_start.style.visibility = "visible";
 }
 
 function onMenuHelp() {
-    ele_menu.style.display = "none";
-    ele_help.style.display = "block";
+    ele_menu.style.visibility = "hidden";
+    ele_help.style.visibility = "visible";
 }
 function onMenuBack() {
-    ele_menu.style.display = "block";
-    ele_help.style.display = "none";
-    ele_start.style.display = "none";
+    ele_menu.style.visibility = "visible";
+    ele_help.style.visibility = "hidden";
+    ele_start.style.visibility = "hidden";
 }
 
