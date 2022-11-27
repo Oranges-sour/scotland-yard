@@ -1,0 +1,93 @@
+#GameLoadShow {
+    background-color: rgb(182, 182, 150);
+
+    width: 100%;
+    height: 100%;
+
+    position: absolute;
+
+    left: 0px;
+    top: 0px;
+    z-index: 1000;
+}
+
+@keyframes fadeout {
+    from {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0;
+    }
+}
+
+#GameLoadShow_t1 {
+
+    margin-top: 5%;
+
+    font: 80px Verdana;
+
+    font-weight: 600;
+
+    color: rgb(62, 56, 38);
+}
+
+#GameLoadShow_t2 {
+    font: 30px Verdana;
+
+    font-weight: 300;
+
+    margin-left: 45%;
+
+    color: rgb(62, 56, 38);
+}
+
+#GameLoadShow_t3 {
+    font: 60px Verdana;
+
+    font-weight: 400;
+
+    color: rgb(62, 56, 38);
+}
+
+#GameLoadShow_loadbar_outline {
+
+    width: 500px;
+    height: 5px;
+
+    position: absolute;
+
+    margin-top: 60px;
+
+    left: calc(50% - 250px);
+
+    border-width: 1px;
+    border-style: solid;
+}
+
+#GameLoadShow_loadbar {
+
+    width: 0px;
+    height: 5px;
+
+    background-color: rgb(62, 56, 38);
+
+    position: absolute;
+
+    margin-top: 60px;
+
+    left: calc(50% - 250px);
+
+    border-width: 1px;
+    border-style: solid;
+}
+
+#GameLoadShow_load_info {
+    font: 23px Verdana;
+
+    margin-top: 30px;
+
+    font-weight: 400;
+
+    color: rgb(62, 56, 38);
+}

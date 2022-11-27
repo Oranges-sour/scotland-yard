@@ -21,6 +21,10 @@ import { game } from "./Game.js";
 let ele_canvas = document.getElementById("canvas");
 let ele_canvas_ui = document.getElementById("canvas_ui");
 
+let ele_GameLoadShow = document.getElementById("GameLoadShow");
+let ele_GameLoadShow_loadbar = document.getElementById("GameLoadShow_loadbar");
+let ele_GameLoadShow_loadinfo = document.getElementById("GameLoadShow_load_info");
+
 var main_director, ui_director;
 
 var touchStartPos = Vec2.new();
@@ -130,7 +134,8 @@ window.onwheel = function (e) {
     }
 }
 
-
+//坐标转换函数
+////////////////////////////////////////////////////
 
 export function inside(pos, lrp, w, h) {
     if (pos.x >= lrp.x && pos.x <= lrp.x + w && pos.y >= lrp.y && pos.y <= lrp.y + h) {
@@ -181,26 +186,181 @@ export function insideUICanvas(pos) {
     let h = ele_canvas_ui.offsetHeight;
     let left = ele_canvas_ui.offsetLeft;
     let top = ele_canvas_ui.offsetTop;
-    
+
     let p = Vec2.new();
     p.set_with_pos(left, top);
     return inside(pos, p, w, h);
 }
 
-function init() {
+////////////////////////////////////////////////////
 
+let gamePreLoadStep = 1;
+let gamePreLoadStepSum = 12;
+
+let gamePreLoadOnWait = false;
+let gamePreLoadFinish = false;
+
+let gamePreLoadFuncs = new Array();
+for (let i = 1; i <= 13; ++i) {
+    gamePreLoadFuncs[i] = new Object();
+
+    gamePreLoadFuncs[i].isLast = true;
+    gamePreLoadFuncs[i].info = "初始化完成";
+    gamePreLoadFuncs[i].loadFunc = function () { };
+    gamePreLoadFuncs[i].checkFunc = function () { return true; };
+}
+
+gamePreLoadFuncs[1].isLast = false;
+gamePreLoadFuncs[1].info = "初始化缩放";
+gamePreLoadFuncs[1].loadFunc = function () {
+    initZoom();
+};
+
+gamePreLoadFuncs[2].isLast = false;
+gamePreLoadFuncs[2].info = "正在连接服务器";
+gamePreLoadFuncs[2].loadFunc = function () {
     //初始化网络
     web.init();
+};
+gamePreLoadFuncs[2].checkFunc = function () {
+    if (web.isServerConnected()) {
+        return true;
+    }
+    return false;
+};
 
+gamePreLoadFuncs[3].isLast = false;
+gamePreLoadFuncs[3].info = "正在初始化渲染器";
+gamePreLoadFuncs[3].loadFunc = function () {
+    initDirector();
+};
+
+gamePreLoadFuncs[4].isLast = false;
+gamePreLoadFuncs[4].info = "正在初始化界面";
+gamePreLoadFuncs[4].loadFunc = function () {
+    initUI();
+};
+
+gamePreLoadFuncs[5].isLast = false;
+gamePreLoadFuncs[5].info = "正在初始化地图";
+gamePreLoadFuncs[5].loadFunc = function () {
+    initMap();
+};
+
+gamePreLoadFuncs[6].isLast = false;
+gamePreLoadFuncs[6].info = "正在初始化锚点";
+gamePreLoadFuncs[6].loadFunc = function () {
+    initAnchor();
+};
+
+gamePreLoadFuncs[7].isLast = false;
+gamePreLoadFuncs[7].info = "正在初始化棋子";
+gamePreLoadFuncs[7].loadFunc = function () {
+    initChess();
+};
+
+gamePreLoadFuncs[8].isLast = false;
+gamePreLoadFuncs[8].info = "正在初始化胜利失败贴图";
+gamePreLoadFuncs[8].loadFunc = function () {
+    initVicDef();
+};
+
+gamePreLoadFuncs[9].isLast = false;
+gamePreLoadFuncs[9].info = "正在初始化棋子选择";
+gamePreLoadFuncs[9].loadFunc = function () {
+    initCardSelect();
+};
+
+gamePreLoadFuncs[10].isLast = false;
+gamePreLoadFuncs[10].info = "正在初始化游戏时钟";
+gamePreLoadFuncs[10].loadFunc = function () {
+    initGameClock();
+};
+
+gamePreLoadFuncs[11].isLast = false;
+gamePreLoadFuncs[11].info = "正在初始化观战显示";
+gamePreLoadFuncs[11].loadFunc = function () {
+    initObserverShow();
+};
+
+gamePreLoadFuncs[12].isLast = false;
+gamePreLoadFuncs[12].info = "正在启动主循环";
+gamePreLoadFuncs[12].loadFunc = function () {
+    initDirectorLoop();
+};
+
+
+function gamePreLoad() {
+    if (gamePreLoadFinish) {
+        return;
+    }
+
+    ele_GameLoadShow_loadbar.style.width = 500 * (gamePreLoadStep / gamePreLoadStepSum) + "px";
+    //如果已经在等待加载，则检查是否成功加载
+    if (gamePreLoadOnWait) {
+        let success = false;
+        //check
+        success = gamePreLoadFuncs[gamePreLoadStep].checkFunc();
+
+        if (success) {
+            gamePreLoadStep += 1;
+            gamePreLoadOnWait = false;
+        }
+    }
+
+    if (!gamePreLoadOnWait) {
+        ele_GameLoadShow_loadinfo.innerHTML = gamePreLoadFuncs[gamePreLoadStep].info;
+
+        if (gamePreLoadFuncs[gamePreLoadStep].isLast) {
+
+            //预加载界面消失
+            //等待300ms再消失
+            setTimeout(function () {
+
+                ele_GameLoadShow.style.animation = "fadeout";
+                ele_GameLoadShow.style.animationDuration = "0.3s";
+                setTimeout(() => {
+                    ele_GameLoadShow.style.display = "none";
+                }, "290");
+
+            }, "400");
+
+            //ele_GameLoadShow
+
+            gamePreLoadFinish = true;
+            return;
+        }
+
+        gamePreLoadOnWait = true;
+        gamePreLoadFuncs[gamePreLoadStep].loadFunc();
+    }
+
+}
+
+
+function init() {
+
+    setInterval(function () {
+        gamePreLoad();
+    }, 100);
+
+}
+
+function initZoom() {
+    if (!isDevicePC) {
+        renderData.zoom = 0.5;
+    } else {
+        renderData.zoom = 1.0;
+    }
+    //提前设置一次
+    document.documentElement.style.zoom = renderData.zoom;
+}
+
+function initDirector() {
     main_director = DirectorManager.new_director(ele_canvas, 60);
     //用来更新渲染区域的大小
     let upd_node = Node.new();
     upd_node.add_schedule(function () {
-        if (!isDevicePC) {
-            renderData.zoom = 0.5;
-        } else {
-            renderData.zoom = 1.0;
-        }
         document.documentElement.style.zoom = renderData.zoom;
 
         let zoom = renderData.zoom;
@@ -248,27 +408,6 @@ function init() {
         //更新UI位置的大小
         ele_canvas_ui.height = renderData.height;
     }, 1 / 60);
-
-    initUI();
-
-    initMap();
-
-    initAnchor();
-
-    //初始化棋子
-    initChess();
-
-    //初始化胜利与失败显示
-    initVicDef();
-
-    //初始化棋子选择
-    initCardSelect();
-
-    //初始化游戏时间显示
-    initGameClock();
-
-    //初始化观战显示
-    initObserverShow();
 }
 
 function initObserverShow() {
@@ -481,6 +620,11 @@ function initChess() {
 
         render_node.add_child_with_key(sp, `player_${i}`);
     }
+}
+
+function initDirectorLoop() {
+    main_director.start_loop();
+    ui_director.start_loop();
 }
 
 //针对触控的操作

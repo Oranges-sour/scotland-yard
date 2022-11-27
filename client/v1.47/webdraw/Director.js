@@ -23,11 +23,14 @@ export class Director {
         this.g_canvas = canvas;
         this.g_ctx = this.g_canvas.getContext("2d");
         this.g_time0 = new Date().getTime() / 1000;
+        this.frame_rate = frame_rate;
+    }
 
+    start_loop() {
         var that = this;
         setInterval(function () {
             that.update();
-        }, parseInt(1000 / frame_rate));
+        }, parseInt(1000 / this.frame_rate));
     }
 
     update() {

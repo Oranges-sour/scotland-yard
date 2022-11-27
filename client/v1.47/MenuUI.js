@@ -41,8 +41,8 @@ const chessCtl = [
     [[], [1], [2], [3], [4], [5], [6]]//6
 ];
 
-const CtlStatueSuccess = "<div class=\"CtlStatueSuccess\"></div>";
-const CtlStatueFailed = "<div class=\"CtlStatueFailed\"></div>";
+const CtlStatueSuccess = "<div class=\"StartPage_CtlStatueSuccess\"></div>";
+const CtlStatueFailed = "<div class=\"StartPage_CtlStatueFailed\"></div>";
 
 var lastPlayerCnt = 0;
 
@@ -55,44 +55,44 @@ for (var i = 1; i <= 6; ++i) {
 var serverConnectedReset = false;
 
 var ele_uuid = document.getElementById("Start_UUID");
-var ele_ChessChoose = document.getElementById("ChessChoose");
-var ele_PlayerCntChoose = document.getElementById("PlayerCntChoose");
+var ele_ChessChoose = document.getElementById("StartPage_ChessChoose");
+var ele_PlayerCntChoose = document.getElementById("StartPage_PlayerCntChoose");
 var ele_playerStatue = new Array();
 for (var i = 1; i <= 6; ++i) {
-    ele_playerStatue[i] = document.getElementById("PlS_" + i);
+    ele_playerStatue[i] = document.getElementById("StartPage_PlS_" + i);
 }
-var ele_menu = document.getElementById("Menu");
-var ele_help = document.getElementById("Help");
-var ele_start = document.getElementById("Start");
+var ele_home_page = document.getElementById("HomePage");
+var ele_help_page = document.getElementById("HelpPage");
+var ele_start_page = document.getElementById("StartPage");
 
 var ele_serverStatueShow = document.getElementById("WebStatueShow");
 
-document.getElementById("BtnReset").onclick = function () {
+document.getElementById("StartPage_Btn_Reset").onclick = function () {
     resetGame();
 };
-document.getElementById("BtnJoin").onclick = function () {
+document.getElementById("StartPage_Btn_Join").onclick = function () {
     joinGame();
 };
-document.getElementById("BtnQuit").onclick = function () {
+document.getElementById("StartPage_Btn_Ouit").onclick = function () {
     quitGame();
 };
-document.getElementById("BtnStart").onclick = function () {
+document.getElementById("StartPage_Btn_Start").onclick = function () {
     startGame();
 };
-document.getElementById("Menu_Start").onclick = function () {
-    onMenuStart();
+document.getElementById("HomePage_Btn_Start").onclick = function () {
+    onMenuHomePageBtnStart();
 };
-document.getElementById("Menu_Help").onclick = function () {
-    onMenuHelp();
+document.getElementById("HomePage_Btn_Help").onclick = function () {
+    onMenuHomePageBtnHelp();
 };
-document.getElementById("Menu_Fullscreen").onclick = function () {
-    onMenuFullscreen();
+document.getElementById("HomePage_Btn_Fullscreen").onclick = function () {
+    onMenuHomePageBtnFullscreen();
 };
-document.getElementById("Help_Close").onclick = function () {
-    onMenuBack();
+document.getElementById("HelpPage_Btn_Close").onclick = function () {
+    onMenuBackHomePage();
 };
-document.getElementById("Start_Close").onclick = function () {
-    onMenuBack();
+document.getElementById("StartPage_Ctn_Close").onclick = function () {
+    onMenuBackHomePage();
 };
 
 //按钮功能设置成功
@@ -155,16 +155,16 @@ function menuUpd() {
     let doc_w = document.documentElement.clientWidth / zoom;
     let doc_h = document.documentElement.clientHeight / zoom;
 
-    ele_menu.style.left = doc_w / 2 - ele_menu.offsetWidth / 2 + "px";
-    ele_start.style.left = doc_w / 2 - ele_start.offsetWidth / 2 + "px";
-    ele_help.style.left = doc_w / 2 - ele_help.offsetWidth / 2 + "px";
+    ele_home_page.style.left = doc_w / 2 - ele_home_page.offsetWidth / 2 + "px";
+    ele_start_page.style.left = doc_w / 2 - ele_start_page.offsetWidth / 2 + "px";
+    ele_help_page.style.left = doc_w / 2 - ele_help_page.offsetWidth / 2 + "px";
     ele_serverStatueShow.style.left = doc_w / 2 - ele_serverStatueShow.offsetWidth / 2 + "px";
     ///
 
     if (!web.isServerConnected()) {
-        ele_menu.style.visibility = "hidden";
-        ele_start.style.visibility = "hidden";
-        ele_help.style.visibility = "hidden";
+        ele_home_page.style.visibility = "hidden";
+        ele_start_page.style.visibility = "hidden";
+        ele_help_page.style.visibility = "hidden";
         ele_serverStatueShow.style.visibility = "visible";
 
 
@@ -208,14 +208,14 @@ export function updateMenuStatue(obj) {
 
 //游戏重置时被调用
 export function resetUI() {
-    var a = ele_menu.style.visibility;
-    var b = ele_help.style.visibility;
-    var c = ele_start.style.visibility;
+    var a = ele_home_page.style.visibility;
+    var b = ele_help_page.style.visibility;
+    var c = ele_start_page.style.visibility;
 
     if (a == "hidden" && b == "hidden" && c == "hidden") {
-        ele_menu.style.visibility = "visible";
-        ele_help.style.visibility = "hidden";
-        ele_start.style.visibility = "hidden";
+        ele_home_page.style.visibility = "visible";
+        ele_help_page.style.visibility = "hidden";
+        ele_start_page.style.visibility = "hidden";
     }
     ele_serverStatueShow.style.visibility = "hidden";
 }
@@ -243,27 +243,27 @@ function quitGame() {
 }
 
 export function closeUI() {
-    ele_menu.style.visibility = "hidden";
-    ele_help.style.visibility = "hidden";
-    ele_start.style.visibility = "hidden";
+    ele_home_page.style.visibility = "hidden";
+    ele_help_page.style.visibility = "hidden";
+    ele_start_page.style.visibility = "hidden";
 }
 
-function onMenuStart() {
-    ele_menu.style.visibility = "hidden";
-    ele_start.style.visibility = "visible";
+function onMenuHomePageBtnStart() {
+    ele_home_page.style.visibility = "hidden";
+    ele_start_page.style.visibility = "visible";
 }
 
-function onMenuHelp() {
-    ele_menu.style.visibility = "hidden";
-    ele_help.style.visibility = "visible";
+function onMenuHomePageBtnHelp() {
+    ele_home_page.style.visibility = "hidden";
+    ele_help_page.style.visibility = "visible";
 }
-function onMenuBack() {
-    ele_menu.style.visibility = "visible";
-    ele_help.style.visibility = "hidden";
-    ele_start.style.visibility = "hidden";
+function onMenuBackHomePage() {
+    ele_home_page.style.visibility = "visible";
+    ele_help_page.style.visibility = "hidden";
+    ele_start_page.style.visibility = "hidden";
 }
 
-function onMenuFullscreen() {
+function onMenuHomePageBtnFullscreen() {
     document.documentElement.requestFullscreen();
     //document.body.style.zoom = 0.5;
 }

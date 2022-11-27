@@ -2,172 +2,18 @@
 <title>ScotlandYard</title>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width">
-<meta http-equiv="Pragma" content="no-cache" />
-<meta http-equiv="Cache-Control" content="no-cache" />
-<meta http-equiv="Expires" content="0" />
-
-
 
 
 <html lang="zh-cn">
-
-<head>
-    <link rel="shortcut icon" href="v1.46/favicon.ico">
-    <link rel="stylesheet" type="text/css" href="v1.46/idx.css">
-</head>
-
 <body>
-    <div style="text-align: left;">
-
-        <canvas id="canvas" width="1200" height="700"></canvas>
-        <canvas id="canvas_ui" width="350" height="700"></canvas>
-
-
-
-        <div id="MenuShow">
-            <div id="WebStatueShow">
-                与服务器断开连接...<br />正在尝试重连
-            </div>
-
-            <div id="Help">
-                <button id="Help_Close">关闭</button>
-                <div id="Help_Text" style="font-family: Verdana;">
-                    <div style="font-size: 36px;">苏格兰特警 规则及操作</div>
-                    <div style="font-size: 16px;">---------------------------------------</div>
-                    <div style="font-size: 26px;">游戏背景</div>
-                    <div style="font-size: 16px;">
-                        • 游戏中，玩家们分别扮演X先生与警探，在伦敦地图上开展警察抓小偷的游戏。到底警探们能够抓到臭名昭著的X先生，还是X先生会玩弄警探们与股掌之间呢？</div>
-                    <div style="font-size: 16px;">---------------------------------------</div>
-                    <div style="font-size: 26px;">游戏规则</div>
-                    <div style="font-size: 22px;">游戏人数</div>
-                    <div style="font-size: 16px;">• 2-6人</div>
-                    <div style="font-size: 16px;">-----------------</div>
-                    <div style="font-size: 22px;">游戏地图</div>
-                    <div style="font-size: 16px;">
-                        •
-                        游戏地图上共6枚棋子，代表X先生或警探们。其中，青色的棋子为X先生。在游戏中，青色即X先生的棋子警探们默认不可见（特定的可见时机在“记卡器”介绍）。警探们需要根据每一轮游戏X先生使用的卡片来推测X先生的所在位置（卡片将在“卡片”介绍）。
-                    </div>
-                    <div style="font-size: 16px;">• 地图上一共有4中交通路线，分别为：出租（白色），公交（蓝色），地铁（橙色），轮船（黑色）</div>
-                    <div style="font-size: 16px;">•
-                        地图上一共有199个车站点，如果车站点带有蓝色，则可以乘坐公交，有橙色则可以乘坐地铁，任意一个车站都可以乘坐出租，X先生可使用特殊卡片乘坐轮船。</div>
-                    <div style="font-size: 16px;">-----------------</div>
-                    <div style="font-size: 22px;">记卡器</div>
-                    <div style="font-size: 16px;">• 每一轮游戏中，X先生使用的卡片都将会被记卡器记录，在记卡器上有圆圈标记的游戏轮中，X先生的棋子将显现可以被警探们看见。</div>
-                    <div style="font-size: 16px;">-----------------</div>
-                    <div style="font-size: 22px;">卡片</div>
-                    <div style="font-size: 16px;">• 出租车：可以使用一张本卡片乘坐出租车，到达最近的出租车站</div>
-                    <div style="font-size: 16px;">• 公交车：可以使用一张本卡片乘坐公交车，到达最近的公交车站</div>
-                    <div style="font-size: 16px;">• 地铁：可以使用一张本卡片乘坐地图，到达最近的地铁站</div>
-                    <div style="font-size: 16px;">• 隐形：X先生专有卡片，可以使用一张本卡片乘坐出租车、公交车、地铁或轮船到达相应最近的车站。并且，在记卡器上将不显示真正乘坐的交通工具。
-                    </div>
-                    <div style="font-size: 16px;">
-                        •
-                        x2：X先生专有卡片，可以使用一张本卡片乘坐出租车、公交车、地铁或轮船到达相应最近的两步内的车站（离开原地一步后再返回原地为有效走棋）。并且，在记卡器上将不显示真正乘坐的交通工具。但，两步行走经过的车站必须用相同的交通工具能够到达。
-                    </div>
-                    <div style="font-size: 16px;">-----------------</div>
-                    <div style="font-size: 22px;">卡片数量</div>
-                    <div style="font-size: 16px;">• 警探：拥有有限数量的出租车、公交车、地铁卡片，如果某一卡片数量耗尽，将无法乘坐相应的交通工具。</div>
-                    <div style="font-size: 16px;">
-                        • X先生：开局拥有有限数量的出租车、公交车、地铁卡片，每一轮中警探们使用过的卡片将被X先生所拥有，意味着在后期，这三种卡片数量可视为无限。X先生还拥有额外的隐形与x2卡片。</div>
-                    <div style="font-size: 16px;">-----------------</div>
-                    <div style="font-size: 22px;">胜利条件</div>
-                    <div style="font-size: 16px;">• 警探：在24轮游戏内推测出X先生的位置，并且使任意警探棋子与X先生棋子在同一车站上，即可获得胜利。</div>
-                    <div style="font-size: 16px;">• X先生：在24轮游戏后，警探未胜利，X先生即胜利。</div>
-                    <div style="font-size: 16px;">---------------------------------------</div>
-                    <div style="font-size: 26px;">游戏操作</div>
-                    <div style="font-size: 22px;">关于网页</div>
-                    <div style="font-size: 16px;">• 为避免由网页缩放的不同，引起的排版混乱，网页水平滚动与垂直滚动将被锁定在左侧与上侧。如出现界面不可见的情况，请缩放网页使内容全部显示。
-                    </div>
-                    <div style="font-size: 16px;">-----------------</div>
-                    <div style="font-size: 22px;">电脑端</div>
-                    <div style="font-size: 16px;">• 地图的移动与缩放：使用鼠标左键移动地图，鼠标滚轮缩放地图。</div>
-                    <div style="font-size: 16px;">• 卡片的选择：在“卡片堆”中点击相应区域以选择对应卡片。</div>
-                    <div style="font-size: 16px;">• 棋子与车站：棋子站在车站上时，车站的标号将被遮挡，鼠标移动至车站上时，车站标号将浮至棋子之上。</div>
-                    <div style="font-size: 16px;">• 棋子的移动：选择好卡片后，在目标车站处双击以完成走棋，如果走棋失败，棋子将在原地，请检查卡片种类与数量和道路连通性，再次进行走棋。
-                    </div>
-                    <div style="font-size: 16px;">• x2卡片的使用：在自己走棋时，第一步：点击第一步的目标车站，如果成功走棋，棋子将立即站立在目标车站上，并且走棋进入第二步。第二步：点击第二步的目标车站，如果成功走棋，棋子将站在目标车站上，走棋完成。如果不成功走棋，棋子将回到第一步之前的棋子位置，请检查卡片数量与道路连通性，以及两步是否有相同的交通线路能够到达（见“卡片”规则）
-                    </div>
-                    <div style="font-size: 16px;">• 控制器按钮：地图将移动至当前正在走棋的棋子，如果自己为玩家，正在走棋棋子为X先生，定位将不起作用。</div>
-                    <div style="font-size: 16px;">-----------------</div>
-                    <div style="font-size: 22px;">手机/触摸设备端</div>
-                    <div style="font-size: 16px;">• 因手机网页缩放的特殊性，在开始游戏后只有使界面左上角的按钮处于禁用状态时才能够操作游戏。否则，将操作网页的移动与缩放。</div>
-                    <div style="font-size: 16px;">• 地图的移动与缩放：滑动地图区域以移动地图，使用双指缩放地图。</div>
-                    <div style="font-size: 16px;">• 卡片的选择：在“卡片堆”中点击相应区域以选择对应卡片。</div>
-                    <div style="font-size: 16px;">• 棋子与车站：棋子站在车站上时，车站的标号将被遮挡，点击车站位置可使车站标号浮至棋子之上。</div>
-                    <div style="font-size: 16px;">• 棋子的移动：选择好卡片后，在目标车站处双击以完成走棋，如果走棋失败，棋子将在原地，请检查卡片种类与数量和道路连通性，再次进行走棋。
-                    </div>
-                    <div style="font-size: 16px;">• x2卡片的使用：在自己走棋时，第一步：点击第一步的目标车站，如果成功走棋，棋子将立即站立在目标车站上，并且走棋进入第二步。第二步：点击第二步的目标车站，如果成功走棋，棋子将站在目标车站上，走棋完成。如果不成功走棋，棋子将回到第一步之前的棋子位置，请检查卡片数量与道路连通性，以及两步是否有相同的交通线路能够到达（见“卡片”规则）
-                    </div>
-                </div>
-            </div>
-
-
-            <div id="Start">
-                <button id="Start_Close">关闭</button>
-                <div id="Start_UUID" style="position: absolute; margin-top: 5px; margin-left: 5px; font: 12px Verdana;">
-                </div>
-                <div style="margin-top: 30px; font: 26px Verdana;">人数选择</div>
-                <select id="PlayerCntChoose">
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                    <option value="6">6</option>
-                </select>
-                <div style="margin-top: 30px; font: 26px Verdana;">棋子选择</div>
-                <select id="ChessChoose">
-                    <option value="1">小偷</option>
-                    <option value="2">3</option>
-                    <option value="3">4</option>
-                    <option value="4">5</option>
-                </select>
-                <div style="margin-top: 30px; font: 26px Verdana;">玩家状态</div>
-                <div>
-                    <div class="PlayerState" id="PlS_1"></div>
-                    <div class="PlayerState" id="PlS_2"></div>
-                    <div class="PlayerState" id="PlS_3"></div>
-                    <div class="PlayerState" id="PlS_4"></div>
-                    <div class="PlayerState" id="PlS_5"></div>
-                    <div class="PlayerState" id="PlS_6"></div>
-                </div>
-                <div style="margin-top: 30px; font: 26px Verdana;">控制</div>
-                <button id="BtnReset" class="Menu_Start_Ctl_Btn">强制重置</button>
-                <div id="BtnReset_S" style="display: inline-block;">
-                </div>
-                <br />
-                <button id="BtnJoin" class="Menu_Start_Ctl_Btn">确定棋子选择</button>
-                <div id="BtnJoin_S" style="display: inline-block;">
-                </div>
-                <br />
-                <button id="BtnQuit" class="Menu_Start_Ctl_Btn">取消棋子选择</button>
-                <div id="BtnQuit_S" style="display: inline-block;">
-                </div>
-                <br />
-                <button id="BtnStart" class="Menu_Start_Ctl_Btn">开始游戏</button>
-                <div id="BtnStart_S" style="display: inline-block;">
-                </div>
-            </div>
-
-
-
-
-            <div type="text" id="Menu">
-                <div style="font: 40px Verdana;">Scotland Yard</div>
-                <div style="font: 10px Verdana; margin-left: 150px;">——v1.46 Upd2022.11.26</div><br />
-
-                <button id="Menu_Start">开始</button><br />
-                <button id="Menu_Help">帮助</button><br />
-                <button id="Menu_Fullscreen">全屏</button>
-            </div>
-
-        </div>
-    </div>
 
 </body>
 
-<script src="v1.46/idx.js" type="module"></script>
-<script src="v1.46/UICtl.js" type="module"></script>
-<script src="v1.46/Web.js" type="module"></script>
-<script src="v1.46/MenuUI.js" type="module"></script>
+<script>
+    window.onload = function() {
+        window.location.href = "./v1.47/index.html";
+    };
+</script>
+
 
 </html>
