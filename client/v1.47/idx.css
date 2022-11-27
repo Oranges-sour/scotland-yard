@@ -1,5 +1,6 @@
 body {
     background-color: rgb(119, 119, 119);
+    overflow: hidden;
 }
 
 #canvas {
@@ -144,7 +145,7 @@ body {
 
 #Menu {
     background-color: rgb(160, 160, 150);
-    background-image: url("../src/menu_bk.png");
+    background-image: url("src/menu_bk.png");
 
     border-style: solid;
     border-width: 3px;
@@ -277,7 +278,7 @@ body {
 }
 
 .CtlStatueSuccess {
-    background-image: url("../../src/ok.png");
+    background-image: url("src/ok.png");
 
     position: absolute;
 
@@ -290,7 +291,7 @@ body {
 }
 
 .CtlStatueFailed {
-    background-image: url("../../src/bad.png");
+    background-image: url("src/bad.png");
 
     position: absolute;
 
@@ -322,32 +323,32 @@ body {
 }
 
 #PlS_1 {
-    background-image: url("../src/ok.png");
+    background-image: url("src/ok.png");
     background-color: rgb(32, 171, 179);
 }
 
 #PlS_2 {
-    background-image: url("../src/ok.png");
+    background-image: url("src/ok.png");
     background-color: rgb(183, 46, 46);
 }
 
 #PlS_3 {
-    background-image: url("../src/ok.png");
+    background-image: url("src/ok.png");
     background-color: rgb(38, 131, 37);
 }
 
 #PlS_4 {
-    background-image: url("../src/ok.png");
+    background-image: url("src/ok.png");
     background-color: rgb(39, 45, 143);
 }
 
 #PlS_5 {
-    background-image: url("../src/ok.png");
+    background-image: url("src/ok.png");
     background-color: rgb(200, 165, 27);
 }
 
 #PlS_6 {
-    background-image: url("../src/ok.png");
+    background-image: url("src/ok.png");
     background-color: rgb(86, 26, 141);
 }
 

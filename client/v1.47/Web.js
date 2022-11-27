@@ -114,6 +114,9 @@ export class Web {
     }
 
     changePlayerCnt(cnt) {
+        if(this.ws === undefined) {
+            return;
+        }
         var obj = new Object();
         obj.type = "playercnt";
         obj.cnt = cnt;
