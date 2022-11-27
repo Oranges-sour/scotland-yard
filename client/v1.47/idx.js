@@ -271,6 +271,8 @@ function init() {
     initObserverShow();
 }
 
+
+
 function initObserverShow() {
     let ob = Node.new();
     main_director.add_child_with_key(ob, "game_observer");

@@ -1,0 +1,14 @@
+#MenuMain {
+    position: absolute;
+
+    margin-top: 10px;
+    margin-left: 10px;
+
+    width: 400px;
+    height: min(80%, 600px);
+
+    text-align: left;
+}
+
+
+

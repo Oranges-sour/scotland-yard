@@ -1,0 +1,12 @@
+#game_load_show {
+    background-color: rgb(182, 182, 150);
+    
+    width: 0%;
+    height: 0%;
+
+    position: absolute;
+
+    left: 0px;
+    top: 0px;
+    z-index: 1000;
+}
