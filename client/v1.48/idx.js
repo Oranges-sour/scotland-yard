@@ -35,7 +35,8 @@ var mouseDown = false;
 var renderData = new Object();
 renderData.width = 1000;
 renderData.height = 700;
-renderData.zoom = 1.0;
+renderData.zoom = 0.5;
+document.documentElement.style.zoom = renderData.zoom;
 
 
 window.onload = function () {
