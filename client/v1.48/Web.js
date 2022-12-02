@@ -5,35 +5,48 @@ import {
 
 import { resetUI, closeUI, updateMenuStatue, btnCtlSuccess, btnCtlFailed } from "./MenuUI.js";
 
+const DEBUG = false;
 
 export class Web {
     constructor() {
         this.userName = randomString(true, 5, 8);
+
+        this.startTryConnect = false;
+
         this.connected = false;
-        this.onopen = false;
+        this.onOpenWebSocket = false;
+
+        var that = this;
+        setInterval(function () {
+            if (that.startTryConnect) {
+                that.connectServer();
+            }
+        }, 200);
     }
 
     init() {
-        var that = this;
-        setInterval(function () {
-            that.webUpdate();
-        }, 200);
+        this.startTryConnect = true;
     }
 
     isServerConnected() {
         return this.connected;
     }
 
-    webUpdate() {
-        if (!this.connected && !this.onopen) {
-            this.ws = new WebSocket("ws://192.168.1.105:23480");
-            this.onopen = true;
+    connectServer() {
+        if (!this.connected && !this.onOpenWebSocket) {
+            if (DEBUG) {
+                this.ws = new WebSocket("ws://192.168.1.105:23480");
+            } else {
+                this.ws = new WebSocket("ws://101.43.196.171:23480");
+            }
+
+            this.onOpenWebSocket = true;
 
             var that = this;
             this.ws.onopen = function () {
                 console.log("Connected");
                 that.connected = true;
-                that.onopen = false;
+                that.onOpenWebSocket = false;
 
                 //regist name
                 var obj = new Object();
@@ -51,7 +64,7 @@ export class Web {
             };
 
             this.ws.onclose = function () {
-                that.onopen = false;
+                that.onOpenWebSocket = false;
                 that.connected = false;
             }
         }
@@ -67,6 +80,9 @@ export class Web {
     }
 
     joinGame(ctl) {
+        if (this.ws === undefined) {
+            return;
+        }
 
         var obj = new Object();
         obj.type = "join";
@@ -78,6 +94,10 @@ export class Web {
     }
 
     quitGame() {
+        if (this.ws === undefined) {
+            return;
+        }
+
         var obj = new Object();
         obj.type = "quit";
         obj.name = this.userName;
@@ -87,6 +107,10 @@ export class Web {
     }
 
     startGame() {
+        if (this.ws === undefined) {
+            return;
+        }
+
         var obj = new Object();
         obj.type = "start";
 
@@ -95,6 +119,10 @@ export class Web {
     }
 
     playChess(where, card_type) {
+        if (this.ws === undefined) {
+            return;
+        }
+
         var obj = new Object();
         obj.type = "play";
         obj.name = this.userName;
@@ -106,6 +134,10 @@ export class Web {
     }
 
     resetGame() {
+        if (this.ws === undefined) {
+            return;
+        }
+        
         var obj = new Object();
         obj.type = "reset";
 
@@ -114,7 +146,7 @@ export class Web {
     }
 
     changePlayerCnt(cnt) {
-        if(this.ws === undefined) {
+        if (this.ws === undefined) {
             return;
         }
         var obj = new Object();

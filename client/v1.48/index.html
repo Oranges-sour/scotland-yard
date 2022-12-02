@@ -2,9 +2,6 @@
 <title>ScotlandYard</title>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width">
-<meta http-equiv="Pragma" content="no-cache" />
-<meta http-equiv="Cache-Control" content="no-cache" />
-<meta http-equiv="Expires" content="0" />
 
 
 <html lang="zh-cn">
@@ -12,11 +9,6 @@
 <head>
     <link rel="shortcut icon" href="favicon.ico">
     <link rel="stylesheet" type="text/css" href="game_load_show.css">
-    <link rel="stylesheet" type="text/css" href="game_menu.css">
-    <link rel="stylesheet" type="text/css" href="game_menu_home_page.css">
-    <link rel="stylesheet" type="text/css" href="game_menu_help_page.css">
-    <link rel="stylesheet" type="text/css" href="game_menu_start_page.css">
-    <link rel="stylesheet" type="text/css" href="idx.css">
 </head>
 
 <body>
@@ -84,7 +76,7 @@
                     <div style="font-size: 22px;">卡片数量</div>
                     <div style="font-size: 16px;">• 警探：拥有有限数量的出租车、公交车、地铁卡片，如果某一卡片数量耗尽，将无法乘坐相应的交通工具。</div>
                     <div style="font-size: 16px;">
-                        • X先生：开局拥有有限数量的出租车、公交车、地铁卡片，每一轮中警探们使用过的卡片将被X先生所拥有，意味着在后期，这三种卡片数量可视为无限。X先生还拥有额外的隐形与x2卡片。
+                        • X先生：开局拥有有限数量的出租车、公交车、地铁卡片，每一轮中警探们使用过的卡片将被X先生所拥有，即在后期，这三种卡片数量可视为无限。X先生还拥有额外的隐形与x2卡片。
                     </div>
                     <div style="font-size: 16px;">-----------------</div>
                     <div style="font-size: 22px;">胜利条件</div>
@@ -93,9 +85,6 @@
                     <div style="font-size: 16px;">---------------------------------------</div>
                     <div style="font-size: 26px;">游戏操作</div>
                     <div style="font-size: 22px;">关于网页</div>
-                    <div style="font-size: 16px;">•
-                        为避免由网页缩放的不同，引起的排版混乱，网页水平滚动与垂直滚动将被锁定在左侧与上侧。如出现界面不可见的情况，请缩放网页使内容全部显示。
-                    </div>
                     <div style="font-size: 16px;">-----------------</div>
                     <div style="font-size: 22px;">电脑端</div>
                     <div style="font-size: 16px;">• 地图的移动与缩放：使用鼠标左键移动地图，鼠标滚轮缩放地图。</div>
@@ -110,8 +99,7 @@
                     <div style="font-size: 16px;">• 控制器按钮：地图将移动至当前正在走棋的棋子，如果自己为玩家，正在走棋棋子为X先生，定位将不起作用。</div>
                     <div style="font-size: 16px;">-----------------</div>
                     <div style="font-size: 22px;">手机/触摸设备端</div>
-                    <div style="font-size: 16px;">• 因手机网页缩放的特殊性，在开始游戏后只有使界面左上角的按钮处于禁用状态时才能够操作游戏。否则，将操作网页的移动与缩放。
-                    </div>
+                    <div style="font-size: 16px;">• 推荐启用全屏以获得最佳体验</div>
                     <div style="font-size: 16px;">• 地图的移动与缩放：滑动地图区域以移动地图，使用双指缩放地图。</div>
                     <div style="font-size: 16px;">• 卡片的选择：在“卡片堆”中点击相应区域以选择对应卡片。</div>
                     <div style="font-size: 16px;">• 棋子与车站：棋子站在车站上时，车站的标号将被遮挡，点击车站位置可使车站标号浮至棋子之上。</div>
@@ -176,7 +164,7 @@
 
             <div type="text" id="HomePage">
                 <div style="font: 40px Verdana;">Scotland Yard</div>
-                <div style="font: 10px Verdana; margin-left: 150px;">——v1.47 Upd2022.11.27</div><br />
+                <div style="font: 10px Verdana; margin-left: 150px;">——v1.48 Upd2022.12.2</div><br />
 
                 <button id="HomePage_Btn_Start">开始</button><br />
                 <button id="HomePage_Btn_Help">帮助</button><br />
@@ -187,6 +175,12 @@
     </div>
 
 </body>
+
+<link rel="stylesheet" type="text/css" href="game_menu.css">
+<link rel="stylesheet" type="text/css" href="game_menu_home_page.css">
+<link rel="stylesheet" type="text/css" href="game_menu_help_page.css">
+<link rel="stylesheet" type="text/css" href="game_menu_start_page.css">
+<link rel="stylesheet" type="text/css" href="idx.css">
 
 <script src="idx.js" type="module"></script>
 <script src="UICtl.js" type="module"></script>
